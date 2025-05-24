@@ -1,6 +1,3 @@
-# Create the Emotional Encoding system module
-
-emotional_encoding_code = """\
 import random
 
 class EmotionalEncoder:
@@ -38,5 +35,3 @@ class EmotionalEncoder:
             return 0.1
         else:
             return -0.1  # suppress weak/no emotion
-"""
-

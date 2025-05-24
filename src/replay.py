@@ -1,6 +1,3 @@
-# Create the Replay Mode Arbitration module with optional damping
-
-replay_mode_code = """\
 import random
 
 class ReplayModeArbitrator:
@@ -33,4 +30,3 @@ class ReplayModeArbitrator:
         if new_mode != self.current_mode:
             self.current_mode = new_mode
             self.last_switch_clock = clock
-"""

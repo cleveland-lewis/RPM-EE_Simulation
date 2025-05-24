@@ -1,6 +1,3 @@
-# Create the Pattern Recognition and Memory Pruning module
-
-pattern_memory_code = """\
 import uuid
 from collections import deque
 import math
@@ -57,5 +54,3 @@ class MemoryStore:
 
     def prune_old_memory(self):
         self.short_term = deque([e for e in self.short_term if e["prioritization_score"] > 0.3], maxlen=self.short_term.maxlen)
-"""
-

@@ -1,6 +1,3 @@
-# Create the Recursive Predictive Modeling system module
-
-rpm_code = """\
 import random
 import uuid
 
@@ -67,4 +64,3 @@ class RecursivePredictiveModeler:
 
     def get_simulations(self):
         return self.simulations
-"""
