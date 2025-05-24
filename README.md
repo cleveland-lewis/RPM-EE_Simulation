@@ -12,7 +12,7 @@ This directory contains the skeleton code for the Recursive Predictive Modeling 
 ## How to Run
 
 ```bash
-python src/main.py
+python dashboard.sh
 ```
 
 ## Next Steps

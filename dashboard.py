@@ -50,10 +50,32 @@ st.markdown("""
 os.makedirs("saved_logs", exist_ok=True)
 os.makedirs("unused_logs", exist_ok=True)
 
+# Simulation execution
 # Interactive simulation execution
-st.sidebar.header("Run New Simulation")
-episodes = st.sidebar.number_input("Number of Episodes", min_value=10, max_value=10000, value=500, step=10)
-run_simulation = st.sidebar.button("Run Simulation")
+st.sidebar.header("Run & Save")
+
+episodes = st.sidebar.number_input("Number of Episodes", min_value=10, max_value=50000, value=500, step=10)
+
+col1, col2 = st.sidebar.columns(2)
+
+with col1:
+    run_simulation = st.button("Run")
+
+with col2:
+    save_triggered = st.button("Save", key="save_button_sidebar")
+if save_triggered:
+    log_data = st.session_state.get("log_data")
+    filename = st.session_state.get("filename")
+    if log_data and filename:
+        save_path = os.path.join("saved_logs", filename)
+        with open(save_path, "w") as f:
+            json.dump(log_data, f, indent=2)
+        st.success(f"Saved to {save_path}")
+
+        # Force refresh so Recent Logs updates immediately
+        st.rerun()
+    else:
+        st.error("No simulation data to save.")
 
 log_data = None
 filename = None
@@ -81,31 +103,17 @@ if st.session_state["log_data"]:
 else:
     df = pd.DataFrame()
 
-# Export and Save Options
+# Export Option Only
 st.subheader("Post-Simulation Options")
-col_export, col_save = st.columns([1, 1])
 
-with col_export:
-    if not df.empty:
-        export_name = st.session_state.get("filename", "simulation_log.json").replace(".json", ".csv")
-        export_csv = st.download_button(
-            label="Export as CSV",
-            file_name=export_name,
-            mime="text/csv",
-            data=df.to_csv(index=False)
-        )
-
-with col_save:
-    if st.button("Save"):
-        log_data = st.session_state.get("log_data")
-        filename = st.session_state.get("filename")
-        if log_data and filename:
-            save_path = os.path.join("saved_logs", filename)
-            with open(save_path, "w") as f:
-                json.dump(log_data, f, indent=2)
-            st.success(f"Saved to {save_path}")
-        else:
-            st.error("No simulation data to save. Run a simulation first.")
+if not df.empty:
+    export_name = st.session_state.get("filename", "simulation_log.json").replace(".json", ".csv")
+    export_csv = st.download_button(
+        label="Export as CSV",
+        file_name=export_name,
+        mime="text/csv",
+        data=df.to_csv(index=False)
+    )
 
 # Sidebar filter
 st.sidebar.header("Filters")
