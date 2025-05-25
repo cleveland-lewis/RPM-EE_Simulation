@@ -1,0 +1,902 @@
+[
+  {
+    "clock": 1,
+    "state": "awake",
+    "replay_mode": "problem_solving",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 5,
+    "schema_stress": 0.163
+  },
+  {
+    "clock": 2,
+    "state": "awake",
+    "replay_mode": "problem_solving",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 0,
+    "schema_stress": 0.281
+  },
+  {
+    "clock": 3,
+    "state": "awake",
+    "replay_mode": "problem_solving",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 3,
+    "schema_stress": 0.344
+  },
+  {
+    "clock": 4,
+    "state": "awake",
+    "replay_mode": "problem_solving",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 4,
+    "schema_stress": 0.266
+  },
+  {
+    "clock": 5,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 3,
+    "schema_stress": 0.283
+  },
+  {
+    "clock": 6,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 3,
+    "schema_stress": 0.231
+  },
+  {
+    "clock": 7,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 1,
+    "num_simulations": 1,
+    "attunement_score": 3,
+    "schema_stress": 0.219
+  },
+  {
+    "clock": 8,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 2,
+    "schema_stress": 0.26
+  },
+  {
+    "clock": 9,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 1,
+    "schema_stress": 0.283
+  },
+  {
+    "clock": 10,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 3,
+    "schema_stress": 0.296
+  },
+  {
+    "clock": 11,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 0,
+    "schema_stress": 0.241
+  },
+  {
+    "clock": 12,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 2,
+    "schema_stress": 0.177
+  },
+  {
+    "clock": 13,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 2,
+    "num_simulations": 2,
+    "attunement_score": 2,
+    "schema_stress": 0.263
+  },
+  {
+    "clock": 14,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 1,
+    "schema_stress": 0.281
+  },
+  {
+    "clock": 15,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 3,
+    "schema_stress": 0.392
+  },
+  {
+    "clock": 16,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 4,
+    "schema_stress": 0.319
+  },
+  {
+    "clock": 17,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 8,
+    "num_simulations": 8,
+    "attunement_score": 4,
+    "schema_stress": 0.296
+  },
+  {
+    "clock": 18,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 0,
+    "schema_stress": 0.229
+  },
+  {
+    "clock": 19,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 0,
+    "schema_stress": 0.35
+  },
+  {
+    "clock": 20,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 4,
+    "schema_stress": 0.406
+  },
+  {
+    "clock": 21,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 2,
+    "schema_stress": 0.457
+  },
+  {
+    "clock": 22,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 3,
+    "schema_stress": 0.391
+  },
+  {
+    "clock": 23,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 4,
+    "schema_stress": 0.336
+  },
+  {
+    "clock": 24,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 3,
+    "schema_stress": 0.288
+  },
+  {
+    "clock": 25,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 5,
+    "schema_stress": 0.397
+  },
+  {
+    "clock": 26,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 2,
+    "schema_stress": 0.454
+  },
+  {
+    "clock": 27,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 4,
+    "schema_stress": 0.451
+  },
+  {
+    "clock": 28,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 3,
+    "schema_stress": 0.349
+  },
+  {
+    "clock": 29,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 2,
+    "schema_stress": 0.284
+  },
+  {
+    "clock": 30,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 2,
+    "num_simulations": 2,
+    "attunement_score": 2,
+    "schema_stress": 0.256
+  },
+  {
+    "clock": 31,
+    "state": "awake",
+    "replay_mode": "pattern_search",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 0,
+    "schema_stress": 0.434
+  },
+  {
+    "clock": 32,
+    "state": "awake",
+    "replay_mode": "pattern_search",
+    "num_tagged": 2,
+    "num_simulations": 2,
+    "attunement_score": 1,
+    "schema_stress": 0.391
+  },
+  {
+    "clock": 33,
+    "state": "awake",
+    "replay_mode": "pattern_search",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 0,
+    "schema_stress": 0.482
+  },
+  {
+    "clock": 34,
+    "state": "awake",
+    "replay_mode": "pattern_search",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 3,
+    "schema_stress": 0.615
+  },
+  {
+    "clock": 35,
+    "state": "awake",
+    "replay_mode": "pattern_search",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 3,
+    "schema_stress": 0.553
+  },
+  {
+    "clock": 36,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 5,
+    "schema_stress": 0.451
+  },
+  {
+    "clock": 37,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 3,
+    "schema_stress": 0.405
+  },
+  {
+    "clock": 38,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 1,
+    "schema_stress": 0.456
+  },
+  {
+    "clock": 39,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 2,
+    "schema_stress": 0.371
+  },
+  {
+    "clock": 40,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 3,
+    "schema_stress": 0.384
+  },
+  {
+    "clock": 41,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 1,
+    "schema_stress": 0.622
+  },
+  {
+    "clock": 42,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 2,
+    "schema_stress": 0.434
+  },
+  {
+    "clock": 43,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 1,
+    "schema_stress": 0.354
+  },
+  {
+    "clock": 44,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 3,
+    "schema_stress": 0.247
+  },
+  {
+    "clock": 45,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 2,
+    "schema_stress": 0.212
+  },
+  {
+    "clock": 46,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 3,
+    "schema_stress": 0.281
+  },
+  {
+    "clock": 47,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 5,
+    "schema_stress": 0.311
+  },
+  {
+    "clock": 48,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 2,
+    "schema_stress": 0.24
+  },
+  {
+    "clock": 49,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 0,
+    "schema_stress": 0.263
+  },
+  {
+    "clock": 50,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 1,
+    "schema_stress": 0.312
+  },
+  {
+    "clock": 51,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 0,
+    "schema_stress": 0.439
+  },
+  {
+    "clock": 52,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 1,
+    "num_simulations": 1,
+    "attunement_score": 0,
+    "schema_stress": 0.417
+  },
+  {
+    "clock": 53,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 1,
+    "schema_stress": 0.357
+  },
+  {
+    "clock": 54,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 2,
+    "schema_stress": 0.306
+  },
+  {
+    "clock": 55,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 2,
+    "num_simulations": 2,
+    "attunement_score": 1,
+    "schema_stress": 0.276
+  },
+  {
+    "clock": 56,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 5,
+    "schema_stress": 0.291
+  },
+  {
+    "clock": 57,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 0,
+    "schema_stress": 0.4
+  },
+  {
+    "clock": 58,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 2,
+    "schema_stress": 0.429
+  },
+  {
+    "clock": 59,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 5,
+    "schema_stress": 0.512
+  },
+  {
+    "clock": 60,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 2,
+    "schema_stress": 0.417
+  },
+  {
+    "clock": 61,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 2,
+    "schema_stress": 0.4
+  },
+  {
+    "clock": 62,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 2,
+    "schema_stress": 0.542
+  },
+  {
+    "clock": 63,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 4,
+    "schema_stress": 0.55
+  },
+  {
+    "clock": 64,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 5,
+    "schema_stress": 0.58
+  },
+  {
+    "clock": 65,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 5,
+    "schema_stress": 0.527
+  },
+  {
+    "clock": 66,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 3,
+    "schema_stress": 0.623
+  },
+  {
+    "clock": 67,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 1,
+    "schema_stress": 0.482
+  },
+  {
+    "clock": 68,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 0,
+    "schema_stress": 0.337
+  },
+  {
+    "clock": 69,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 2,
+    "schema_stress": 0.247
+  },
+  {
+    "clock": 70,
+    "state": "awake",
+    "replay_mode": "pattern_search",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 2,
+    "schema_stress": 0.314
+  },
+  {
+    "clock": 71,
+    "state": "awake",
+    "replay_mode": "pattern_search",
+    "num_tagged": 2,
+    "num_simulations": 2,
+    "attunement_score": 3,
+    "schema_stress": 0.393
+  },
+  {
+    "clock": 72,
+    "state": "awake",
+    "replay_mode": "pattern_search",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 2,
+    "schema_stress": 0.423
+  },
+  {
+    "clock": 73,
+    "state": "awake",
+    "replay_mode": "pattern_search",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 5,
+    "schema_stress": 0.472
+  },
+  {
+    "clock": 74,
+    "state": "awake",
+    "replay_mode": "pattern_search",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 4,
+    "schema_stress": 0.642
+  },
+  {
+    "clock": 75,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 3,
+    "schema_stress": 0.686
+  },
+  {
+    "clock": 76,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 5,
+    "schema_stress": 0.588
+  },
+  {
+    "clock": 77,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 3,
+    "schema_stress": 0.59
+  },
+  {
+    "clock": 78,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 0,
+    "schema_stress": 0.456
+  },
+  {
+    "clock": 79,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 4,
+    "schema_stress": 0.477
+  },
+  {
+    "clock": 80,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 3,
+    "schema_stress": 0.495
+  },
+  {
+    "clock": 81,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 2,
+    "num_simulations": 2,
+    "attunement_score": 1,
+    "schema_stress": 0.565
+  },
+  {
+    "clock": 82,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 2,
+    "schema_stress": 0.6
+  },
+  {
+    "clock": 83,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 3,
+    "schema_stress": 0.6
+  },
+  {
+    "clock": 84,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 2,
+    "num_simulations": 2,
+    "attunement_score": 5,
+    "schema_stress": 0.542
+  },
+  {
+    "clock": 85,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 3,
+    "schema_stress": 0.419
+  },
+  {
+    "clock": 86,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 3,
+    "schema_stress": 0.531
+  },
+  {
+    "clock": 87,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 3,
+    "schema_stress": 0.488
+  },
+  {
+    "clock": 88,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 1,
+    "schema_stress": 0.631
+  },
+  {
+    "clock": 89,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 4,
+    "schema_stress": 0.537
+  },
+  {
+    "clock": 90,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 0,
+    "schema_stress": 0.523
+  },
+  {
+    "clock": 91,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 1,
+    "schema_stress": 0.482
+  },
+  {
+    "clock": 92,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 4,
+    "num_simulations": 4,
+    "attunement_score": 0,
+    "schema_stress": 0.499
+  },
+  {
+    "clock": 93,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 6,
+    "num_simulations": 6,
+    "attunement_score": 0,
+    "schema_stress": 0.583
+  },
+  {
+    "clock": 94,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 1,
+    "schema_stress": 0.671
+  },
+  {
+    "clock": 95,
+    "state": "awake",
+    "replay_mode": "soothing",
+    "num_tagged": 5,
+    "num_simulations": 5,
+    "attunement_score": 5,
+    "schema_stress": 0.877
+  },
+  {
+    "clock": 96,
+    "state": "awake",
+    "replay_mode": "soothing",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 0,
+    "schema_stress": 0.967
+  },
+  {
+    "clock": 97,
+    "state": "awake",
+    "replay_mode": "soothing",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 0,
+    "schema_stress": 0.903
+  },
+  {
+    "clock": 98,
+    "state": "awake",
+    "replay_mode": "soothing",
+    "num_tagged": 3,
+    "num_simulations": 3,
+    "attunement_score": 4,
+    "schema_stress": 0.774
+  },
+  {
+    "clock": 99,
+    "state": "awake",
+    "replay_mode": "soothing",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 2,
+    "schema_stress": 0.758
+  },
+  {
+    "clock": 100,
+    "state": "awake",
+    "replay_mode": "rest",
+    "num_tagged": 7,
+    "num_simulations": 7,
+    "attunement_score": 2,
+    "schema_stress": 0.631
+  }
+]
