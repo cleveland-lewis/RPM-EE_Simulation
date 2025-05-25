@@ -1,5 +1,3 @@
-import random
-
 class EmotionalEncoder:
     def __init__(self):
         self.replay_fatigue_threshold = 3

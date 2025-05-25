@@ -1,5 +1,3 @@
-import random
-
 class ReplayModeArbitrator:
     def __init__(self, damping_cycles=5):
         self.current_mode = "problem_solving"

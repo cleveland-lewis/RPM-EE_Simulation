@@ -1,17 +1,21 @@
-# RPM-EE Simulation Class (v1.1.0 Integrated)
-
-from sensory import SensoryInputSystem
-from salience import SalienceTagger
-from memory import MemoryStore
-from rpm import RecursivePredictiveModeler
-from emotion import EmotionalEncoder
-from replay import ReplayModeArbitrator
-from fatigue import ReplayFatigueSuppressor
 from arbiter import SimulationClusterArbiter
-from selfmodel import SelfModel
 from attunement import SocialAttunementSystem
+from emotion import EmotionalEncoder
+from fatigue import ReplayFatigueSuppressor
+from memory import MemoryStore
+from replay import ReplayModeArbitrator
+from rpm import RecursivePredictiveModeler
+from salience import SalienceTagger
+from selfmodel import SelfModel
+from sensory import SensoryInputSystem
+
 
 class RPMEESimulation:
+    """
+    Orchestrates the RPM-EE simulation by coordinating subsystems across time steps.
+    Tracks internal states including attunement, schema stress, and replay dynamics.
+    """
+
     def __init__(self):
         self.clock = 0
         self.logs = []
@@ -42,12 +46,16 @@ class RPMEESimulation:
         evaluated = self.self_model.evaluate_simulations(ranked)
         attunement_score = self.attuner.evaluate_predictions(evaluated)
 
+        prediction_error = sum(sim.get("schema_mismatch", 0.0) for sim in evaluated) / max(1, len(evaluated))
+        emotion_volatility = sum(abs(sim.get("emotional_prediction", 0.0)) for sim in evaluated) / max(1,
+                                                                                                       len(evaluated))
+
         # Example system state for mode selection
         system_state = {
             "clock": self.clock,
             "stress": self.self_model.schema_stress,
-            "prediction_error": sum(sim.get("schema_mismatch", 0.0) for sim in evaluated) / max(1, len(evaluated)),
-            "emotion_volatility": sum(abs(sim["emotional_prediction"]) for sim in evaluated) / max(1, len(evaluated))
+            "prediction_error": prediction_error,
+            "emotion_volatility": emotion_volatility
         }
 
         mode = self.replay_mode.select_mode(system_state)
@@ -55,15 +63,21 @@ class RPMEESimulation:
         # Log basic metrics
         self.logs.append({
             "clock": self.clock,
-            "state": input_packet["state"],
+            "state": input_packet.get("state", None),
             "replay_mode": mode,
             "num_tagged": len(tagged_events),
             "num_simulations": len(simulations),
-            "attunement_score": attunement_score,
+            "attunement_score": round(attunement_score, 3),
             "schema_stress": round(self.self_model.schema_stress, 3)
         })
 
     def run(self, episodes=100):
+        """
+        Run the simulation for a defined number of episodes.
+
+        Args:
+            episodes (int): Number of simulation steps to execute.
+        """
         for episode in range(episodes):
             self.clock += 1
             self.step()

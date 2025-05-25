@@ -1,6 +1,7 @@
 # RPM-EE v1.1.0 Simulation
 
-This directory contains the skeleton code for the Recursive Predictive Modeling with Emotional Encoding (RPM-EE) simulation architecture.
+This directory contains the skeleton code for the Recursive Predictive Modeling with Emotional Encoding (RPM-EE)
+simulation architecture.
 
 ## Structure
 
@@ -18,11 +19,12 @@ python dashboard.sh
 ## Next Steps
 
 Implement subsystems in `simulation.py`:
-- [ ] Sensory input 
-- [ ]Tagging + prioritization
+
+- [ ] Sensory input
+  - [ ]Tagging + prioritization
 - [ ] Pattern matching
 - [ ] Recursive simulation
-- [ ] Emotional encoding 
+- [ ] Emotional encoding
 - [ ] Replay mode arbitration
 - [ ] Action decision
 - [ ] Logging + visualization

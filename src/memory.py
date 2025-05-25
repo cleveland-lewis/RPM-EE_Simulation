@@ -1,6 +1,5 @@
-import uuid
 from collections import deque
-import math
+
 
 class MemoryStore:
     def __init__(self, max_short_term=1000):
@@ -49,8 +48,10 @@ class MemoryStore:
         sim += weights["intensity"] * (1.0 - abs(e1["intensity"] - e2["intensity"]))
         sim += weights["emotion_valence"] * (1.0 - abs(e1["emotion"]["valence"] - e2["emotion"]["valence"]))
         sim += weights["timing"] * (1.0 - abs(e1["timing"] - e2["timing"]))
-        sim += weights["prioritization_score"] * (1.0 - abs(e1["prioritization_score"] - e2["prioritization_score"]) / 10.0)
+        sim += weights["prioritization_score"] * (
+                    1.0 - abs(e1["prioritization_score"] - e2["prioritization_score"]) / 10.0)
         return max(0.0, min(1.0, sim))  # clamp between 0 and 1
 
     def prune_old_memory(self):
-        self.short_term = deque([e for e in self.short_term if e["prioritization_score"] > 0.3], maxlen=self.short_term.maxlen)
+        self.short_term = deque([e for e in self.short_term if e["prioritization_score"] > 0.3],
+                                maxlen=self.short_term.maxlen)

@@ -1,7 +1,7 @@
 class SimulationClusterArbiter:
     def __init__(self, alpha=0.5, beta=0.3, gamma=0.2):
         self.alpha = alpha  # weight for physical plausibility
-        self.beta = beta    # weight for emotional prediction
+        self.beta = beta  # weight for emotional prediction
         self.gamma = gamma  # weight for reward distortion
 
     def score_simulations(self, simulations):
@@ -15,9 +15,9 @@ class SimulationClusterArbiter:
                 t3 = 0.0  # suppress reward distortion influence
 
             final_score = (
-                self.alpha * t1 +
-                self.beta * t2 +
-                self.gamma * t3
+                    self.alpha * t1 +
+                    self.beta * t2 +
+                    self.gamma * t3
             )
             sim["final_score"] = round(final_score, 3)
         return simulations

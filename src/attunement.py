@@ -1,5 +1,6 @@
 import random
 
+
 class SocialAttunementSystem:
     def __init__(self):
         self.current_truth = self._generate_truth()

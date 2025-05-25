@@ -11,4 +11,4 @@ handlers:
     level: INFO
 root:
   level: INFO
-  handlers: [file]
+  handlers: [ file ]
