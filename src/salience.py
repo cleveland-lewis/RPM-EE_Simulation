@@ -7,10 +7,16 @@ from datetime import datetime
 class SalienceTagger:
     MODALITIES = ["vision", "hearing", "touch", "smell", "taste"]
 
-    def __init__(self, salience_decay=0.01, weight_error_corr=1.0, weight_soothing=1.0):
+    def __init__(self, salience_decay=0.01, weight_error_corr=1.0, weight_soothing=1.0,
+                 timing_center=300, timing_steepness=0.1):
         self.salience_decay = salience_decay
         self.weight_error_corr = weight_error_corr
         self.weight_soothing = weight_soothing
+        self.timing_center = timing_center
+        self.timing_steepness = timing_steepness
+
+        # Track recurrence of event types per modality
+        self.recurrence_memory = {}
 
     def tag_input(self, input_packet, debug=False):
         tagged_events = []
@@ -32,14 +38,18 @@ class SalienceTagger:
         return tagged_events
 
     def _tag_event(self, event, modality, clock, state, other_w, debug=False):
-        # Feature‐values
         novelty = random.uniform(0.2, 1.0)
         emotion = self._simulate_emotion(modality, event["intensity"])
-        recurrence = 0.0
 
-        # apply decay to timing score
-        raw_timing = 1.0 / (1.0 + math.exp(-0.1 * (clock - 300)))
+        # Recurrence tracking (requires event["type"] field)
+        event_key = (modality, event.get("type", "unknown"))
+        self.recurrence_memory[event_key] = self.recurrence_memory.get(event_key, 0) + 1
+        recurrence = 1.0 / self.recurrence_memory[event_key]  # Decreases over time
+
+        # Timing salience with parametrized sigmoid
+        raw_timing = 1.0 / (1.0 + math.exp(-self.timing_steepness * (clock - self.timing_center)))
         timing = raw_timing * (1.0 - self.salience_decay)
+
         duration = event["duration"]
         intensity = event["intensity"]
 
@@ -54,12 +64,13 @@ class SalienceTagger:
 
         if debug:
             print(f"[DEBUG] Modality: {modality}")
+            print(f"  Event Key: {event_key}")
             print(f"  Novelty: {novelty:.4f}")
             print(f"  Emotion: {emotion}")
+            print(f"  Recurrence Count: {self.recurrence_memory[event_key]}")
             print(f"  Timing: {timing:.4f}")
             print(f"  Duration: {duration}")
             print(f"  Intensity: {intensity}")
-            print(f"  Score Weights: other_w={other_w:.4f}, soothing={self.weight_soothing}, error_corr={self.weight_error_corr}")
             print(f"  Prioritization Score: {prioritization_score:.4f}")
 
         return {
@@ -69,7 +80,7 @@ class SalienceTagger:
             "state": state,
             "novelty": round(novelty, 4),
             "emotion": emotion,
-            "recurrence": recurrence,
+            "recurrence": round(recurrence, 4),
             "timing": round(timing, 4),
             "duration": duration,
             "intensity": intensity,
@@ -77,16 +88,30 @@ class SalienceTagger:
         }
 
     def _simulate_emotion(self, modality, intensity):
-        valence = 0.0
+        # Sigmoid scaling for smooth gradation
+        sigmoid_valence = 2 / (1 + math.exp(-10 * (intensity - 0.5))) - 1
+
+        # Modality-specific emotional bias
+        modality_bias = {
+            "vision": 0.4,
+            "hearing": 0.2,
+            "touch": -0.3,
+            "smell": -0.5,
+            "taste": 0.6
+        }
+
+        valence = sigmoid_valence + modality_bias.get(modality, 0.0)
+        valence = max(-1.0, min(1.0, round(valence, 3)))  # Clamp to [-1, 1]
+
+        # Optional: valence bins to assign category
         category = "neutral"
-        if modality == "vision" and intensity > 0.7:
-            valence, category = 0.8, "awe"
-        elif modality == "hearing" and intensity > 0.6:
-            valence, category = 0.6, "surprise"
-        elif modality == "touch" and intensity > 0.5:
-            valence, category = -0.4, "discomfort"
-        elif modality == "smell" and intensity > 0.5:
-            valence, category = -0.6, "disgust"
-        elif modality == "taste" and intensity > 0.5:
-            valence, category = 0.7, "pleasure"
+        if valence > 0.6:
+            category = "high_positive"
+        elif valence > 0.2:
+            category = "positive"
+        elif valence < -0.6:
+            category = "high_negative"
+        elif valence < -0.2:
+            category = "negative"
+
         return {"valence": valence, "category": category}

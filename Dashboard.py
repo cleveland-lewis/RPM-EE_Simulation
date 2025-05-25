@@ -83,6 +83,50 @@ with st.sidebar.expander("Parameters", expanded=False):
 episodes = st.sidebar.number_input("Episodes", 10, 10000, 500, step=50)
 repetitions = st.sidebar.number_input("Repetitions", 1, 100, 1, step=1)
 run_sim = st.sidebar.button("Run Simulation")
+with st.sidebar.expander("Salience Settings", expanded=True):
+    init_state("salience_decay", 0.01)
+    salience_decay = st.number_input(
+        "Salience decay rate", 0.0, 1.0,
+        value=st.session_state["salience_decay"], step=0.001,
+        key="salience_decay"
+    )
+
+    init_state("weight_error_corr", 1.0)
+    weight_error_corr = st.number_input(
+        "Error-correction weight", 0.0, 2.0,
+        value=st.session_state["weight_error_corr"], step=0.1,
+        key="weight_error_corr"
+    )
+
+    init_state("weight_soothing", 1.0)
+    weight_soothing = st.number_input(
+        "Soothing weight", 0.0, 2.0,
+        value=st.session_state["weight_soothing"], step=0.1,
+        key="weight_soothing"
+    )
+
+    init_state("timing_center", 300)
+    timing_center = st.slider(
+        "Timing sigmoid center", 0, 1000,
+        value=st.session_state["timing_center"],
+        key="timing_center"
+    )
+
+    init_state("timing_steepness", 0.1)
+    timing_steepness = st.slider(
+        "Timing sigmoid steepness", 0.01, 1.0,
+        value=st.session_state["timing_steepness"],
+        step=0.01,
+        key="timing_steepness"
+    )
+
+if st.button("🔄 Reset to Default"):
+    st.session_state["salience_decay"] = 0.01
+    st.session_state["weight_error_corr"] = 1.0
+    st.session_state["weight_soothing"] = 1.0
+    st.session_state["timing_center"] = 300
+    st.session_state["timing_steepness"] = 0.1
+    st.experimental_rerun()
 
 # --- Presets ---
 with st.sidebar.expander("Personality Presets", expanded=False):
