@@ -9,14 +9,16 @@ class SensoryInputSystem:
         self,
         neurotype='neurotypical',
         context='default',
-        senses_count_range=(3, 3),  # Exactly 3 events per modality during awake for test
-        intensity_range=(0.5, 0.5),  # Fixed intensity for deterministic test
-        duration_range=(1, 3),  # Fixed range includes 1 and 3 to satisfy test duration
+        senses_count_range=(3, 3),
+        intensity_range=(0.5, 0.5),
+        duration_range=(1, 3),
         awake_ticks=1300,
         fatigue_ticks=400,
         asleep_ticks=700,
         salience_weights=(0.6, 0.4),
-        salience_decay=0.01
+        salience_decay=0.01,
+        low_salience_threshold=None,
+        high_salience_threshold=None
     ):
         self.clock = 0
         self.state = 'awake'
@@ -29,7 +31,16 @@ class SensoryInputSystem:
         self.intensity_range = intensity_range
         self.duration_range = duration_range
 
-        self.memory_buffer = memory.MemoryBuffer()
+        # --- Randomize thresholds if not provided ---
+        if low_salience_threshold is None:
+            low_salience_threshold = random.uniform(0.3, 0.7)
+        if high_salience_threshold is None:
+            high_salience_threshold = random.uniform(0.7, 0.95)
+
+        self.memory_buffer = memory.MemoryBuffer(
+            low_salience_threshold=low_salience_threshold,
+            high_salience_threshold=high_salience_threshold
+        )
         self.long_term_storage = memory.LongTermStorage()
 
         w_i, w_n = salience_weights
@@ -157,3 +168,4 @@ class SensoryInputSystem:
 
     def _replay_long_term(self):
         return self.long_term_storage.replay()
+

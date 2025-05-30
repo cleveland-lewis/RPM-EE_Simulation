@@ -217,9 +217,12 @@
 </head>
 <body>
   <main class="container" role="main" aria-label="RPM-EE Trial Simulation Interface">
+    <div><button onclick="history.back()">Go Back</button>
+</div>
     <div class="summary-box" id="summaryBox" aria-live="polite" aria-atomic="true">
       Averages will appear here after simulation.
     </div>
+
     <div id="analysisBox" style="padding:1em; border:1px solid #ccc; margin:1em 0; font-family: monospace;">
       <strong>Data Analysis:</strong>
       <div id="analysisContent">Waiting for simulation data...</div>
@@ -534,7 +537,7 @@ function renderSpreadsheet(arr) {
   const avgStr = mean(stress).toFixed(4);
 
   document.getElementById("summaryBox").innerHTML =
-    `<b>Avg Attunement:</b> <span style="color:#4682b4">${avgAtt}</span>
+    `<b>Avg Attunement:</b> <span style="color:#1b5f00">${avgAtt}</span>
     &nbsp; &nbsp;
     <b>Avg Stress:</b> <span style="color:#a94442">${avgStr}</span>
     <span style="font-size:0.9em;color:#666;margin-left:2em;">(N=${arr.length})</span>`;

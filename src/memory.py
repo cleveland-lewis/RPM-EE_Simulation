@@ -15,10 +15,11 @@ class MemoryBuffer(MemoryStore):
     """
     Short-term memory buffer with per-event salience, decay, and consolidation support.
     """
-    def __init__(self, max_short_term=1000, low_salience_threshold=0.5):
+    def __init__(self, max_short_term=1000, low_salience_threshold=0.5, high_salience_threshold=0.9):
         super().__init__()
         self.short_term = deque(maxlen=max_short_term)
         self.low_salience_threshold = low_salience_threshold
+        self.high_salience_threshold = high_salience_threshold
 
     def match_patterns(self, events):
         matched = []
@@ -54,19 +55,23 @@ class MemoryBuffer(MemoryStore):
             event['salience'] *= math.exp(-rate)
 
     def store_events(self, tagged_events):
-        """
-        Store new tagged events and assign half-life & decay rate.
-        """
         for event in tagged_events:
             s0 = event.get('initial_salience', event.get('salience', 0))
-            event['initial_salience'] = s0  # Ensure initial_salience set
-            event['salience'] = event.get('salience', s0)  # Ensure salience set
-
-            if s0 < self.low_salience_threshold:
+            event['initial_salience'] = s0
+            event['salience'] = event.get('salience', s0)
+            # Jitter thresholds
+            jitter = random.uniform(-0.05, 0.05)
+            dyn_low = min(max(self.low_salience_threshold + jitter, 0), 1)
+            dyn_high = min(max(self.high_salience_threshold + jitter, 0), 1)
+            # Use dynamic thresholds
+            if s0 < dyn_low:
                 half_life = random.uniform(1200, 2400)
+            elif s0 > dyn_high:
+                half_life = random.uniform(4800, 7200)
             else:
                 half_life = random.uniform(2400, 4800)
-
+            event['dynamic_low_salience_threshold'] = dyn_low
+            event['dynamic_high_salience_threshold'] = dyn_high
             event['half_life'] = round(half_life, 4)
             event['decay_rate'] = math.log(2) / half_life
             event['tag_age'] = event.get('tag_age', 0)

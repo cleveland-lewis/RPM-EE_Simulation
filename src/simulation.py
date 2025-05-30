@@ -25,24 +25,28 @@ def flatten_dict(d, parent_key='', sep='.'):
 # SIMULATION CORE
 # --------------------
 def run_simulation(total_ticks: int = 2400) -> list:
-    """
-    Run the sensory-memory simulation for `total_ticks` iterations.
-    Returns a list of per-tick packets (partially flattened for CSV/export),
-    preserving 'memory_config' and 'memory_stats' as nested dictionaries.
-    """
-    sim = sensory.SensoryInputSystem()
+    # Randomize thresholds per simulation/agent
+    base_low = random.uniform(0.3, 0.7)
+    base_high = random.uniform(0.7, 0.95)
+    # Assuming SensoryInputSystem accepts these as args and passes to MemoryBuffer
+    sim = sensory.SensoryInputSystem(
+        low_salience_threshold=base_low,
+        high_salience_threshold=base_high,
+        # ...other args...
+    )
     logs = []
     for _ in range(total_ticks):
         sim.update_clock()
         sim.memory_buffer.tick_decay()
         packet = sim.generate_input()
+        ...
 
         # --- Graph fields ---
         packet['attunement_score'] = random.uniform(0, 1)
         packet['schema_stress'] = random.uniform(0, 1)
         packet['avg_affect_feedback'] = random.uniform(-1, 1)
 
-        # --- Example nested fields ---
+        # --- Nested fields ---
         packet['memory_config'] = {
             'low_salience_threshold': getattr(sim.memory_buffer, "low_salience_threshold", None),
             'half_life_ranges': {'low': (1200, 2400), 'high': (2400, 4800)},
