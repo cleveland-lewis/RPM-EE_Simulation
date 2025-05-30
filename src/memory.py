@@ -20,6 +20,29 @@ class MemoryBuffer(MemoryStore):
         self.short_term = deque(maxlen=max_short_term)
         self.low_salience_threshold = low_salience_threshold
 
+    def match_patterns(self, events):
+        matched = []
+        unmatched = []
+        for event in events:
+            max_sim = self.max_similarity(event)
+            if max_sim > 0.8:
+                event_copy = event.copy()
+                event_copy['recurrence'] = 1
+                matched.append(event_copy)
+            else:
+                unmatched.append(event)
+        return matched, unmatched
+
+    def prune_old_memory(self, min_salience=0.1):
+        self.short_term = deque(
+            [e for e in self.short_term if e.get('salience', 0) >= min_salience],
+            maxlen=self.short_term.maxlen
+        )
+
+        @property
+        def long_term(self):
+            # Provide empty dict or reference to your actual long-term storage
+            return {}
     def tick_decay(self):
         """
         Increment tag_age and apply exponential decay to each event's salience.

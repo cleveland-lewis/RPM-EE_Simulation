@@ -16,7 +16,8 @@ class SensoryInputSystem:
         senses_count_range=(0, 5),
         intensity_range=(0.1, 1.0),
         duration_range=(1, 10),
-        awake_ticks=1700,
+        awake_ticks=1300,
+        fatigue_ticks=400,
         asleep_ticks=700,
         salience_weights=(0.6, 0.4),
         salience_decay=0.01
@@ -24,7 +25,7 @@ class SensoryInputSystem:
         # Clock and state setup
         self.clock = 0
         self.state = 'awake'
-        self.state_durations = {'awake': awake_ticks, 'asleep': asleep_ticks}
+        self.state_durations = {'awake': awake_ticks, 'asleep': asleep_ticks, 'fatigued': fatigue_ticks}
         self.state_timer = self.state_durations[self.state]
 
         # Sensory parameters
@@ -63,6 +64,10 @@ class SensoryInputSystem:
             self.state = 'asleep'
             self.state_timer = self.state_durations['asleep']
             self._on_sleep_entry()
+        elif self.state == 'fatigued':
+            self.state = 'asleep'
+            self.state_timer = self.state_durations['asleep']
+            self._on_sleep_entry()
         else:
             self.state = 'awake'
             self.state_timer = self.state_durations['awake']
@@ -72,23 +77,29 @@ class SensoryInputSystem:
         self._consolidate()
 
     def generate_input(self):
-        """Generate sensory packet with events grouped by modality."""
         if self.state == 'awake':
             events = self._awake_cycle()
         else:
             events = self._sleep_cycle()
 
-        # Group events by modality for easier downstream processing
+        # Initialize grouped_events with all modalities as keys
         grouped_events = {mod: [] for mod in self.MODALITIES}
         for event in events:
-            mod = event.get('modality', 'unknown')
-            grouped_events.setdefault(mod, []).append(event)
+            mod = event.get('modality', None)
+            # Only add event if modality known and expected
+            if mod in self.MODALITIES:
+                grouped_events[mod].append(event)
+            else:
+                # Optionally collect unknown modality events under a separate key or discard
+                grouped_events.setdefault('unknown', []).append(event)
 
-        return {
+        packet = {
             'clock': self.clock,
             'state': self.state,
-            'senses_packet': grouped_events
         }
+        # Update top-level dict with all modalities keys, even if empty lists
+        packet.update(grouped_events) # Type: ignore
+        return packet
 
     def _awake_cycle(self):
         """Select mode weighted by probability and process sensory events."""
@@ -104,11 +115,11 @@ class SensoryInputSystem:
         return self._light_replay()
 
     def _sleep_cycle(self):
-        """Replay events from long-term storage during sleep."""
-        return self._replay_long_term()
+        # Replay events from long-term storage during sleep.
+        return []
 
     def _simulate_senses(self, count=None, intensity_range=None, modality='generic'):
-        """Generate raw sensory events tagged with modality."""
+        # Generate raw sensory events tagged with modality.
         if self.state == 'asleep':
             return []
 

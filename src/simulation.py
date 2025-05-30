@@ -26,7 +26,8 @@ def flatten_dict(d, parent_key='', sep='.'):
 def run_simulation(total_ticks: int = 2400) -> list:
     """
     Run the sensory-memory simulation for `total_ticks` iterations.
-    Returns a list of per-tick packets (flattened for CSV/export).
+    Returns a list of per-tick packets (partially flattened for CSV/export),
+    preserving 'memory_config' and 'memory_stats' as nested dictionaries.
     """
     sim = sensory.SensoryInputSystem()
     logs = []
@@ -35,7 +36,7 @@ def run_simulation(total_ticks: int = 2400) -> list:
         sim.memory_buffer.tick_decay()
         packet = sim.generate_input()
 
-        # --- Graph fields (replace with real values as you progress) ---
+        # --- Graph fields ---
         packet['attunement_score'] = random.uniform(0, 1)
         packet['schema_stress'] = random.uniform(0, 1)
         packet['avg_affect_feedback'] = random.uniform(-1, 1)
@@ -51,8 +52,19 @@ def run_simulation(total_ticks: int = 2400) -> list:
             'long_term_count': len(getattr(getattr(sim, "long_term_storage", type('', (), {})()), "long_term", []))
         }
 
-        # Flatten here!
-        logs.append(flatten_dict(packet))
+        # Flatten everything except 'memory_config' and 'memory_stats'
+        keys_to_exclude = ['memory_config', 'memory_stats']
+        partial_flat = {}
+        for k, v in packet.items():
+            if k in keys_to_exclude:
+                partial_flat[k] = v
+            else:
+                if isinstance(v, dict):
+                    partial_flat.update(flatten_dict({k: v}))
+                else:
+                    partial_flat[k] = v
+
+        logs.append(partial_flat)
     return logs
 
 # --------------------

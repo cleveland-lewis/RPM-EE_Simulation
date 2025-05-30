@@ -11,7 +11,11 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
 from src.salience import SalienceTagger
-
+class MockMemoryStore:
+    @staticmethod
+    def max_similarity(self, event):
+        # Return a fixed similarity for testing purposes, e.g. 0.2
+        return 0.2
 class FixedUUID:
     @staticmethod
     def uuid4():
@@ -34,9 +38,7 @@ def patch_uuid_datetime(monkeypatch):
 
 @pytest.fixture
 def tagger():
-    # use default parameters
-    return SalienceTagger(salience_decay=0.01, weight_error_corr=1.0, weight_soothing=1.0,
-                         timing_center=300, timing_steepness=0.1)
+    return SalienceTagger(memory_store=MockMemoryStore(), w_i=0.6, w_n=0.4, salience_decay=0.01)
 
 @pytest.fixture
 def input_packet():

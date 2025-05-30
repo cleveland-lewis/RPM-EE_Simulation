@@ -2,12 +2,12 @@
 import os
 import sys
 import pytest
+from src.memory import MemoryBuffer
+
 
 # Add src directory to path for imports
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
-
-from src.memory import MemoryBuffer
 
 @pytest.fixture
 def store():
