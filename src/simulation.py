@@ -1,4 +1,5 @@
 import os
+import json
 import random
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -79,6 +80,18 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+
+# --------------------
+# Saving as .JSON file
+# --------------------
+class LogSaveRequest(BaseModel):
+    logs: list
+# Overwrites each time; for append, open with 'a' and write jsonlines
+@app.post("/save-logs")
+async def save_logs(payload: LogSaveRequest):
+    with open("saved_logs.json", "w") as f:
+        json.dump(payload.logs, f, indent=2)
+    return {"status": "success"}
 # Serve main HTML (e.g., /src/trials.html)
 @app.get("/", include_in_schema=False)
 async def serve_trials():

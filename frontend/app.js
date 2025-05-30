@@ -68,29 +68,6 @@ function arrayToCSV(arr) {
   return rows.join("\r\n");
 }
 
-// --- Spreadsheet Render ---
-function renderSpreadsheet(arr) {
-  const container = document.getElementById("spreadsheet");
-  if (!arr.length) {
-    container.innerHTML = "<div style='color:#888;'>[no data]</div>";
-    return;
-  }
-  const headers = Object.keys(arr[0]);
-  let html = "<table id='spreadsheet-table'><thead><tr>";
-  for (const h of headers) html += `<th>${h}</th>`;
-  html += "</tr></thead><tbody>";
-  for (let i = 0; i < arr.length; ++i) {
-    html += "<tr>";
-    for (const h of headers) {
-      let val = arr[i][h];
-      if (typeof val === "number") val = Number.isFinite(val) ? val.toFixed(4) : "";
-      html += `<td>${val === undefined ? "" : val}</td>`;
-    }
-    html += "</tr>";
-  }
-  html += "</tbody></table>";
-  container.innerHTML = html;
-}
 
 // --- Stats helpers ---
 function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0; }
@@ -245,17 +222,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  saveBtn.addEventListener("click", () => {
-    if (!lastRawLogs.length) return;
-    try {
-      localStorage.setItem("rpmee_last_result", JSON.stringify(lastRawLogs));
-      statusBox.textContent = "[ results saved locally ]";
-      logDebug("Saved results to localStorage.");
-    } catch (e) {
-      statusBox.textContent = "[ error saving results ]";
-      logDebug("ERROR saving results: " + e.toString());
-    }
-  });
+  document.getElementById('saveBtn').onclick = async function() {
+  if (!lastRawLogs.length) return;
+  try {
+    const response = await fetch("http://127.0.0.1:8000/save-logs", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({logs: lastRawLogs})
+    });
+    const result = await response.json();
+    document.getElementById('status').textContent =
+      result.status === "success"
+        ? "[ logs saved server-side ]"
+        : `[ error: ${result.msg} ]`;
+  } catch (e) {
+    document.getElementById('status').textContent = "[ error saving results ]";
+  }
+};
 
   downloadBtn.addEventListener("click", () => {
     if (!lastFlatLogs.length) return;

@@ -499,24 +499,29 @@
       logDebug("Page loaded.");
     });
 
-    function renderSpreadsheet(arr) {
-      const container = document.getElementById("spreadsheet");
-      if (!arr.length) {
-        container.innerHTML = "<div>[no data]</div>";
-        return;
-      }
-      let html = "<table><thead><tr><th>Col1</th><th>Col2</th></tr></thead><tbody>";
-      arr.forEach(row => {
-        html += `<tr><td>${row.col1}</td><td>${row.col2}</td></tr>`;
-      });
-      html += "</tbody></table>";
-      container.innerHTML = html;
-    }
 
-    document.getElementById("runBtn").onclick = () => {
-      const data = [{col1:"A", col2:1}, {col1:"B", col2:2}];
-      renderSpreadsheet(data);
-    };
+function renderSpreadsheet(arr) {
+  const container = document.getElementById("spreadsheet");
+  if (!arr.length) {
+    container.innerHTML = "<div style='color:#888;'>[no data]</div>";
+    return;
+  }
+  const headers = Object.keys(arr[0]);
+  let html = "<table id='spreadsheet-table'><thead><tr>";
+  for (const h of headers) html += `<th>${h}</th>`;
+  html += "</tr></thead><tbody>";
+  for (let i = 0; i < arr.length; ++i) {
+    html += "<tr>";
+    for (const h of headers) {
+      let val = arr[i][h];
+      if (typeof val === "number") val = Number.isFinite(val) ? val.toFixed(4) : "";
+      html += `<td>${val === undefined ? "" : val}</td>`;
+    }
+    html += "</tr>";
+  }
+  html += "</tbody></table>";
+  container.innerHTML = html;
+    }
     function showAverages(arr) {
   if (!arr.length) {
     document.getElementById("summaryBox").textContent = "Averages will appear here after simulation.";

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Save Button</title>
+</head>
+<body>
+  <button id="saveBtn" disabled>Save</button>
+  <button id="fillBtn">Simulate Run</button>
+  <span id="status"></span>
+  <script>
+    let lastRawLogs = [];
+
+    // Simulate data to enable Save
+    document.getElementById('fillBtn').onclick = function() {
+      lastRawLogs = [{a:1,b:2},{a:3,b:4}];
+      document.getElementById('saveBtn').disabled = false;
+      document.getElementById('status').textContent = "Data ready, Save enabled.";
+    };
+
+    document.getElementById('saveBtn').onclick = function() {
+      if (!lastRawLogs.length) return;
+      try {
+        localStorage.setItem("rpmee_last_result", JSON.stringify(lastRawLogs));
+        document.getElementById('status').textContent = "[ results saved locally ]";
+      } catch (e) {
+        document.getElementById('status').textContent = "[ error saving results ]";
+      }
+    };
+  </script>
+</body>
+</html>
