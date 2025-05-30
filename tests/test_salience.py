@@ -12,10 +12,10 @@ sys.path.insert(0, os.path.join(ROOT, "src"))
 
 from src.salience import SalienceTagger
 class MockMemoryStore:
-    @staticmethod
-    def max_similarity(self, event):
-        # Return a fixed similarity for testing purposes, e.g. 0.2
-        return 0.2
+    class MockMemoryStore:
+        def max_similarity(self, event):
+            # Return fixed similarity for tests
+            return 0.2
 class FixedUUID:
     @staticmethod
     def uuid4():

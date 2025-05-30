@@ -39,10 +39,11 @@ class MemoryBuffer(MemoryStore):
             maxlen=self.short_term.maxlen
         )
 
-        @property
-        def long_term(self):
-            # Provide empty dict or reference to your actual long-term storage
-            return {}
+    @property
+    def long_term(self):
+        # If no long-term store linked here, return empty dict by default
+        return {}
+
     def tick_decay(self):
         """
         Increment tag_age and apply exponential decay to each event's salience.
@@ -58,10 +59,14 @@ class MemoryBuffer(MemoryStore):
         """
         for event in tagged_events:
             s0 = event.get('initial_salience', event.get('salience', 0))
+            event['initial_salience'] = s0  # Ensure initial_salience set
+            event['salience'] = event.get('salience', s0)  # Ensure salience set
+
             if s0 < self.low_salience_threshold:
                 half_life = random.uniform(1200, 2400)
             else:
                 half_life = random.uniform(2400, 4800)
+
             event['half_life'] = round(half_life, 4)
             event['decay_rate'] = math.log(2) / half_life
             event['tag_age'] = event.get('tag_age', 0)
@@ -101,10 +106,33 @@ class MemoryBuffer(MemoryStore):
 
     @staticmethod
     def _event_similarity(e1, e2):
+        # Return 0 similarity if modalities differ
+        if e1.get('modality') != e2.get('modality'):
+            return 0.0
+
         weights = {'duration': 0.1, 'intensity': 0.1, 'novelty': 0.3, 'timing': 0.2, 'prioritization_score': 0.3}
         sim = 0.0
-        sim += weights['duration'] * (1 - abs(e1.get('duration', 0) - e2.get('duration', 0)) / 10)
-        sim += weights['intensity'] * (1 - abs(e1.get('intensity', 0) - e2.get('intensity', 0)))
+
+        dur_diff = abs(e1.get('duration', 0) - e2.get('duration', 0))
+        dur_sim = max(0.0, 1 - dur_diff / 10)
+        sim += weights['duration'] * dur_sim
+
+        int_diff = abs(e1.get('intensity', 0) - e2.get('intensity', 0))
+        int_sim = max(0.0, 1 - int_diff)
+        sim += weights['intensity'] * int_sim
+
+        nov_diff = abs(e1.get('novelty', 0) - e2.get('novelty', 0))
+        nov_sim = max(0.0, 1 - nov_diff)
+        sim += weights['novelty'] * nov_sim
+
+        tim_diff = abs(e1.get('timing', 0) - e2.get('timing', 0))
+        tim_sim = max(0.0, 1 - tim_diff)
+        sim += weights['timing'] * tim_sim
+
+        pri_diff = abs(e1.get('prioritization_score', 0) - e2.get('prioritization_score', 0))
+        pri_sim = max(0.0, 1 - pri_diff)
+        sim += weights['prioritization_score'] * pri_sim
+
         return max(0.0, min(1.0, sim))
 
     def replay_salient(self, top_k=10):
