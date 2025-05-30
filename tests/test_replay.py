@@ -7,7 +7,7 @@ import pytest
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
-from replay import ReplayModeArbitrator
+from src.replay import ReplayModeArbitrator
 
 @pytest.fixture
 def arbitrator():

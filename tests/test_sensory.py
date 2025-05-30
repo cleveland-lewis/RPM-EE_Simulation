@@ -8,7 +8,7 @@ import random
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
-from sensory import SensoryInputSystem
+from src.sensory import SensoryInputSystem
 
 @pytest.fixture
 def system():

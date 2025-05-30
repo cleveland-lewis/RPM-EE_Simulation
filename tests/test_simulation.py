@@ -3,15 +3,20 @@ import os
 import sys
 import pytest
 
+from src.simulation import run_simulation
+
 # Add src directory to path for imports
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
-from simulation import RPMEESimulation
+from src.simulation import run_simulation
 
+@pytest.fixture
+def system():
+    return run_simulation()
 
 def test_run_populates_logs_list_and_correct_length():
-    sim = RPMEESimulation()
+    sim = run_simulation()
     sim.run(episodes=5)
     logs = getattr(sim, 'logs', None)
     assert isinstance(logs, list), "sim.logs should be a list after run()"
@@ -19,7 +24,7 @@ def test_run_populates_logs_list_and_correct_length():
 
 
 def test_each_entry_has_required_keys():
-    sim = RPMEESimulation()
+    sim = run_simulation()
     sim.run(episodes=1)
     logs = sim.logs
     entry = logs[0]
@@ -31,7 +36,7 @@ def test_each_entry_has_required_keys():
 
 
 def test_clock_indices_are_increasing():
-    sim = RPMEESimulation()
+    sim = run_simulation()
     sim.run(episodes=4)
     logs = sim.logs
     clocks = [e.get('clock') for e in logs]
@@ -41,7 +46,7 @@ def test_clock_indices_are_increasing():
 
 
 def test_scores_non_negative_and_numeric():
-    sim = RPMEESimulation()
+    sim = run_simulation()
     sim.run(episodes=10)
     logs = sim.logs
     for e in logs:
@@ -54,7 +59,7 @@ def test_scores_non_negative_and_numeric():
 
 
 def test_replay_mode_present_as_string_if_in_logs():
-    sim = RPMEESimulation()
+    sim = run_simulation()
     sim.run(episodes=5)
     logs = sim.logs
     for e in logs:
@@ -64,7 +69,7 @@ def test_replay_mode_present_as_string_if_in_logs():
 
 
 def test_run_zero_episodes_returns_empty_list_and_logs_attr_empty():
-    sim = RPMEESimulation()
+    sim = run_simulation()
     logs = sim.run(episodes=0)
     # run() should return an empty list
     assert logs == [], "Expected no log entries when episodes=0"
