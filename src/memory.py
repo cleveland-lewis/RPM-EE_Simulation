@@ -1,57 +1,109 @@
+import math
+import random
 from collections import deque
 
-
 class MemoryStore:
-    def __init__(self, max_short_term=1000):
+    """
+    Base memory store for managing decay of salience over time.
+    Internal use for both short-term and long-term storage.
+    """
+    def __init__(self):
+        # common decay function is in subclass
+        pass
+
+class MemoryBuffer(MemoryStore):
+    """
+    Short-term memory buffer with per-event salience, decay, and consolidation support.
+    """
+    def __init__(self, max_short_term=1000, low_salience_threshold=0.5):
+        # Initialize storage
         self.short_term = deque(maxlen=max_short_term)
-        self.long_term = {}
+        self.low_salience_threshold = low_salience_threshold
+
+    def tick_decay(self):
+        """
+        For each event: increment tag_age and apply exponential decay.
+        """
+        for event in list(self.short_term):
+            event['tag_age'] = event.get('tag_age', 0) + 1
+            rate = event.get('decay_rate', math.log(2)/2000)
+            event['salience'] *= math.exp(-rate)
 
     def store_events(self, tagged_events):
+        """
+        Add new tagged events, assign half_life & decay_rate based on initial_salience.
+        """
         for event in tagged_events:
+            s0 = event.get('initial_salience', event.get('salience',0))
+            if s0 < self.low_salience_threshold:
+                half_life = random.uniform(1200,2400)
+            else:
+                half_life = random.uniform(2400,4800)
+            event['half_life'] = round(half_life,4)
+            event['decay_rate'] = math.log(2)/half_life
+            event['tag_age'] = event.get('tag_age',0)
             self.short_term.append(event)
 
-    def match_patterns(self, new_events):
-        matched = []
-        unmatched = []
-        for event in new_events:
-            similarity_score = self._compare_to_memory(event)
-            if similarity_score > 0.8:
-                matched.append(event)
-                event["recurrence"] = 1  # simple bump, could be a running average
-            else:
-                unmatched.append(event)
-        return matched, unmatched
+    def consolidate_to(self, long_term_storage, threshold=0.5, boost_rate=0.1):
+        """
+        Move high-salience events into long-term storage, boost them first.
+        """
+        for event in list(self.short_term):
+            init = event.get('initial_salience', event['salience'])
+            event['salience'] += boost_rate * init
+            if event['salience'] >= threshold:
+                long_term_storage.store(event)
+                try: self.short_term.remove(event)
+                except ValueError: pass
 
-    def _compare_to_memory(self, event):
-        # Simplified cosine-like comparison with existing short-term memory
+    def cleanup_low_salience(self, min_salience=0.1):
+        """
+        Remove events whose salience fell below min_salience.
+        """
+        self.short_term = deque(
+            [e for e in self.short_term if e.get('salience',0)>=min_salience],
+            maxlen=self.short_term.maxlen
+        )
+
+    def max_similarity(self, event):
+        """
+        Compute max similarity to items in short-term.
+        """
         if not self.short_term:
             return 0.0
-        scores = []
-        for past_event in self.short_term:
-            sim = self._event_similarity(event, past_event)
-            scores.append(sim)
-        return max(scores) if scores else 0.0
+        sims = [self._event_similarity(event,p) for p in self.short_term]
+        return max(sims)
 
     def _event_similarity(self, e1, e2):
-        weights = {
-            "modality": 0.1,
-            "duration": 0.1,
-            "intensity": 0.1,
-            "emotion_valence": 0.3,
-            "timing": 0.2,
-            "prioritization_score": 0.2
-        }
+        weights = {'duration':0.1,'intensity':0.1,'novelty':0.3,'timing':0.2,'prioritization_score':0.3}
+        sim=0.0
+        sim+=weights['duration']*(1-abs(e1.get('duration',0)-e2.get('duration',0))/10)
+        sim+=weights['intensity']*(1-abs(e1.get('intensity',0)-e2.get('intensity',0)))
+        return max(0.0,min(1.0,sim))
 
-        sim = 0
-        sim += weights["modality"] * (1.0 if e1["modality"] == e2["modality"] else 0.0)
-        sim += weights["duration"] * (1.0 - abs(e1["duration"] - e2["duration"]) / 10.0)
-        sim += weights["intensity"] * (1.0 - abs(e1["intensity"] - e2["intensity"]))
-        sim += weights["emotion_valence"] * (1.0 - abs(e1["emotion"]["valence"] - e2["emotion"]["valence"]))
-        sim += weights["timing"] * (1.0 - abs(e1["timing"] - e2["timing"]))
-        sim += weights["prioritization_score"] * (
-                    1.0 - abs(e1["prioritization_score"] - e2["prioritization_score"]) / 10.0)
-        return max(0.0, min(1.0, sim))  # clamp between 0 and 1
+    def replay_salient(self, top_k=10):
+        """
+        Return top_k events by current salience.
+        """
+        return sorted(self.short_term, key=lambda e:e.get('salience',0),reverse=True)[:top_k]
 
-    def prune_old_memory(self):
-        self.short_term = deque([e for e in self.short_term if e["prioritization_score"] > 0.3],
-                                maxlen=self.short_term.maxlen)
+class LongTermStorage(MemoryStore):
+    """
+    Long-term store for consolidated events.
+    """
+    def __init__(self):
+        self.long_term = {}
+
+    def store(self, event):
+        """
+        Save event by id.
+        """
+        self.long_term[event['id']] = event
+
+    def replay(self, top_k=10):
+        """
+        Return top_k long-term events by salience.
+        """
+        events=list(self.long_term.values())
+        return sorted(events, key=lambda e:e.get('salience',0),reverse=True)[:top_k]
+

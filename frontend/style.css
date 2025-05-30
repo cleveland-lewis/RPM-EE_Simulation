@@ -1,0 +1,239 @@
+/* --- Reset and Base --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #faf8f0;
+  color: #000;
+  font-family: Menlo, Monaco, Consolas, monospace;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+/* --- Main Container --- */
+.window {
+  width: 100%;
+  max-width: none;
+  background: #f8f8f8;
+  border: 4px solid #000;
+  box-shadow: 6px 6px 0 #000;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  user-select: none;
+}
+
+/* --- Controls Section --- */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  align-items: center;
+  font-size: 1rem;
+  color: #000;
+  user-select: none;
+}
+
+.controls label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 700;
+  color: #000;
+  font-size: 0.9rem;
+}
+
+.controls input[type="number"] {
+  margin-top: 0.3rem;
+  width: 70px;
+  padding: 0.35rem 0.5rem;
+  font-size: 1rem;
+  border: 2px solid #000;
+  background: #fff;
+  font-family: Menlo, Monaco, Consolas, monospace;
+  transition: border-color 0.2s ease;
+  border-radius: 0;
+}
+
+.controls input[type="number"]:focus {
+  outline: none;
+  border-color: black;
+  box-shadow: 0 0 0 2px #000000 inset;
+  background: #e7e7d7;
+}
+
+.controls button {
+  padding: 0.6rem 1.3rem;
+  border: 2px solid #000;
+  border-radius: 0;
+  background-color: #fff;
+  color: #000;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: Menlo, Monaco, Consolas, monospace;
+  user-select: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.controls button:hover:not(:disabled) {
+  background-color: black;
+  color: #fff;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.controls button:disabled {
+  background-color: #ccc;
+  color: #777;
+  border-color: #777;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* --- Status Bar --- */
+#status {
+  font-weight: 700;
+  font-size: 1rem;
+  color: black;
+  user-select: none;
+  margin-left: 1rem;
+}
+
+/* --- Debug Panel --- */
+#debug-panel {
+  background: #f8f8f8;
+  border: 2px solid #000;
+  border-radius: 0;
+  color: #000;
+  font-family: Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85rem;
+  padding: 1rem;
+  max-height: 130px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  box-shadow: inset 0 0 0 2px #000;
+  user-select: text;
+}
+
+/* --- Output Panel --- */
+#output {
+  background: #f8f8f8;
+  border: 2px solid #000;
+  border-radius: 0;
+  padding: 1rem;
+  color: #000;
+  font-family: Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9rem;
+  height: 180px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  user-select: text;
+  box-shadow: inset 0 0 0 2px #000;
+  display: none;
+}
+
+/* --- Graph Containers --- */
+.graph-island {
+  background: #fff;
+  border: 3px solid #000;
+  padding: 1.25rem 1.75rem;
+  margin-top: 1.25rem;
+  user-select: none;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.graph-island:hover {
+  border-color: black;
+  transform: translateY(-3px);
+}
+
+.graph-island h3 {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: grey;
+  font-family: Menlo, Monaco, Consolas, monospace;
+}
+
+/* --- Graph Focused --- */
+.graph-island.focused {
+  border-color: black;
+  box-shadow: 0 0 10px #000000;
+  transform: scale(1.05);
+}
+
+/* --- Spreadsheet Table --- */
+#spreadsheet {
+  overflow-x: auto;
+  max-height: 300px;
+  border: 2px solid #000;
+  background: #f8f8f8;
+  box-shadow: inset 0 0 0 2px #000;
+  border-radius: 0;
+  margin-top: 1.5rem;
+}
+
+table#spreadsheet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: Menlo, Monaco, Consolas, monospace;
+}
+
+table#spreadsheet-table th,
+table#spreadsheet-table td {
+  border: 1px solid #000;
+  padding: 4px 8px;
+  text-align: right;
+  white-space: nowrap;
+  user-select: text;
+}
+
+table#spreadsheet-table th {
+  background: #e0e0b0;
+  font-weight: 700;
+  color: #000;
+  text-align: center;
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  body {
+    padding: 1.5rem;
+  }
+  .window {
+    width: 100%;
+    padding: 1rem 1.5rem;
+  }
+  .controls {
+    gap: 1rem;
+  }
+  .controls label input,
+  .controls button {
+    width: 100%;
+  }
+::selection {
+  background: #d3d3d3;  /* light gray */
+  color: #000;          /* black text on selection */
+}
+::-moz-selection {
+  background: #d3d3d3;
+  color: #000;
+}
+/* --- Text Selection Highlight --- */
+::selection {
+  background: #d3d3d3;
+  color: #000;
+}
+::-moz-selection {
+  background: #d3d3d3;
+  color: #000;
+}
+}

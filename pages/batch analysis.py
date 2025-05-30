@@ -1,4 +1,4 @@
-# pages/Batch Analysis.py
+# pages/batch analysis.py
 # Page title: Batch Simulation
 import glob
 import json

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RPM-EE Trial Simulation</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* --- Base styles --- */
+    body {
+      font-family: sans-serif;
+      background: #f5f7fa;
+      color: #222;
+      padding: 0.5rem; /* minimal padding */
+      margin: 0;
+      display: block;
+    }
+
+    .container {
+      width: 100vw;
+      max-width: 100vw;
+      background: #fff;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 1rem 2rem;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .summary-box {
+      border: 2px solid #222;
+      border-radius: 8px;
+      padding: 12px 24px;
+      background: #f8f8fa;
+      font-size: 1.15em;
+      width: fit-content;
+      user-select: none;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem 2rem;
+      flex-wrap: wrap;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #555;
+      user-select: none;
+    }
+
+    input[type="number"] {
+      margin-top: 0.3rem;
+      width: 70px;
+      padding: 0.3rem 0.5rem;
+      border: 1.5px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="number"]:focus {
+      border-color: #6a9a7b;
+      outline: none;
+      box-shadow: 0 0 6px rgba(106,154,123,0.5);
+    }
+
+    button {
+      padding: 0.5rem 1.3rem;
+      background-color: #6a9a7b;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #5c8668;
+    }
+
+    button:disabled {
+      background-color: #a1b6a2;
+      cursor: not-allowed;
+    }
+
+    #status {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #6a9a7b;
+      user-select: none;
+      margin-left: 1rem;
+    }
+
+    #debug-panel {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      color: #666;
+      font-family: monospace;
+      font-size: 0.85rem;
+      padding: 1rem;
+      max-height: 130px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      box-shadow: inset 0 0 6px #ddd;
+      user-select: text;
+    }
+
+    #output {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 1rem;
+      color: #444;
+      font-family: monospace;
+      font-size: 0.9rem;
+      height: 180px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      user-select: text;
+      box-shadow: inset 0 0 6px #ddd;
+      display: none;
+    }
+
+    .graph-island {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.07);
+      padding: 1.25rem 1.75rem;
+      margin-top: 1.25rem;
+      user-select: none;
+      transition: box-shadow 0.25s ease, transform 0.25s ease;
+    }
+
+    .graph-island:hover {
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+
+    .graph-island h3 {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: #3b5a40;
+    }
+
+    .graph-island.focused {
+      box-shadow: 0 0 20px #6a9a7b;
+      border: 1.5px solid #6a9a7b;
+      transform: scale(1.03);
+    }
+
+    #spreadsheet-title {
+      margin-top: 1.5rem;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #444;
+      user-select: none;
+    }
+
+    #spreadsheet {
+      overflow-x: auto;
+      max-height: 300px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      box-shadow: inset 0 0 6px #ddd;
+    }
+
+    table#spreadsheet-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    table#spreadsheet-table th,
+    table#spreadsheet-table td {
+      border: 1px solid #ccc;
+      padding: 4px 8px;
+      text-align: right;
+      white-space: nowrap;
+      font-family: monospace;
+      user-select: text;
+    }
+
+    table#spreadsheet-table th {
+      background: #eaeaea;
+      font-weight: 700;
+      color: #333;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        width: 95%;
+        padding: 1rem 1.5rem;
+      }
+      .controls {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      label, button {
+        width: 100%;
+      }
+      input[type="number"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container" role="main" aria-label="RPM-EE Trial Simulation Interface">
+    <div class="summary-box" id="summaryBox" aria-live="polite" aria-atomic="true">
+      Averages will appear here after simulation.
+    </div>
+    <div id="analysisBox" style="padding:1em; border:1px solid #ccc; margin:1em 0; font-family: monospace;">
+      <strong>Data Analysis:</strong>
+      <div id="analysisContent">Waiting for simulation data...</div>
+    </div>
+    <section class="controls" aria-label="Simulation controls">
+      <label for="episodes">Episodes:
+        <input id="episodes" type="number" min="1" value="500" aria-describedby="episodes-desc" />
+      </label>
+      <span id="episodes-desc" class="visually-hidden">Enter the number of episodes for simulation</span>
+      <label for="repetitions">Repetitions:
+        <input id="repetitions" type="number" min="1" value="1" aria-describedby="repetitions-desc" />
+      </label>
+      <span id="repetitions-desc" class="visually-hidden">Enter the number of repetitions for simulation</span>
+      <button id="runBtn" aria-live="polite">▶ Run Simulation</button>
+      <button id="downloadCSV" disabled>Export CSV</button>
+      <span id="status" aria-live="assertive" aria-atomic="true" style="margin-left:1rem;">[waiting]</span>
+    </section>
+
+    <section id="graphs" aria-label="Simulation graphs">
+      <article class="graph-island" tabindex="0">
+        <h3>Attunement Score</h3>
+        <div id="attunementGraph" role="img" aria-label="Graph showing Attunement Score over time"></div>
+      </article>
+      <article class="graph-island" tabindex="0">
+        <h3>Schema Stress</h3>
+        <div id="stressGraph" role="img" aria-label="Graph showing Schema Stress over time"></div>
+      </article>
+      <article class="graph-island" tabindex="0">
+        <h3>Affect Feedback</h3>
+        <div id="affectGraph" role="img" aria-label="Graph showing Affect Feedback over time"></div>
+      </article>
+    </section>
+
+    <section aria-label="Debugging and raw data">
+      <div id="debug-panel" aria-live="polite" aria-atomic="true"></div>
+      <pre id="output" style="display:none;"></pre>
+      <h2 id="spreadsheet-title">Raw Data Spreadsheet</h2>
+      <div id="spreadsheet" role="region" aria-label="Spreadsheet view of raw data"></div>
+    </section>
+  </main>
+
+  <script>
+    // --- Basic Debug Logger ---
+    function logDebug(msg) {
+      const now = new Date();
+      const ts = now.toISOString().slice(11, 19);
+      const panel = document.getElementById('debug-panel');
+      if (panel) {
+        panel.textContent += `[${ts}] ${msg}\n`;
+        panel.scrollTop = panel.scrollHeight;
+      }
+      console.log(`[${ts}] ${msg}`);
+    }
+
+    // Animate line graphs using Plotly
+    function animateGraph(id, data, label) {
+      if (!Array.isArray(data) || data.length === 0) {
+        Plotly.purge(id);
+        logDebug(`[WARN] No data for ${label}`);
+        Plotly.newPlot(id, [{ x: [0], y: [0], mode: "lines", name: "No data" }], { title: `${label}: No Data` });
+        return;
+      }
+      Plotly.purge(id);
+      Plotly.newPlot(id, [{
+        x: [...Array(data.length).keys()],
+        y: data,
+        mode: "lines",
+        name: label
+      }], { yaxis: { title: label } });
+    }
+
+    // Convert array of objects to CSV string
+    function flattenForCSV(obj) {
+      const flat = {};
+      for (const k in obj) {
+        const v = obj[k];
+        if (k === "memory_config" && v && typeof v === "object") {
+          flat["memory_config_low_salience_threshold"] = typeof v.low_salience_threshold === "number" ? v.low_salience_threshold : "";
+          flat["memory_config_prune_min_salience"] = typeof v.prune_min_salience === "number" ? v.prune_min_salience : "";
+          if (v.half_life_ranges && typeof v.half_life_ranges === "object") {
+            flat["memory_config_half_life_low_start"] = Array.isArray(v.half_life_ranges.low) ? v.half_life_ranges.low[0] || "" : "";
+            flat["memory_config_half_life_low_end"] = Array.isArray(v.half_life_ranges.low) ? v.half_life_ranges.low[1] || "" : "";
+            flat["memory_config_half_life_high_start"] = Array.isArray(v.half_life_ranges.high) ? v.half_life_ranges.high[0] || "" : "";
+            flat["memory_config_half_life_high_end"] = Array.isArray(v.half_life_ranges.high) ? v.half_life_ranges.high[1] || "" : "";
+          } else {
+            flat["memory_config_half_life_low_start"] = "";
+            flat["memory_config_half_life_low_end"] = "";
+            flat["memory_config_half_life_high_start"] = "";
+            flat["memory_config_half_life_high_end"] = "";
+          }
+        } else if (k === "memory_stats" && v && typeof v === "object") {
+          flat["memory_stats_short_term_count"] = typeof v.short_term_count === "number" ? v.short_term_count : "";
+          flat["memory_stats_long_term_count"] = typeof v.long_term_count === "number" ? v.long_term_count : "";
+        } else if (typeof v === "number") {
+          flat[k] = v;
+        } else if (typeof v === "string" && v.trim() !== "" && !isNaN(v)) {
+          flat[k] = Number(v);
+        } else {
+          flat[k] = "";
+        }
+      }
+      return flat;
+    }
+
+    // Extract all unique keys from array of objects
+    function gatherAllKeys(arr) {
+      const keys = new Set();
+      arr.forEach(row => Object.keys(row).forEach(k => keys.add(k)));
+      return Array.from(keys);
+    }
+
+    // Convert array of objects into CSV formatted string
+    function arrayToCSV(arr) {
+      if (!arr.length) return "";
+      const allKeys = gatherAllKeys(arr);
+      const rows = [allKeys.join(",")];
+      arr.forEach(row => {
+        const flat = flattenForCSV(row);
+        rows.push(allKeys.map(k => (flat[k] === undefined ? "" : flat[k])).join(","));
+      });
+      return rows.join("\r\n");
+    }
+
+    // Statistical helper functions
+    function mean(arr) {
+      return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    }
+    function median(arr) {
+      if (!arr.length) return 0;
+      const sorted = arr.slice().sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+    }
+    function stdDev(arr) {
+      if (!arr.length) return 0;
+      const m = mean(arr);
+      return Math.sqrt(arr.reduce((acc, val) => acc + (val - m) ** 2, 0) / arr.length);
+    }
+
+    // Format statistical summary as HTML string
+    function formatStats(arr) {
+      return `
+        Count: ${arr.length}<br>
+        Mean: ${mean(arr).toFixed(4)}<br>
+        Median: ${median(arr).toFixed(4)}<br>
+        Std Dev: ${stdDev(arr).toFixed(4)}
+      `;
+    }
+
+    // Render detailed data analysis including histograms
+    function renderAnalysis(rawLogs) {
+      const attunement = rawLogs.map(d => +d.attunement_score || 0);
+      const stress = rawLogs.map(d => +d.schema_stress || 0);
+      const affect = rawLogs.map(d => +d.avg_affect_feedback || 0);
+
+      document.getElementById("analysisContent").innerHTML = `
+        <b>Attunement Score</b><br>${formatStats(attunement)}<br><br>
+        <b>Schema Stress</b><br>${formatStats(stress)}<br><br>
+        <b>Affect Feedback</b><br>${formatStats(affect)}<br>
+      `;
+
+      Plotly.newPlot('attunementHist', [{
+        x: attunement,
+        type: 'histogram',
+        marker: { color: 'blue' }
+      }], { title: 'Attunement Score Distribution' });
+
+      Plotly.newPlot('stressHist', [{
+        x: stress,
+        type: 'histogram',
+        marker: { color: 'red' }
+      }], { title: 'Schema Stress Distribution' });
+
+      Plotly.newPlot('affectHist', [{
+        x: affect,
+        type: 'histogram',
+        marker: { color: 'green' }
+      }], { title: 'Affect Feedback Distribution' });
+    }
+
+    // Main event bindings and logic
+    document.addEventListener("DOMContentLoaded", () => {
+      const runBtn = document.getElementById("runBtn");
+      const downloadBtn = document.getElementById("downloadCSV");
+      const statusBox = document.getElementById("status");
+      const outputBox = document.getElementById("output");
+      const graphIslands = document.querySelectorAll(".graph-island");
+      let episodesInput = document.getElementById("episodes");
+      let repetitionsInput = document.getElementById("repetitions");
+      let lastRawLogs = [];
+
+      // Allow clicking to toggle graph focus
+      graphIslands.forEach(island => {
+        island.addEventListener("click", () => {
+          island.classList.toggle("focused");
+        });
+      });
+
+      runBtn.addEventListener("click", async () => {
+        const episodes = parseInt(episodesInput.value, 10) || 500;
+        const repetitions = parseInt(repetitionsInput.value, 10) || 1;
+
+        statusBox.textContent = "[ running simulation... ]";
+        logDebug(`Run clicked. Episodes=${episodes} Repetitions=${repetitions}`);
+
+        try {
+          logDebug(`Sending POST request to backend with episodes=${episodes}, repetitions=${repetitions}`);
+          const response = await fetch("http://127.0.0.1:8000/run", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ episodes, repetitions })
+          });
+          logDebug(`Received response: ${response.status}`);
+
+          if (!response.ok) throw new Error(`Network response not OK, status ${response.status}`);
+
+          const result = await response.json();
+          logDebug(`Result received with data length: ${result.data ? result.data.length : 'undefined'}`);
+
+          // Flatten all repetitions for easier processing
+          const rawLogs = (result.data && Array.isArray(result.data)) ? result.data.flat() : [];
+          lastRawLogs = rawLogs;
+
+          document.getElementById("downloadCSV").disabled = !rawLogs.length;
+          logDebug(`Raw logs length: ${rawLogs.length}`);
+
+          renderSpreadsheet(rawLogs);
+          showAverages(rawLogs);
+
+          const attunement = rawLogs.map(d => +d.attunement_score || 0);
+          const stress = rawLogs.map(d => +d.schema_stress || 0);
+          const affect = rawLogs.map(d => +d.avg_affect_feedback || 0);
+
+          animateGraph("attunementGraph", attunement, "Attunement Score");
+          animateGraph("stressGraph", stress, "Schema Stress");
+          animateGraph("affectGraph", affect, "Affect Feedback");
+
+          logDebug("Graphs rendered successfully.");
+          statusBox.textContent = "[ simulation complete ]";
+
+        } catch (err) {
+          statusBox.textContent = "[ error occurred ]";
+          logDebug("ERROR: " + err.toString());
+          console.error(err);
+          renderSpreadsheet([]);
+          showAverages([]);
+        }
+      });
+
+      downloadBtn.addEventListener("click", () => {
+        if (!lastRawLogs.length) return;
+        const csv = arrayToCSV(lastRawLogs);
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0, 10);
+        link.download = `simulation_results_${dateStr}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        logDebug("CSV exported.");
+      });
+
+      logDebug("Page loaded.");
+    });
+
+    function renderSpreadsheet(arr) {
+      const container = document.getElementById("spreadsheet");
+      if (!arr.length) {
+        container.innerHTML = "<div>[no data]</div>";
+        return;
+      }
+      let html = "<table><thead><tr><th>Col1</th><th>Col2</th></tr></thead><tbody>";
+      arr.forEach(row => {
+        html += `<tr><td>${row.col1}</td><td>${row.col2}</td></tr>`;
+      });
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    }
+
+    document.getElementById("runBtn").onclick = () => {
+      const data = [{col1:"A", col2:1}, {col1:"B", col2:2}];
+      renderSpreadsheet(data);
+    };
+    function showAverages(arr) {
+  if (!arr.length) {
+    document.getElementById("summaryBox").textContent = "Averages will appear here after simulation.";
+    return;
+  }
+  const mean = (a) => a.length ? (a.reduce((s, x) => s + x, 0) / a.length) : 0;
+  const attunement = arr.map(d => +d.attunement_score || 0);
+  const stress = arr.map(d => +d.schema_stress || 0);
+  const avgAtt = mean(attunement).toFixed(4);
+  const avgStr = mean(stress).toFixed(4);
+
+  document.getElementById("summaryBox").innerHTML =
+    `<b>Avg Attunement:</b> <span style="color:#4682b4">${avgAtt}</span>
+    &nbsp; &nbsp;
+    <b>Avg Stress:</b> <span style="color:#a94442">${avgStr}</span>
+    <span style="font-size:0.9em;color:#666;margin-left:2em;">(N=${arr.length})</span>`;
+}
+  </script>
+</body>
+</html>
