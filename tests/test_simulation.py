@@ -1,9 +1,8 @@
 # tests/test_simulation.py
 import os
 import sys
-import pytest
 
-from src.simulation import run_simulation
+import pytest
 
 # Add src directory to path for imports
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

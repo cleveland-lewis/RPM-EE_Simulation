@@ -22,5 +22,6 @@ class SimulationClusterArbiter:
             sim["final_score"] = round(final_score, 3)
         return simulations
 
-    def sort_simulations(self, simulations):
+    @staticmethod
+    def sort_simulations(simulations):
         return sorted(simulations, key=lambda x: x.get("final_score", 0.0), reverse=True)

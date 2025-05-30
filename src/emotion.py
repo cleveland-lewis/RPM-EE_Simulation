@@ -23,7 +23,8 @@ class EmotionalEncoder:
 
         return simulations
 
-    def _calculate_affect_feedback(self, sim):
+    @staticmethod
+    def _calculate_affect_feedback(sim):
         # Reinforce high-emotion, low-plausibility simulations as distorted favorites
         if sim["reward_distortion"] > 0.4 and sim["emotion_intensity"] > 0.6:
             return 0.6  # biasing replay upwards

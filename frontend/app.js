@@ -25,6 +25,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const flat = {};
     for (const k in obj) {
       const v = obj[k];
+      v.low_salience_threshold = undefined;
+      v.low_salience_threshold = undefined;
+      v.prune_min_salience = undefined;
+      v.prune_min_salience = undefined;
+      v.half_life_ranges = undefined;
+      v.short_term_count = undefined;
+      v.short_term_count = undefined;
+      v.long_term_count = undefined;
+      v.long_term_count = undefined;
       if (k === "memory_config" && v && typeof v === "object") {
         flat["memory_config_low_salience_threshold"] = typeof v.low_salience_threshold === "number" ? v.low_salience_threshold : "";
         flat["memory_config_prune_min_salience"] = typeof v.prune_min_salience === "number" ? v.prune_min_salience : "";

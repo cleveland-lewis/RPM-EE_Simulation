@@ -61,7 +61,7 @@
       margin-top: 0.3rem;
       width: 70px;
       padding: 0.3rem 0.5rem;
-      border: 1.5px solid #ccc;
+      border: 2px solid #ccc;
       border-radius: 5px;
       font-size: 1rem;
       font-family: inherit;
@@ -156,12 +156,6 @@
       font-size: 1.1rem;
       margin-bottom: 1rem;
       color: #3b5a40;
-    }
-
-    .graph-island.focused {
-      box-shadow: 0 0 20px #6a9a7b;
-      border: 1.5px solid #6a9a7b;
-      transform: scale(1.03);
     }
 
     #spreadsheet-title {
@@ -302,6 +296,15 @@
       const flat = {};
       for (const k in obj) {
         const v = obj[k];
+        v.low_salience_threshold = undefined;
+        v.low_salience_threshold = undefined;
+        v.prune_min_salience = undefined;
+        v.prune_min_salience = undefined;
+        v.half_life_ranges = undefined;
+        v.short_term_count = undefined;
+        v.short_term_count = undefined;
+        v.long_term_count = undefined;
+        v.long_term_count = undefined;
         if (k === "memory_config" && v && typeof v === "object") {
           flat["memory_config_low_salience_threshold"] = typeof v.low_salience_threshold === "number" ? v.low_salience_threshold : "";
           flat["memory_config_prune_min_salience"] = typeof v.prune_min_salience === "number" ? v.prune_min_salience : "";

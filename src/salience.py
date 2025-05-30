@@ -1,18 +1,19 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 class SalienceTagger:
     """
     Computes and tags each sensory event with an initial salience score
-    based on intensity and novelty relative to past memory.
+    based on intensity and novelty relative to memory.
     """
-    def __init__(self, memory_store, w_I=0.6, w_N=0.4, salience_decay=0.01):
+    MODALITIES = ['vision', 'hearing',]
+    def __init__(self, memory_store, w_i=0.6, w_n=0.4, salience_decay=0.01):
         # memory_store must provide max_similarity(event) → float in [0,1]
         self.memory_store = memory_store
         # weight on event intensity
-        self.w_I = w_I
+        self.w_i = w_i
         # weight on event novelty
-        self.w_N = w_N
+        self.w_n = w_n
         # per-tick decay rate for salience
         self.salience_decay = salience_decay
 
@@ -31,24 +32,25 @@ class SalienceTagger:
         tagged = []
         for e in events:
             # Normalize intensity to [0,1]
-            I = e.get('intensity', 0.0)
-            I_norm = min(max(I, 0.0), 1.0)
+            intensity = e.get('intensity', 0.0)
+            intensity_norm = min(max(intensity, 0.0), 1.0)
 
             # Compute novelty: 1 - highest similarity to existing memories
-            sim = self.memory_store.max_similarity(e)
-            N = 1.0 - sim
+            similarity = self.memory_store.max_similarity(e)
+            similarity = min(max(similarity, 0.0), 1.0)
+            novelty = 1.0 - similarity
 
             # Composite salience: weighted sum
-            s = self.w_I * I_norm + self.w_N * N
+            salience_score = self.w_i * intensity_norm + self.w_n * novelty
 
             # Build tagged event
             e_tagged = e.copy()
             e_tagged.update({
                 'id': str(uuid.uuid4()),
-                'timestamp': datetime.utcnow().isoformat(),
-                'novelty': round(N, 4),
-                'initial_salience': round(s, 4),
-                'salience': round(s, 4),
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'novelty': round(novelty, 4),
+                'initial_salience': round(salience_score, 4),
+                'salience': round(salience_score, 4),
                 'tag_age': 0,
                 'decay_rate': self.salience_decay
             })

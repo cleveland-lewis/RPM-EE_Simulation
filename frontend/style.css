@@ -163,11 +163,6 @@ body {
 }
 
 /* --- Graph Focused --- */
-.graph-island.focused {
-  border-color: black;
-  box-shadow: 0 0 10px #000000;
-  transform: scale(1.05);
-}
 
 /* --- Spreadsheet Table --- */
 #spreadsheet {

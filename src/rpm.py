@@ -32,7 +32,8 @@ class RecursivePredictiveModeler:
         }
         return simulation
 
-    def _predict_action(self, event):
+    @staticmethod
+    def _predict_action(event):
         # Placeholder logic — replace with real mapping from emotion or modality
         if event["modality"] == "vision":
             return "approach" if event["emotion"]["valence"] > 0 else "withdraw"
@@ -40,7 +41,8 @@ class RecursivePredictiveModeler:
             return "recoil" if event["emotion"]["valence"] < 0 else "explore"
         return "observe"
 
-    def _predict_result(self, event):
+    @staticmethod
+    def _predict_result(event):
         # Result is simplified as binary — success/failure or positive/negative
         if event["emotion"]["valence"] > 0.5:
             return "positive outcome"
@@ -48,12 +50,14 @@ class RecursivePredictiveModeler:
             return "negative outcome"
         return "neutral outcome"
 
-    def _compute_physical_plausibility(self, event):
+    @staticmethod
+    def _compute_physical_plausibility(event):
         # Modality and intensity influence realism
         realism = 1.0 - abs(event["intensity"] - 0.5)
         return round(realism, 3)
 
-    def _estimate_emotional_outcome(self, event):
+    @staticmethod
+    def _estimate_emotional_outcome(event):
         # Use emotion valence as expected emotion prediction
         return round(event["emotion"]["valence"], 3)
 

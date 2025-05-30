@@ -1,3 +1,4 @@
 class InputBiasFilter:
     def __init__(self, neurotype=None, context=None):
-        pass
+        self.neurotype = neurotype
+        self.context = context

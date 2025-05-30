@@ -1,15 +1,16 @@
-import os
-import json
 import gc
+import json
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
-import streamlit as st
 import plotly.express as px
+import streamlit as st
+from simulation import RPMEESimulation
+from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-from sklearn.cluster import KMeans
-from datetime import datetime
-from simulation import RPMEESimulation
+
 from config import DEFAULT_CONFIG, PRESETS, save_trial_count
 
 st.set_page_config(page_title="RPM-EE Simulation Dashboard", layout="wide")

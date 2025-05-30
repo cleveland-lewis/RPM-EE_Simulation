@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
-from salience import SalienceTagger
+from src.salience import SalienceTagger
 
 class FixedUUID:
     @staticmethod
@@ -27,7 +27,7 @@ class FixedDateTime:
 def patch_uuid_datetime(monkeypatch):
     # Patch uuid.uuid4 and datetime.utcnow
     import uuid as uuid_module
-    import salience as sal_mod
+    import src.salience as sal_mod
     monkeypatch.setattr(uuid_module, 'uuid4', FixedUUID.uuid4)
     monkeypatch.setattr(sal_mod, 'datetime', FixedDateTime)
     yield

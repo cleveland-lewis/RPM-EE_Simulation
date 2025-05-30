@@ -8,7 +8,7 @@ import pytest
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
-from rpm import RecursivePredictiveModeler
+from src.rpm import RecursivePredictiveModeler
 
 @pytest.fixture(autouse=True)
 def patch_uuid(monkeypatch):

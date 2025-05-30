@@ -7,11 +7,11 @@ import pytest
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
-from memory import MemoryStore
+from src.memory import MemoryBuffer
 
 @pytest.fixture
 def store():
-    return MemoryStore(max_short_term=3)
+    return MemoryBuffer(max_short_term=3)
 
 @pytest.fixture
 def example_event():
