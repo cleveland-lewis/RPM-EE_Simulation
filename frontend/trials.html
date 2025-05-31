@@ -264,284 +264,254 @@
       <div id="spreadsheet" role="region" aria-label="Spreadsheet view of raw data"></div>
     </section>
   </main>
-
-  <script>
-    // --- Basic Debug Logger ---
-    function logDebug(msg) {
-      const now = new Date();
-      const ts = now.toISOString().slice(11, 19);
-      const panel = document.getElementById('debug-panel');
-      if (panel) {
-        panel.textContent += `[${ts}] ${msg}\n`;
-        panel.scrollTop = panel.scrollHeight;
-      }
-      console.log(`[${ts}] ${msg}`);
+<script>  // --- Debug Logger ---
+  function logDebug(msg) {
+    const now = new Date();
+    const ts = now.toISOString().slice(11, 19);
+    const panel = document.getElementById('debug-panel');
+    if (panel) {
+      panel.textContent += `[${ts}] ${msg}\n`;
+      panel.scrollTop = panel.scrollHeight;
     }
+    console.log(`[${ts}] ${msg}`);
+  }
 
-    // Animate line graphs using Plotly
-    function animateGraph(id, data, label) {
-      if (!Array.isArray(data) || data.length === 0) {
-        Plotly.purge(id);
-        logDebug(`[WARN] No data for ${label}`);
-        Plotly.newPlot(id, [{ x: [0], y: [0], mode: "lines", name: "No data" }], { title: `${label}: No Data` });
-        return;
-      }
-      Plotly.purge(id);
-      Plotly.newPlot(id, [{
-        x: [...Array(data.length).keys()],
-        y: data,
-        mode: "lines",
-        name: label
-      }], { yaxis: { title: label } });
-    }
-
-    // Convert array of objects to CSV string
-    function flattenForCSV(obj) {
-      const flat = {};
-      for (const k in obj) {
-        const v = obj[k];
-        v.low_salience_threshold = undefined;
-        v.low_salience_threshold = undefined;
-        v.prune_min_salience = undefined;
-        v.prune_min_salience = undefined;
-        v.half_life_ranges = undefined;
-        v.short_term_count = undefined;
-        v.short_term_count = undefined;
-        v.long_term_count = undefined;
-        v.long_term_count = undefined;
-        if (k === "memory_config" && v && typeof v === "object") {
-          flat["memory_config_low_salience_threshold"] = typeof v.low_salience_threshold === "number" ? v.low_salience_threshold : "";
-          flat["memory_config_prune_min_salience"] = typeof v.prune_min_salience === "number" ? v.prune_min_salience : "";
-          if (v.half_life_ranges && typeof v.half_life_ranges === "object") {
-            flat["memory_config_half_life_low_start"] = Array.isArray(v.half_life_ranges.low) ? v.half_life_ranges.low[0] || "" : "";
-            flat["memory_config_half_life_low_end"] = Array.isArray(v.half_life_ranges.low) ? v.half_life_ranges.low[1] || "" : "";
-            flat["memory_config_half_life_high_start"] = Array.isArray(v.half_life_ranges.high) ? v.half_life_ranges.high[0] || "" : "";
-            flat["memory_config_half_life_high_end"] = Array.isArray(v.half_life_ranges.high) ? v.half_life_ranges.high[1] || "" : "";
-          } else {
-            flat["memory_config_half_life_low_start"] = "";
-            flat["memory_config_half_life_low_end"] = "";
-            flat["memory_config_half_life_high_start"] = "";
-            flat["memory_config_half_life_high_end"] = "";
-          }
-        } else if (k === "memory_stats" && v && typeof v === "object") {
-          flat["memory_stats_short_term_count"] = typeof v.short_term_count === "number" ? v.short_term_count : "";
-          flat["memory_stats_long_term_count"] = typeof v.long_term_count === "number" ? v.long_term_count : "";
-        } else if (typeof v === "number") {
-          flat[k] = v;
-        } else if (typeof v === "string" && v.trim() !== "" && !isNaN(v)) {
-          flat[k] = Number(v);
+  // --- CSV/Flatten Helpers ---
+  function flattenForCSV(obj) {
+    const flat = {};
+    for (const k in obj) {
+      const v = obj[k];
+      // Custom flatten for known nested fields
+      if (k === "memory_config" && v && typeof v === "object") {
+        flat["memory_config_low_salience_threshold"] = typeof v.low_salience_threshold === "number" ? v.low_salience_threshold : "";
+        flat["memory_config_prune_min_salience"] = typeof v.prune_min_salience === "number" ? v.prune_min_salience : "";
+        if (v.half_life_ranges && typeof v.half_life_ranges === "object") {
+          flat["memory_config_half_life_low_start"] = Array.isArray(v.half_life_ranges.low) ? v.half_life_ranges.low[0] || "" : "";
+          flat["memory_config_half_life_low_end"] = Array.isArray(v.half_life_ranges.low) ? v.half_life_ranges.low[1] || "" : "";
+          flat["memory_config_half_life_high_start"] = Array.isArray(v.half_life_ranges.high) ? v.half_life_ranges.high[0] || "" : "";
+          flat["memory_config_half_life_high_end"] = Array.isArray(v.half_life_ranges.high) ? v.half_life_ranges.high[1] || "" : "";
         } else {
-          flat[k] = "";
+          flat["memory_config_half_life_low_start"] = "";
+          flat["memory_config_half_life_low_end"] = "";
+          flat["memory_config_half_life_high_start"] = "";
+          flat["memory_config_half_life_high_end"] = "";
         }
+      } else if (k === "memory_stats" && v && typeof v === "object") {
+        flat["memory_stats_short_term_count"] = typeof v.short_term_count === "number" ? v.short_term_count : "";
+        flat["memory_stats_long_term_count"] = typeof v.long_term_count === "number" ? v.long_term_count : "";
+      } else if (typeof v === "number") {
+        flat[k] = v;
+      } else if (typeof v === "string" && v.trim() !== "" && !isNaN(v)) {
+        flat[k] = Number(v);
+      } else if (typeof v === "object" && v !== null) {
+        // Serialize all other objects/arrays as JSON for CSV/table
+        flat[k] = JSON.stringify(v);
+      } else {
+        flat[k] = v;
       }
-      return flat;
     }
+    return flat;
+  }
 
-    // Extract all unique keys from array of objects
-    function gatherAllKeys(arr) {
-      const keys = new Set();
-      arr.forEach(row => Object.keys(row).forEach(k => keys.add(k)));
-      return Array.from(keys);
+  function gatherAllKeys(arr) {
+    const keys = new Set();
+    arr.forEach(row => Object.keys(row).forEach(k => keys.add(k)));
+    return Array.from(keys);
+  }
+
+  function arrayToCSV(arr) {
+    if (!arr.length) return "";
+    const allKeys = gatherAllKeys(arr);
+    const rows = [allKeys.join(",")];
+    arr.forEach(row => {
+      const flat = flattenForCSV(row);
+      rows.push(allKeys.map(k => (flat[k] === undefined ? "" : flat[k])).join(","));
+    });
+    return rows.join("\r\n");
+  }
+
+  // --- Stats helpers ---
+  function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0; }
+  function median(arr) {
+    if (!arr.length) return 0;
+    const sorted = arr.slice().sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+  }
+  function stdDev(arr) {
+    if (!arr.length) return 0;
+    const m = mean(arr);
+    return Math.sqrt(arr.reduce((acc, val) => acc + (val - m) ** 2, 0) / arr.length);
+  }
+  function formatStats(arr) {
+    return `
+      Count: ${arr.length}<br>
+      Mean: ${mean(arr).toFixed(4)}<br>
+      Median: ${median(arr).toFixed(4)}<br>
+      Std Dev: ${stdDev(arr).toFixed(4)}
+    `;
+  }
+
+  // --- Table render: objects/arrays as JSON ---
+  function renderSpreadsheet(arr) {
+    const container = document.getElementById("spreadsheet");
+    if (!arr.length) {
+      container.innerHTML = "<div style='color:#888;'>[no data]</div>";
+      return;
     }
+    const headers = Object.keys(flattenForCSV(arr[0]));
+    let html = "<table id='spreadsheet-table'><thead><tr>";
+    for (const h of headers) html += `<th>${h}</th>`;
+    html += "</tr></thead><tbody>";
+    for (let i = 0; i < arr.length; ++i) {
+      const row = flattenForCSV(arr[i]);
+      html += "<tr>";
+      for (const h of headers) {
+        let val = row[h];
+        if (typeof val === "number") val = Number.isFinite(val) ? val.toFixed(4) : "";
+        html += `<td>${val === undefined ? "" : val}</td>`;
+      }
+      html += "</tr>";
+    }
+    html += "</tbody></table>";
+    container.innerHTML = html;
+  }
 
-    // Convert array of objects into CSV formatted string
-    function arrayToCSV(arr) {
-      if (!arr.length) return "";
-      const allKeys = gatherAllKeys(arr);
-      const rows = [allKeys.join(",")];
-      arr.forEach(row => {
-        const flat = flattenForCSV(row);
-        rows.push(allKeys.map(k => (flat[k] === undefined ? "" : flat[k])).join(","));
+  // --- Plotly Graphs ---
+  function animateGraph(id, data, label) {
+    if (!Array.isArray(data) || data.length === 0) {
+      Plotly.purge(id);
+      logDebug(`[WARN] No data for ${label}`);
+      Plotly.newPlot(id, [{ x: [0], y: [0], mode: "lines", name: "No data" }], { title: `${label}: No Data` });
+      return;
+    }
+    Plotly.purge(id);
+    Plotly.newPlot(id, [{
+      x: [...Array(data.length).keys()],
+      y: data,
+      mode: "lines",
+      name: label
+    }], { yaxis: { title: label } });
+  }
+
+  // --- Data Analysis ---
+  function renderAnalysis(rawLogs) {
+    const attunement = rawLogs.map(d => +d.attunement_score || 0);
+    const stress = rawLogs.map(d => +d.schema_stress || 0);
+    const affect = rawLogs.map(d => +d.avg_affect_feedback || 0);
+
+    document.getElementById("analysisContent").innerHTML = `
+      <b>Attunement Score</b><br>${formatStats(attunement)}<br><br>
+      <b>Schema Stress</b><br>${formatStats(stress)}<br><br>
+      <b>Affect Feedback</b><br>${formatStats(affect)}<br>
+    `;
+  }
+
+  // --- Summary ---
+  function showAverages(arr) {
+    if (!arr.length) {
+      document.getElementById("summaryBox").textContent = "Averages will appear here after simulation.";
+      return;
+    }
+    const attunement = arr.map(d => +d.attunement_score || 0);
+    const stress = arr.map(d => +d.schema_stress || 0);
+    const avgAtt = mean(attunement).toFixed(4);
+    const avgStr = mean(stress).toFixed(4);
+    document.getElementById("summaryBox").innerHTML =
+      `<b>Avg Attunement:</b> <span style="color:#1b5f00">${avgAtt}</span>
+      &nbsp; &nbsp;
+      <b>Avg Stress:</b> <span style="color:#a94442">${avgStr}</span>
+      <span style="font-size:0.9em;color:#666;margin-left:2em;">(N=${arr.length})</span>`;
+  }
+
+  // --- Main ---
+  document.addEventListener("DOMContentLoaded", () => {
+    const runBtn = document.getElementById("runBtn");
+    const downloadBtn = document.getElementById("downloadCSV");
+    const statusBox = document.getElementById("status");
+    const outputBox = document.getElementById("output");
+    const graphIslands = document.querySelectorAll(".graph-island");
+    let episodesInput = document.getElementById("episodes");
+    let repetitionsInput = document.getElementById("repetitions");
+    let lastRawLogs = [];
+
+    // Allow clicking to toggle graph focus
+    graphIslands.forEach(island => {
+      island.addEventListener("click", () => {
+        island.classList.toggle("focused");
       });
-      return rows.join("\r\n");
-    }
-
-    // Statistical helper functions
-    function mean(arr) {
-      return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
-    }
-    function median(arr) {
-      if (!arr.length) return 0;
-      const sorted = arr.slice().sort((a, b) => a - b);
-      const mid = Math.floor(sorted.length / 2);
-      return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-    }
-    function stdDev(arr) {
-      if (!arr.length) return 0;
-      const m = mean(arr);
-      return Math.sqrt(arr.reduce((acc, val) => acc + (val - m) ** 2, 0) / arr.length);
-    }
-
-    // Format statistical summary as HTML string
-    function formatStats(arr) {
-      return `
-        Count: ${arr.length}<br>
-        Mean: ${mean(arr).toFixed(4)}<br>
-        Median: ${median(arr).toFixed(4)}<br>
-        Std Dev: ${stdDev(arr).toFixed(4)}
-      `;
-    }
-
-    // Render detailed data analysis including histograms
-    function renderAnalysis(rawLogs) {
-      const attunement = rawLogs.map(d => +d.attunement_score || 0);
-      const stress = rawLogs.map(d => +d.schema_stress || 0);
-      const affect = rawLogs.map(d => +d.avg_affect_feedback || 0);
-
-      document.getElementById("analysisContent").innerHTML = `
-        <b>Attunement Score</b><br>${formatStats(attunement)}<br><br>
-        <b>Schema Stress</b><br>${formatStats(stress)}<br><br>
-        <b>Affect Feedback</b><br>${formatStats(affect)}<br>
-      `;
-
-      Plotly.newPlot('attunementHist', [{
-        x: attunement,
-        type: 'histogram',
-        marker: { color: 'blue' }
-      }], { title: 'Attunement Score Distribution' });
-
-      Plotly.newPlot('stressHist', [{
-        x: stress,
-        type: 'histogram',
-        marker: { color: 'red' }
-      }], { title: 'Schema Stress Distribution' });
-
-      Plotly.newPlot('affectHist', [{
-        x: affect,
-        type: 'histogram',
-        marker: { color: 'green' }
-      }], { title: 'Affect Feedback Distribution' });
-    }
-
-    // Main event bindings and logic
-    document.addEventListener("DOMContentLoaded", () => {
-      const runBtn = document.getElementById("runBtn");
-      const downloadBtn = document.getElementById("downloadCSV");
-      const statusBox = document.getElementById("status");
-      const outputBox = document.getElementById("output");
-      const graphIslands = document.querySelectorAll(".graph-island");
-      let episodesInput = document.getElementById("episodes");
-      let repetitionsInput = document.getElementById("repetitions");
-      let lastRawLogs = [];
-
-      // Allow clicking to toggle graph focus
-      graphIslands.forEach(island => {
-        island.addEventListener("click", () => {
-          island.classList.toggle("focused");
-        });
-      });
-
-      runBtn.addEventListener("click", async () => {
-        const episodes = parseInt(episodesInput.value, 10) || 500;
-        const repetitions = parseInt(repetitionsInput.value, 10) || 1;
-
-        statusBox.textContent = "[ running simulation... ]";
-        logDebug(`Run clicked. Episodes=${episodes} Repetitions=${repetitions}`);
-
-        try {
-          logDebug(`Sending POST request to backend with episodes=${episodes}, repetitions=${repetitions}`);
-          const response = await fetch("http://127.0.0.1:8000/run", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ episodes, repetitions })
-          });
-          logDebug(`Received response: ${response.status}`);
-
-          if (!response.ok) throw new Error(`Network response not OK, status ${response.status}`);
-
-          const result = await response.json();
-          logDebug(`Result received with data length: ${result.data ? result.data.length : 'undefined'}`);
-
-          // Flatten all repetitions for easier processing
-          const rawLogs = (result.data && Array.isArray(result.data)) ? result.data.flat() : [];
-          lastRawLogs = rawLogs;
-
-          document.getElementById("downloadCSV").disabled = !rawLogs.length;
-          logDebug(`Raw logs length: ${rawLogs.length}`);
-
-          renderSpreadsheet(rawLogs);
-          showAverages(rawLogs);
-
-          const attunement = rawLogs.map(d => +d.attunement_score || 0);
-          const stress = rawLogs.map(d => +d.schema_stress || 0);
-          const affect = rawLogs.map(d => +d.avg_affect_feedback || 0);
-
-          animateGraph("attunementGraph", attunement, "Attunement Score");
-          animateGraph("stressGraph", stress, "Schema Stress");
-          animateGraph("affectGraph", affect, "Affect Feedback");
-
-          logDebug("Graphs rendered successfully.");
-          statusBox.textContent = "[ simulation complete ]";
-
-        } catch (err) {
-          statusBox.textContent = "[ error occurred ]";
-          logDebug("ERROR: " + err.toString());
-          console.error(err);
-          renderSpreadsheet([]);
-          showAverages([]);
-        }
-      });
-
-      downloadBtn.addEventListener("click", () => {
-        if (!lastRawLogs.length) return;
-        const csv = arrayToCSV(lastRawLogs);
-        const blob = new Blob([csv], { type: "text/csv" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        const now = new Date();
-        const dateStr = now.toISOString().slice(0, 10);
-        link.download = `simulation_results_${dateStr}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        logDebug("CSV exported.");
-      });
-
-      logDebug("Page loaded.");
     });
 
+    runBtn.addEventListener("click", async () => {
+      const episodes = parseInt(episodesInput.value, 10) || 500;
+      const repetitions = parseInt(repetitionsInput.value, 10) || 1;
 
-function renderSpreadsheet(arr) {
-  const container = document.getElementById("spreadsheet");
-  if (!arr.length) {
-    container.innerHTML = "<div style='color:#888;'>[no data]</div>";
-    return;
-  }
-  const headers = Object.keys(arr[0]);
-  let html = "<table id='spreadsheet-table'><thead><tr>";
-  for (const h of headers) html += `<th>${h}</th>`;
-  html += "</tr></thead><tbody>";
-  for (let i = 0; i < arr.length; ++i) {
-    html += "<tr>";
-    for (const h of headers) {
-      let val = arr[i][h];
-      if (typeof val === "number") val = Number.isFinite(val) ? val.toFixed(4) : "";
-      html += `<td>${val === undefined ? "" : val}</td>`;
-    }
-    html += "</tr>";
-  }
-  html += "</tbody></table>";
-  container.innerHTML = html;
-    }
-    function showAverages(arr) {
-  if (!arr.length) {
-    document.getElementById("summaryBox").textContent = "Averages will appear here after simulation.";
-    return;
-  }
-  const mean = (a) => a.length ? (a.reduce((s, x) => s + x, 0) / a.length) : 0;
-  const attunement = arr.map(d => +d.attunement_score || 0);
-  const stress = arr.map(d => +d.schema_stress || 0);
-  const avgAtt = mean(attunement).toFixed(4);
-  const avgStr = mean(stress).toFixed(4);
+      statusBox.textContent = "[ running simulation... ]";
+      logDebug(`Run clicked. Episodes=${episodes} Repetitions=${repetitions}`);
 
-  document.getElementById("summaryBox").innerHTML =
-    `<b>Avg Attunement:</b> <span style="color:#1b5f00">${avgAtt}</span>
-    &nbsp; &nbsp;
-    <b>Avg Stress:</b> <span style="color:#a94442">${avgStr}</span>
-    <span style="font-size:0.9em;color:#666;margin-left:2em;">(N=${arr.length})</span>`;
-}
-  </script>
+      try {
+        logDebug(`Sending POST request to backend with episodes=${episodes}, repetitions=${repetitions}`);
+        const response = await fetch("http://127.0.0.1:8000/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ episodes, repetitions })
+        });
+        logDebug(`Received response: ${response.status}`);
+
+        if (!response.ok) throw new Error(`Network response not OK, status ${response.status}`);
+
+        const result = await response.json();
+        logDebug(`Result received with data length: ${result.data ? result.data.length : 'undefined'}`);
+
+        // Flatten all repetitions for easier processing
+        const rawLogs = (result.data && Array.isArray(result.data)) ? result.data.flat() : [];
+        lastRawLogs = rawLogs;
+
+        document.getElementById("downloadCSV").disabled = !rawLogs.length;
+        logDebug(`Raw logs length: ${rawLogs.length}`);
+
+        renderSpreadsheet(rawLogs);
+        showAverages(rawLogs);
+
+        const attunement = rawLogs.map(d => +d.attunement_score || 0);
+        const stress = rawLogs.map(d => +d.schema_stress || 0);
+        const affect = rawLogs.map(d => +d.avg_affect_feedback || 0);
+
+        animateGraph("attunementGraph", attunement, "Attunement Score");
+        animateGraph("stressGraph", stress, "Schema Stress");
+        animateGraph("affectGraph", affect, "Affect Feedback");
+
+        logDebug("Graphs rendered successfully.");
+        statusBox.textContent = "[ simulation complete ]";
+
+      } catch (err) {
+        statusBox.textContent = "[ error occurred ]";
+        logDebug("ERROR: " + err.toString());
+        console.error(err);
+        renderSpreadsheet([]);
+        showAverages([]);
+      }
+    });
+
+    downloadBtn.addEventListener("click", () => {
+      if (!lastRawLogs.length) return;
+      const csv = arrayToCSV(lastRawLogs);
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10);
+      link.download = `simulation_results_${dateStr}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      logDebug("CSV exported.");
+    });
+
+    logDebug("Page loaded.");
+  });
+</script>
 </body>
 </html>
