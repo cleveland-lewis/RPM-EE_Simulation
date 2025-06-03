@@ -1,10 +1,21 @@
-/* --- Reset and Base --- */
+/* ============================= */
+/* ===== RESET AND BASE ======== */
+/* ======================================================================================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+/* ======================================================================================= */
+/* ======================================================================================= */
 
+
+
+
+/* ================= HEADER ================ */
+
+/* ===== BODY & TYPOGRAPHY ===== */
+/* ======================================================================================= */
 body {
   background: #faf8f0;
   color: #000;
@@ -15,8 +26,15 @@ body {
   align-items: flex-start;
   min-height: 100vh;
 }
+/* ======================================================================================= */
+/* ======================================================================================= */
 
-/* --- Main Container --- */
+
+
+
+/* ===== MAIN CONTAINER ======== */
+/* ======================================================================================= */
+
 .window {
   width: 100%;
   max-width: none;
@@ -29,8 +47,14 @@ body {
   gap: 1.5rem;
   user-select: none;
 }
+/* ======================================================================================= */
+/* ======================================================================================= */
 
-/* --- Controls Section --- */
+
+
+
+/* ================= SIMULATION CONTROLS ================ */
+/* ======================================================================================= */
 .controls {
   display: flex;
   flex-wrap: wrap;
@@ -96,8 +120,14 @@ body {
   cursor: not-allowed;
   box-shadow: none;
 }
+/* ======================================================================================= */
+/* ======================================================================================= */
 
-/* --- Status Bar --- */
+
+
+
+/* ================= SIMULATION PROGRESS ================ */
+/* ======================================================================================= */
 #status {
   font-weight: 700;
   font-size: 1rem;
@@ -105,8 +135,15 @@ body {
   user-select: none;
   margin-left: 1rem;
 }
+/* ======================================================================================= */
+/* ======================================================================================= */
 
-/* --- Debug Panel --- */
+
+
+
+/* ================= DEBUG/LOG PANEL ================ */
+/* ======================================================================================= */
+
 #debug-panel {
   background: #f8f8f8;
   border: 2px solid #000;
@@ -122,7 +159,6 @@ body {
   user-select: text;
 }
 
-/* --- Output Panel --- */
 #output {
   background: #f8f8f8;
   border: 2px solid #000;
@@ -139,7 +175,15 @@ body {
   display: none;
 }
 
-/* --- Graph Containers --- */
+/* ======================================================================================= */
+/* ======================================================================================= */
+
+
+
+
+/* ================= STACKED DATA PANELS ================ */
+/* ======================================================================================= */
+
 .graph-island {
   background: #fff;
   border: 3px solid #000;
@@ -161,10 +205,15 @@ body {
   color: grey;
   font-family: Menlo, Monaco, Consolas, monospace;
 }
+/* ======================================================================================= */
+/* ======================================================================================= */
 
-/* --- Graph Focused --- */
 
-/* --- Spreadsheet Table --- */
+
+
+/* ================= SPREADSHEET TABLE ================ */
+/* ======================================================================================= */
+
 #spreadsheet {
   overflow-x: auto;
   max-height: 300px;
@@ -197,8 +246,14 @@ table#spreadsheet-table th {
   color: #000;
   text-align: center;
 }
+/* ======================================================================================= */
+/* ======================================================================================= */
 
-/* --- Responsive --- */
+
+
+
+/* ================= RESPONSIVE RULES ================ */
+/* ======================================================================================= */
 @media (max-width: 900px) {
   body {
     padding: 1.5rem;
@@ -214,6 +269,15 @@ table#spreadsheet-table th {
   .controls button {
     width: 100%;
   }
+}
+/* ======================================================================================= */
+/* ======================================================================================= */
+
+
+
+/* ================= TEXT SELECTION ================ */
+/* ======================================================================================= */
+
 ::selection {
   background: #d3d3d3;  /* light gray */
   color: #000;          /* black text on selection */
@@ -222,13 +286,150 @@ table#spreadsheet-table th {
   background: #d3d3d3;
   color: #000;
 }
-/* --- Text Selection Highlight --- */
-::selection {
-  background: #d3d3d3;
-  color: #000;
+/* ======================================================================================= */
+/* ======================================================================================= */
+
+
+
+/* ================= HAMBURGER DROPDOWN ================ */
+/* ======================================================================================= */
+
+.hamburger {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  width: 38px;
+  height: 38px;
+  background: #fff;
+  border: 2.5px solid #000;
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 30;
 }
-::-moz-selection {
-  background: #d3d3d3;
-  color: #000;
+.hamburger-bar {
+  width: 22px;
+  height: 2.5px;
+  background: #111;
+  margin: 4.5px 0;
+  border-radius: 2px;
 }
+.menu-dropdown {
+  display: none;
+  position: absolute;
+  top: 2.5rem;
+  right: 0;
+  min-width: 162px;
+  background: #fff;
+  border: 1.5px solid #000;
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 #000;
+  z-index: 50;
+  font-family: Menlo, Monaco, Consolas, monospace;
+  padding: 0.5rem 0.75rem;
 }
+.menu-dropdown.show {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.menu-dropdown a {
+  display: block;
+  padding: 7px 20px 7px 10px;
+  color: #111;
+  font-size: 1em;
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  background: none;
+}
+.menu-dropdown a:hover,
+.menu-dropdown a:focus {
+  background: #f4f4ef;
+  color: #111;
+  text-decoration: underline solid #111 2px;
+}
+.menu-dropdown a:visited {
+  color: #111 !important;
+}
+.menu-dropdown hr {
+  border: none;
+  border-top: 1.5px solid #eee;
+  margin-top: 2rem;
+  font-family: Menlo, Monaco, Consolas, monospace;
+}
+/* ======================================================================================= */
+/* ======================================================================================= */
+
+
+
+
+/* ================= DARK MODE ================ */
+/* ======================================================================================= */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background: #1a1a1a !important;
+    color: #f1f1f1 !important;
+  }
+  .main-container,
+  .window,
+  .stat-card,
+  .graph-island,
+  .menu-dropdown {
+    background: #222 !important;
+    color: #f1f1f1 !important;
+    border-color: #666 !important;
+  }
+  .stat-label {
+    color: #bbb !important;
+  }
+  .stat-value {
+    color: #fff !important;
+  }
+  .progress-outer {
+    background: #333 !important;
+    border-color: #666 !important;
+  }
+  .progress-inner {
+    background: #e0e022 !important;
+  }
+  #debug-panel, #output {
+    background: #222 !important;
+    border-color: #444 !important;
+    color: #f1f1f1 !important;
+  }
+  table#spreadsheet-table {
+    background: #181818 !important;
+    color: #eee !important;
+    border-color: #555 !important;
+  }
+  table#spreadsheet-table th {
+    background: #222 !important;
+    color: #ffe066 !important;
+  }
+  input[type="number"], button {
+    background: #222 !important;
+    color: #f1f1f1 !important;
+    border-color: #888 !important;
+  }
+  .hamburger {
+    background: #222 !important;
+    border-color: #f1f1f1 !important;
+  }
+  .hamburger-bar {
+    background: #f1f1f1 !important;
+  }
+  .menu-dropdown a, .menu-dropdown a:visited {
+    color: #f1f1f1 !important;
+  }
+  .menu-dropdown a:hover,
+  .menu-dropdown a:focus {
+    background: #2a2a2a !important;
+    color: #ffe066 !important;
+    text-decoration: underline solid #ffe066 2px !important;
+  }
+}
+/* ============================= */

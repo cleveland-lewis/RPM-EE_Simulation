@@ -35,10 +35,14 @@ class MemoryBuffer(MemoryStore):
         return matched, unmatched
 
     def prune_old_memory(self, min_salience=0.1):
-        self.short_term = deque(
-            [e for e in self.short_term if e.get('salience', 0) >= min_salience],
-            maxlen=self.short_term.maxlen
-        )
+        # Only remove the oldest event below min_salience (if any)
+        for idx, e in enumerate(self.short_term):
+            if e.get('salience', 0) < min_salience:
+                # Remove by index and break; preserves all others
+                self.short_term.rotate(-idx)
+                self.short_term.popleft()
+                self.short_term.rotate(idx)
+                break
 
     @property
     def long_term(self):

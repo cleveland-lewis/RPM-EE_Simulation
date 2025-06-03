@@ -1,5 +1,5 @@
 import random
-from .salience import SalienceTagger
+from src.salience import SalienceTagger
 from . import memory
 
 class SensoryInputSystem:
@@ -9,16 +9,17 @@ class SensoryInputSystem:
         self,
         neurotype='neurotypical',
         context='default',
-        senses_count_range=(3, 3),
-        intensity_range=(0.5, 0.5),
-        duration_range=(1, 3),
+        senses_count_range=(1, 10),
+        intensity_range=(0.1, 1.0),
+        duration_range=(1, 10),
         awake_ticks=1300,
         fatigue_ticks=400,
         asleep_ticks=700,
         salience_weights=(0.6, 0.4),
         salience_decay=0.01,
         low_salience_threshold=None,
-        high_salience_threshold=None
+        high_salience_threshold=None,
+        highly_variable_rate=0.1
     ):
         self.clock = 0
         self.state = 'awake'
@@ -30,6 +31,7 @@ class SensoryInputSystem:
         self.senses_count_range = senses_count_range
         self.intensity_range = intensity_range
         self.duration_range = duration_range
+        self.highly_variable_rate = highly_variable_rate
 
         # --- Randomize thresholds if not provided ---
         if low_salience_threshold is None:
@@ -59,19 +61,8 @@ class SensoryInputSystem:
         if self.state_timer <= 0:
             self._transition_state()
 
-    def _sleep_cycle(self):
-        # Produce exactly 1 event per modality during sleep (to satisfy test)
-        all_events = []
-        for modality in self.MODALITIES:
-            all_events.append({
-                'modality': modality,
-                'intensity': 0.2,  # fixed value to match test mocks
-                'duration': 3  # or 2, depends on test expectation
-            })
-        return all_events
-
-    def transition_state(self):
-        # Rename from _transition_state to public method for tests
+    def _transition_state(self):
+        # Cycle through states: awake -> fatigued -> asleep -> awake
         if self.state == 'awake':
             self.state = 'fatigued'
             self.state_timer = self.state_durations['fatigued']
@@ -79,20 +70,29 @@ class SensoryInputSystem:
             self.state = 'asleep'
             self.state_timer = self.state_durations['asleep']
             self._on_sleep_entry()
-        else:
+        else:  # asleep
             self.state = 'awake'
             self.state_timer = self.state_durations['awake']
 
     def _on_sleep_entry(self):
+        # Perform consolidation on sleep entry
         self._consolidate()
 
     def generate_input(self):
-        if self.state in ('awake', 'fatigued'):
+        # Produce sensory input according to current state
+        if self.state == 'awake':
+            # Full range sensory input with exploration mode
             events = self._awake_cycle()
+        elif self.state == 'fatigued':
+            # Reduced sensory input or soothe mode
+            events = self._soothe()
+        elif self.state == 'asleep':
+            # Minimal sensory input, fixed low intensity events
+            events = self._sleep_cycle()
         else:
-            # When asleep, produce NO events — empty lists for all modalities
             events = []
 
+        # Group events by modality in the returned packet
         grouped_events = {mod: [] for mod in self.MODALITIES}
         for event in events:
             mod = event.get('modality')
@@ -111,13 +111,66 @@ class SensoryInputSystem:
         return packet
 
     def _awake_cycle(self):
+        # Exploration mode: random sensory events per modality
         mode = random.choices(list(self.mode_weights.keys()), weights=list(self.mode_weights.values()))[0]
+        events = []
         if mode == 'explore':
-            return self._explore()
+            events.extend(self._explore())
         elif mode == 'soothe':
-            return self._soothe()
+            events.extend(self._soothe())
         else:
-            return self._light_replay()
+            events.extend(self._light_replay())
+
+        # Add highly variable events rarely
+        if random.random() < self.highly_variable_rate:
+            events.extend(self._highly_variable_events())
+
+        return events
+
+    def _highly_variable_events(self):
+        # Generate a small number of events (e.g., 1 to 3)
+        count = random.randint(1, 3)
+        events = []
+        for _ in range(count):
+            # Randomly pick low or high intensity near edges of range
+            low_edge = self.intensity_range[0]
+            high_edge = self.intensity_range[1]
+            if random.random() < 0.5:
+                intensity_val = random.uniform(low_edge, low_edge + 0.1)
+            else:
+                intensity_val = random.uniform(high_edge - 0.1, high_edge)
+            duration_val = random.randint(self.duration_range[0], self.duration_range[1])
+            modality = random.choice(self.MODALITIES)
+            events.append({
+                'modality': modality,
+                'intensity': intensity_val,
+                'duration': duration_val
+            })
+        return events
+
+    def _sleep_cycle(self):
+        # Fixed low intensity sensory events per modality to simulate sleep
+        all_events = []
+        for modality in self.MODALITIES:
+            all_events.append({
+                'modality': modality,
+                'intensity': 0.2,  # low constant intensity for sleep
+                'duration': 3      # fixed duration for sleep sensory events
+            })
+        return all_events
+
+    def transition_state(self):
+        # Rename from _transition_state to public method for tests
+        if self.state == 'awake':
+            self.state = 'fatigued'
+            self.state_timer = self.state_durations['fatigued']
+        elif self.state == 'fatigued':
+            self.state = 'asleep'
+            self.state_timer = self.state_durations['asleep']
+            self._on_sleep_entry()
+        else:
+            self.state = 'awake'
+            self.state_timer = self.state_durations['awake']
 
     def _simulate_senses(self, count=None, intensity_range=None, modality='generic'):
         if self.state == 'asleep':
@@ -127,18 +180,20 @@ class SensoryInputSystem:
         ir = intensity_range if intensity_range else self.intensity_range
         dr = self.duration_range
 
-        # Use fixed values if range fixed (for tests), else random within range
-        intensity_val = ir[0] if ir[0] == ir[1] else random.uniform(ir[0], ir[1])
-        duration_val = dr[0] if dr[0] == dr[1] else random.randint(dr[0], dr[1])
-
-        return [
-            {
+        events = []
+        for _ in range(cnt):
+            # Optionally customize intensity ranges per modality here
+            # if modality == 'vision':
+            #     ir = (0.2, 0.8)
+            intensity_val = random.uniform(ir[0], ir[1])
+            duration_val = random.randint(dr[0], dr[1])
+            events.append({
                 'modality': modality,
                 'intensity': intensity_val,
                 'duration': duration_val
-            }
-            for _ in range(cnt)
-        ]
+            })
+
+        return events
 
     def _explore(self):
         all_events = []
@@ -168,4 +223,3 @@ class SensoryInputSystem:
 
     def _replay_long_term(self):
         return self.long_term_storage.replay()
-

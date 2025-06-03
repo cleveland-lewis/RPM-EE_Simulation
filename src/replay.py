@@ -1,8 +1,9 @@
 class ReplayModeArbitrator:
-    def __init__(self, damping_cycles=5):
+    def __init__(self, damping_cycles=5, debug=False):
         self.damping_cycles = damping_cycles
         self.current_mode = 'rest'
         self.last_switch_clock = -damping_cycles  # Initialize so switching allowed immediately
+        self.debug = debug
 
     def select_mode(self, system_state):
         clock = system_state.get('clock', 0)
@@ -15,7 +16,13 @@ class ReplayModeArbitrator:
         volatility_threshold = 0.5
 
         # Prevent switching if within damping period
+        if clock < self.last_switch_clock:
+            # Clock reset or error; allow mode switch and reset tracker
+            self.last_switch_clock = clock - self.damping_cycles
+
         if clock - self.last_switch_clock < self.damping_cycles:
+            if self.debug:
+                print(f"[Arbitrator] Damping: Remain in {self.current_mode} (clock={clock})")
             return self.current_mode
 
         # Determine new mode based on priority order
@@ -30,6 +37,8 @@ class ReplayModeArbitrator:
 
         # Update if mode changed
         if new_mode != self.current_mode:
+            if self.debug:
+                print(f"[Arbitrator] Mode switch: {self.current_mode} -> {new_mode} at clock={clock}")
             self.current_mode = new_mode
             self.last_switch_clock = clock
 

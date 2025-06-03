@@ -21,8 +21,10 @@ class SelfModel:
             # Update schema stress
             if mismatch > 0.5:
                 self.schema_stress += 0.1
+                self.schema_stress = min(max(self.schema_stress, 0.0), 1.0)
             else:
                 self.schema_stress *= 0.95  # decay
+                self.schema_stress = min(max(self.schema_stress, 0.0), 1.0)
 
             # Apply schema filtering penalty
             realism = sim.get("plausibility", 0.0)

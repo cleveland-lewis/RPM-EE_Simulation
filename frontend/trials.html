@@ -2,515 +2,939 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>RPM-EE Trial Simulation</title>
+  <title>Trial Simulation</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* --- Base styles --- */
-    body {
-      font-family: sans-serif;
-      background: #f5f7fa;
-      color: #222;
-      padding: 0.5rem; /* minimal padding */
+    html, body {
+      height: 100%;
       margin: 0;
-      display: block;
+      padding: 0;
+      font-family: 'Menlo', 'Roboto Mono', 'Courier New', monospace;
+      letter-spacing: 0.01em;
     }
-
-    .container {
+    .main-container {
       width: 100vw;
       max-width: 100vw;
-      background: #fff;
-      border-radius: 0;
-      box-shadow: none;
-      padding: 1rem 2rem;
       margin: 0;
+      padding: 1rem 2vw;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* --- Layout: Main content split into left info and right main --- */
+    .content-layout {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 2.5rem;
+      width: 100%;
+      margin-top: 2.5rem;
+    }
+    /* Left column for info/stat boxes */
+    .left-info-col {
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      min-width: 240px;
+      max-width: 350px;
+      flex: 0 0 260px;
     }
-
-    .summary-box {
-      border: 2px solid #222;
-      border-radius: 8px;
-      padding: 12px 24px;
-      background: #f8f8fa;
-      font-size: 1.15em;
-      width: fit-content;
-      user-select: none;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 1rem 2rem;
-      flex-wrap: wrap;
-    }
-
-    label {
+    /* Right main content area */
+    .right-main-col {
+      flex: 1 1 0;
+      min-width: 0;
       display: flex;
       flex-direction: column;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: #555;
-      user-select: none;
+      gap: 2rem;
     }
-
-    input[type="number"] {
-      margin-top: 0.3rem;
-      width: 70px;
-      padding: 0.3rem 0.5rem;
-      border: 2px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-      font-family: inherit;
-      transition: border-color 0.3s ease;
+    .page-title {
+      margin-top: 80px;
+      text-align: center;
+      font-size: 2em;
+      font-weight: 800;
+      text-transform: uppercase;
     }
-
-    input[type="number"]:focus {
-      border-color: #6a9a7b;
-      outline: none;
-      box-shadow: 0 0 6px rgba(106,154,123,0.5);
-    }
-
-    button {
-      padding: 0.5rem 1.3rem;
-      background-color: #6a9a7b;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 1rem;
-      user-select: none;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover:not(:disabled) {
-      background-color: #5c8668;
-    }
-
-    button:disabled {
-      background-color: #a1b6a2;
-      cursor: not-allowed;
-    }
-
-    #status {
-      font-weight: 600;
-      font-size: 1rem;
-      color: #6a9a7b;
-      user-select: none;
-      margin-left: 1rem;
-    }
-
-    #debug-panel {
-      background: #fafafa;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      color: #666;
-      font-family: monospace;
-      font-size: 0.85rem;
-      padding: 1rem;
-      max-height: 130px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      box-shadow: inset 0 0 6px #ddd;
-      user-select: text;
-    }
-
-    #output {
-      background: #fafafa;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 1rem;
-      color: #444;
-      font-family: monospace;
-      font-size: 0.9rem;
-      height: 180px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      user-select: text;
-      box-shadow: inset 0 0 6px #ddd;
-      display: none;
-    }
-
-    .graph-island {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.07);
-      padding: 1.25rem 1.75rem;
-      margin-top: 1.25rem;
-      user-select: none;
-      transition: box-shadow 0.25s ease, transform 0.25s ease;
-    }
-
-    .graph-island:hover {
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      transform: translateY(-2px);
-    }
-
-    .graph-island h3 {
-      font-weight: 700;
-      font-size: 1.1rem;
+    .page-sub {
+      text-align: center;
+      font-size: 1em;
       margin-bottom: 1rem;
-      color: #3b5a40;
     }
-
-    #spreadsheet-title {
-      margin-top: 1.5rem;
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    label {
       font-weight: 700;
-      font-size: 1rem;
-      color: #444;
-      user-select: none;
+      text-transform: uppercase;
     }
-
+    input[type="number"] {
+      padding: 0.3rem 0.6rem;
+      font-size: 1rem;
+      border: 2px solid #111;
+      border-radius: 6px;
+    }
+    button {
+      padding: 0.5rem 1.5rem;
+      font-size: 1rem;
+      border: 2px solid #111;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #status {
+      font-weight: 700;
+      color: #007700;
+    }
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem 0;
+      height: 40px;
+    }
+    .spinner {
+      border: 4px solid #e5e5e5;
+      border-top: 4px solid #222;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* Stat cards grid for summary stats (in right col) */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 0 0 1.5rem 0;
+      /* reduced margin to fit new layout */
+    }
+    .stat-card {
+      padding: 1rem;
+      border: 3px solid #111;
+      border-radius: 10px;
+      text-align: center;
+      background: #fafbfc;
+    }
+    .stat-label {
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #444;
+    }
+    .stat-value {
+      font-size: 2em;
+      font-weight: 800;
+    }
+    .graph-section {
+      margin: 0 0 2rem 0;
+    }
+    .graph-island {
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border: 2px solid #111;
+      border-radius: 10px;
+    }
+    .graph-island h3 {
+      margin-top: 0;
+      text-transform: uppercase;
+    }
+    #debug-panel, #output {
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      padding: 1rem;
+      font-family: monospace;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      margin-bottom: 0.5rem;
+    }
+    #spreadsheet-title {
+      font-weight: 700;
+      margin-top: 2rem;
+    }
     #spreadsheet {
       overflow-x: auto;
-      max-height: 300px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      box-shadow: inset 0 0 6px #ddd;
     }
-
-    table #spreadsheet-table {
+    table#spreadsheet-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12px;
     }
-
     table#spreadsheet-table th,
     table#spreadsheet-table td {
-      border: 1px solid #ccc;
-      padding: 4px 8px;
+      border: 1px solid #aaa;
+      padding: 0.5rem;
       text-align: right;
-      white-space: nowrap;
-      font-family: monospace;
-      user-select: text;
     }
-
     table#spreadsheet-table th {
-      background: #eaeaea;
       font-weight: 700;
-      color: #333;
-      text-align: center;
     }
 
+    /* Hamburger Styles (from style.css, adapted for fixed positioning) */
+    .hamburger {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      width: 38px;
+      height: 38px;
+      border: 2.5px solid #000;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+    }
+    .hamburger-bar {
+      width: 22px;
+      height: 2.5px;
+      background: #111;
+      margin: 4.5px 0;
+      border-radius: 2px;
+      transition: background 0.15s;
+    }
+    .menu-dropdown {
+      display: none;
+      position: fixed;
+      top: 62px;
+      right: 24px;
+      min-width: 162px;
+      border: 1.5px solid #000;
+      border-radius: 6px;
+      box-shadow: 4px 4px 0 #000;
+      z-index: 1002;
+      font-family: Menlo, Monaco, Consolas, monospace;
+      padding: 0.5rem 0.75rem;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .menu-dropdown.show {
+      display: flex;
+    }
+    .menu-dropdown a {
+      display: block;
+      padding: 7px 20px 7px 10px;
+      color: #111;
+      font-size: 1em;
+      text-decoration: none;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      background: none;
+    }
+    .menu-dropdown a:hover,
+    .menu-dropdown a:focus {
+      color: #111;
+      text-decoration: underline solid #111 2px;
+    }
+    .menu-dropdown a:visited {
+      color: #111 !important;
+    }
+    .menu-dropdown hr {
+      border: none;
+      border-top: 1.5px solid #eee;
+      margin: 4px 0;
+    }
+    .menu-dropdown button {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      color: #111;
+      font-size: 1em;
+      font-family: inherit;
+      padding: 7px 10px;
+      text-align: left;
+      cursor: pointer;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    .menu-dropdown button:hover,
+    .menu-dropdown button:focus {
+      text-decoration: underline solid #111 2px;
+    }
+
+    /* Config Modal Styles */
+    .config-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.22);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 5000;
+    }
+    .config-content {
+      background: #fff;
+      padding: 2rem 2.5rem;
+      border-radius: 14px;
+      box-shadow: 0 4px 40px #0002;
+      text-align: left;
+      min-width: 320px;
+    }
+    .config-content h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+    .config-content label {
+      display: block;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .config-content button {
+      margin-right: 1rem;
+    }
+    /* Modal styles */
+    .config-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.32);
+      justify-content: center;
+      align-items: center;
+    }
+    .config-modal.show {
+      display: flex;
+    }
+    .config-content {
+      background: #fff;
+      color: #111;
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.19), 0 1.5px 0 #111;
+      border: 2.5px solid #111;
+      min-width: 300px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .config-content label {
+      font-weight: 700;
+      color: #222;
+      display: block;
+      margin-bottom: 0.5em;
+    }
+    .config-content button {
+      background: #111;
+      color: #fff;
+      border: 2px solid #222;
+      border-radius: 6px;
+      font-weight: 700;
+      padding: 0.5em 1.2em;
+      margin-top: 1em;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .config-content button:hover, .config-content button:focus {
+      background: #222;
+      color: #fff;
+      outline: 2px solid #0077ff;
+    }
+
+    /* Responsive: Stack columns on narrow screens */
     @media (max-width: 900px) {
-      .container {
-        width: 95%;
-        padding: 1rem 1.5rem;
-      }
-      .controls {
+      .content-layout {
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.5rem;
       }
-      label, button {
+      .left-info-col,
+      .right-main-col {
+        max-width: 100%;
+        min-width: 0;
         width: 100%;
       }
-      input[type="number"] {
-        width: 100%;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .config-modal {
+        background: rgba(255, 255, 255, 0.09);
+      }
+      .config-content {
+        background: #18191a;
+        color: #f1f3f6;
+        border: 2.5px solid #333;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.39), 0 1.5px 0 #222;
+      }
+      .config-content label {
+        color: #e2e5ea;
+      }
+      .config-content button {
+        background: #222;
+        color: #7b7c81;
+        border: 2px solid #7b7c81;
+      }
+      .config-content button:hover, .config-content button:focus {
+        background: #333;
+        color: #fff;
+        outline: 2px solid #6abfff;
       }
     }
   </style>
 </head>
 <body>
-  <main class="container" role="main" aria-label="RPM-EE Trial Simulation Interface">
-    <div><button onclick="history.back()">Go Back</button>
-</div>
-    <div class="summary-box" id="summaryBox" aria-live="polite" aria-atomic="true">
-      Averages will appear here after simulation.
-    </div>
-
-    <div id="analysisBox" style="padding:1em; border:1px solid #ccc; margin:1em 0; font-family: monospace;">
-      <strong>Data Analysis:</strong>
-      <div id="analysisContent">Waiting for simulation data...</div>
-    </div>
-    <section class="controls" aria-label="Simulation controls">
-      <label for="episodes">Episodes:
-        <input id="episodes" type="number" min="1" value="500" aria-describedby="episodes-desc" />
+  <!-- Hamburger and Dropdown Menu (fixed, on all pages) -->
+  <div class="hamburger" id="hamburgerBtn" tabindex="0" aria-label="Open menu">
+    <div class="hamburger-bar"></div>
+    <div class="hamburger-bar"></div>
+    <div class="hamburger-bar"></div>
+  </div>
+  <div class="menu-dropdown" id="menuDropdown">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html">About</a>
+    <a href="trials.html">Trials</a>
+    <a href="batch.html">Batch</a>
+    <button onclick="toggleDevMode()">Toggle Dev Mode</button>
+  </div>
+  <div class="main-container">
+    <div class="page-title">Trial Simulation</div>
+    <div class="page-sub" id="sim-date"></div>
+    <section class="controls">
+      <label for="episodes">Episodes
+        <input id="episodes" type="number" min="1" value="2400" />
       </label>
-      <span id="episodes-desc" class="visually-hidden">Enter the number of episodes for simulation</span>
-      <label for="repetitions">Repetitions:
-        <input id="repetitions" type="number" min="1" value="1" aria-describedby="repetitions-desc" />
+      <label for="repetitions">Repetitions
+        <input id="repetitions" type="number" min="1" value="1" />
       </label>
-      <span id="repetitions-desc" class="visually-hidden">Enter the number of repetitions for simulation</span>
-      <button id="runBtn" aria-live="polite">▶ Run Simulation</button>
+      <button id="runBtn">▶ Run Simulation</button>
+      <button id="configBtn" type="button">Configure</button>
       <button id="saveBtn" disabled>Save</button>
       <button id="downloadCSV" disabled>Export CSV</button>
-      <span id="status" aria-live="assertive" aria-atomic="true" style="margin-left:1rem;">[waiting]</span>
+      <span id="status">[waiting]</span>
     </section>
+    <div id="configModal" class="config-modal" style="display: none;">
+      <div class="config-content">
+        <h3>Configure Simulation</h3>
+        <label>Salience Decay: <input id="configSalienceDecay" type="number" min="0" max="1" step="0.01" value="0.01"></label><br>
+        <label>Event Rate: <input id="configEventRate" type="number" min="1" max="10" step="1" value="3"></label><br>
+        <button id="configSaveBtn" type="button">Save</button>
+        <button id="configCancelBtn" type="button">Cancel</button>
+      </div>
+    </div>
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+      <div class="spinner"></div>
+    </div>
 
-    <section id="graphs" aria-label="Simulation graphs">
-      <article class="graph-island" tabindex="0">
-        <h3>Attunement Score</h3>
-        <div id="attunementGraph" role="img" aria-label="Graph showing Attunement Score over time"></div>
-      </article>
-      <article class="graph-island" tabindex="0">
-        <h3>Schema Stress</h3>
-        <div id="stressGraph" role="img" aria-label="Graph showing Schema Stress over time"></div>
-      </article>
-      <article class="graph-island" tabindex="0">
-        <h3>Affect Feedback</h3>
-        <div id="affectGraph" role="img" aria-label="Graph showing Affect Feedback over time"></div>
-      </article>
-    </section>
+    <!--
+      Layout: Split into left info column (vertical stat/graph boxes) and right main column (stat cards, settings, graphs, data)
+      Left: ATTUNEMENT SCORE, SCHEMA STRESS, AFFECT FEEDBACK, debug
+      Right: Stat cards, current settings (horizontal), graphs, spreadsheet
+    -->
+    <div class="content-layout">
+      <!-- Left info column: vertical stack of info/graph/debug -->
+      <div class="left-info-col">
+        <!-- Left: Attunement Score graph -->
+        <div class="graph-island">
+          <h3>Attunement Score</h3>
+          <div id="attunementGraph"></div>
+        </div>
+        <!-- Left: Schema Stress graph -->
+        <div class="graph-island">
+          <h3>Schema Stress</h3>
+          <div id="stressGraph"></div>
+        </div>
+        <!-- Left: Affect Feedback graph -->
+        <div class="graph-island">
+          <h3>Affect Feedback</h3>
+          <div id="affectGraph"></div>
+        </div>
+        <!-- Debug panel -->
+        <div id="debug-panel"></div>
+      </div>
+      <!-- Right main column: stat cards, settings, spreadsheet -->
+      <div class="right-main-col">
+        <!-- Stat cards grid (summary stats) -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-label">Avg. Attunement</div>
+            <div class="stat-value" id="statAttunement">0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg. Stress Schema</div>
+            <div class="stat-value" id="statStress">0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Clock Number</div>
+            <div class="stat-value" id="statClock">000</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Simulation Uptime</div>
+            <div class="stat-value" id="statUptime">00:00.00</div>
+          </div>
+        </div>
+        <!-- Horizontal current settings display -->
+        <!--
+          Settings are displayed in a horizontal flex row, aligned with stat cards.
+          This wrapper ensures "Current Settings" and values are on the right, horizontally.
+        -->
+        <div class="current-settings-row" style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin: 0 0.5em 0 0; font-size: 1.15em;">Current Settings</h3>
+          <div id="configDisplay" style="display: flex; gap: 2.2rem; align-items: center; font-weight: 700;">
+            <div>Salience Decay: <span id="displaySalienceDecay">0.01</span></div>
+            <div>Event Rate: <span id="displayEventRate">3</span></div>
+          </div>
+        </div>
+        <!-- Spreadsheet and output -->
+        <pre id="output" style="display:none;"></pre>
+        <h2 id="spreadsheet-title">Raw Data Spreadsheet</h2>
+        <div id="spreadsheet"></div>
+      </div>
+    </div>
+    <!-- End content-layout -->
+  </div>
+  <script>
 
-    <section aria-label="Debugging and raw data">
-      <div id="debug-panel" aria-live="polite" aria-atomic="true"></div>
-      <pre id="output" style="display:none;"></pre>
-      <h2 id="spreadsheet-title">Raw Data Spreadsheet</h2>
-      <div id="spreadsheet" role="region" aria-label="Spreadsheet view of raw data"></div>
-    </section>
-  </main>
-<script>  // --- Debug Logger ---
-  function logDebug(msg) {
-    const now = new Date();
-    const ts = now.toISOString().slice(11, 19);
-    const panel = document.getElementById('debug-panel');
-    if (panel) {
-      panel.textContent += `[${ts}] ${msg}\n`;
-      panel.scrollTop = panel.scrollHeight;
+    // Hamburger Menu Logic (unified)
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const menuDropdown = document.getElementById('menuDropdown');
+
+    function closeDropdown(e) {
+      if (
+        !menuDropdown.contains(e.target) &&
+        !hamburgerBtn.contains(e.target)
+      ) {
+        menuDropdown.classList.remove('show');
+        document.removeEventListener('click', closeDropdown);
+      }
     }
-    console.log(`[${ts}] ${msg}`);
-  }
 
-  // --- CSV/Flatten Helpers ---
-  function flattenForCSV(obj) {
-    const flat = {};
-    for (const k in obj) {
-      const v = obj[k];
-      // Custom flatten for known nested fields
-      if (k === "memory_config" && v && typeof v === "object") {
-        flat["memory_config_low_salience_threshold"] = typeof v.low_salience_threshold === "number" ? v.low_salience_threshold : "";
-        flat["memory_config_prune_min_salience"] = typeof v.prune_min_salience === "number" ? v.prune_min_salience : "";
-        if (v.half_life_ranges && typeof v.half_life_ranges === "object") {
-          flat["memory_config_half_life_low_start"] = Array.isArray(v.half_life_ranges.low) ? v.half_life_ranges.low[0] || "" : "";
-          flat["memory_config_half_life_low_end"] = Array.isArray(v.half_life_ranges.low) ? v.half_life_ranges.low[1] || "" : "";
-          flat["memory_config_half_life_high_start"] = Array.isArray(v.half_life_ranges.high) ? v.half_life_ranges.high[0] || "" : "";
-          flat["memory_config_half_life_high_end"] = Array.isArray(v.half_life_ranges.high) ? v.half_life_ranges.high[1] || "" : "";
-        } else {
-          flat["memory_config_half_life_low_start"] = "";
-          flat["memory_config_half_life_low_end"] = "";
-          flat["memory_config_half_life_high_start"] = "";
-          flat["memory_config_half_life_high_end"] = "";
-        }
-      } else if (k === "memory_stats" && v && typeof v === "object") {
-        flat["memory_stats_short_term_count"] = typeof v.short_term_count === "number" ? v.short_term_count : "";
-        flat["memory_stats_long_term_count"] = typeof v.long_term_count === "number" ? v.long_term_count : "";
-      } else if (typeof v === "number") {
-        flat[k] = v;
-      } else if (typeof v === "string" && v.trim() !== "" && !isNaN(v)) {
-        flat[k] = Number(v);
-      } else if (typeof v === "object" && v !== null) {
-        // Serialize all other objects/arrays as JSON for CSV/table
-        flat[k] = JSON.stringify(v);
+    hamburgerBtn.onclick = function(e) {
+      e.stopPropagation();
+      menuDropdown.classList.toggle('show');
+      if (menuDropdown.classList.contains('show')) {
+        document.addEventListener('click', closeDropdown);
       } else {
-        flat[k] = v;
+        document.removeEventListener('click', closeDropdown);
       }
-    }
-    return flat;
-  }
+    };
 
-  function gatherAllKeys(arr) {
-    const keys = new Set();
-    arr.forEach(row => Object.keys(row).forEach(k => keys.add(k)));
-    return Array.from(keys);
-  }
+    hamburgerBtn.onkeydown = function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        hamburgerBtn.click();
+      }
+    };
 
-  function arrayToCSV(arr) {
-    if (!arr.length) return "";
-    const allKeys = gatherAllKeys(arr);
-    const rows = [allKeys.join(",")];
-    arr.forEach(row => {
-      const flat = flattenForCSV(row);
-      rows.push(allKeys.map(k => (flat[k] === undefined ? "" : flat[k])).join(","));
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        menuDropdown.classList.remove('show');
+        document.removeEventListener('click', closeDropdown);
+      }
     });
-    return rows.join("\r\n");
-  }
 
-  // --- Stats helpers ---
-  function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0; }
-  function median(arr) {
-    if (!arr.length) return 0;
-    const sorted = arr.slice().sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-  }
-  function stdDev(arr) {
-    if (!arr.length) return 0;
-    const m = mean(arr);
-    return Math.sqrt(arr.reduce((acc, val) => acc + (val - m) ** 2, 0) / arr.length);
-  }
-  function formatStats(arr) {
-    return `
-      Count: ${arr.length}<br>
-      Mean: ${mean(arr).toFixed(4)}<br>
-      Median: ${median(arr).toFixed(4)}<br>
-      Std Dev: ${stdDev(arr).toFixed(4)}
-    `;
-  }
-
-  // --- Table render: objects/arrays as JSON ---
-  function renderSpreadsheet(arr) {
-    const container = document.getElementById("spreadsheet");
-    if (!arr.length) {
-      container.innerHTML = "<div style='color:#888;'>[no data]</div>";
-      return;
+    function toggleDevMode() {
+      document.body.classList.toggle('dev-mode');
+      // Add your dev mode logic here
     }
-    const headers = Object.keys(flattenForCSV(arr[0]));
-    let html = "<table id='spreadsheet-table'><thead><tr>";
-    for (const h of headers) html += `<th>${h}</th>`;
-    html += "</tr></thead><tbody>";
-    for (let i = 0; i < arr.length; ++i) {
-      const row = flattenForCSV(arr[i]);
-      html += "<tr>";
-      for (const h of headers) {
-        let val = row[h];
-        if (typeof val === "number") val = Number.isFinite(val) ? val.toFixed(4) : "";
-        html += `<td>${val === undefined ? "" : val}</td>`;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const now = new Date();
+      const dateElement = document.getElementById("sim-date");
+      if (dateElement) {
+        dateElement.textContent = now.toDateString();
       }
-      html += "</tr>";
-    }
-    html += "</tbody></table>";
-    container.innerHTML = html;
+    });
+  </script>
+<script>
+  // ————————————————————————————————————————————————————————————————
+  // Utility: format seconds as MM:SS.ss string for uptime/stat display (includes fractional seconds for smoother display)
+  // Used to show simulation uptime in a readable way.
+  function formatSeconds(sec) {
+    // Accepts seconds as float or int, returns MM:SS.ss
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    // Show two decimals for smoother stopwatch display
+    return String(m).padStart(2, "0") + ":" + s.toFixed(2).padStart(5, "0");
+  }
+  // ————————————————————————————————————————————————————————————————
+  // Debug Log Utility
+  // Adds a timestamped message to the debug panel at the top.
+  function debugLog(msg) {
+    const panel = document.getElementById('debug-panel');
+    if (!panel) return;
+    const now = new Date();
+    const ts = now.toLocaleTimeString();
+    // Prepend new message so latest is at the top
+    const newMsg = `[${ts}] ${msg}`;
+    panel.innerHTML = newMsg + "<br>" + panel.innerHTML;
   }
 
-  // --- Plotly Graphs ---
-  function animateGraph(id, data, label) {
-    if (!Array.isArray(data) || data.length === 0) {
-      Plotly.purge(id);
-      logDebug(`[WARN] No data for ${label}`);
-      Plotly.newPlot(id, [{ x: [0], y: [0], mode: "lines", name: "No data" }], { title: `${label}: No Data` });
-      return;
-    }
-    Plotly.purge(id);
-    Plotly.newPlot(id, [{
-      x: [...Array(data.length).keys()],
-      y: data,
-      mode: "lines",
-      name: label
-    }], { yaxis: { title: label } });
-  }
-
-  // --- Data Analysis ---
-  function renderAnalysis(rawLogs) {
-    const attunement = rawLogs.map(d => +d.attunement_score || 0);
-    const stress = rawLogs.map(d => +d.schema_stress || 0);
-    const affect = rawLogs.map(d => +d.avg_affect_feedback || 0);
-
-    document.getElementById("analysisContent").innerHTML = `
-      <b>Attunement Score</b><br>${formatStats(attunement)}<br><br>
-      <b>Schema Stress</b><br>${formatStats(stress)}<br><br>
-      <b>Affect Feedback</b><br>${formatStats(affect)}<br>
-    `;
-  }
-
-  // --- Summary ---
-  function showAverages(arr) {
-    if (!arr.length) {
-      document.getElementById("summaryBox").textContent = "Averages will appear here after simulation.";
-      return;
-    }
-    const attunement = arr.map(d => +d.attunement_score || 0);
-    const stress = arr.map(d => +d.schema_stress || 0);
-    const avgAtt = mean(attunement).toFixed(4);
-    const avgStr = mean(stress).toFixed(4);
-    document.getElementById("summaryBox").innerHTML =
-      `<b>Avg Attunement:</b> <span style="color:#1b5f00">${avgAtt}</span>
-      &nbsp; &nbsp;
-      <b>Avg Stress:</b> <span style="color:#a94442">${avgStr}</span>
-      <span style="font-size:0.9em;color:#666;margin-left:2em;">(N=${arr.length})</span>`;
-  }
-
-  // --- Main ---
+  // ————————————————————————————————————————————————————————————————
+  // Main simulation page logic runs after DOM loaded
   document.addEventListener("DOMContentLoaded", () => {
-    const runBtn = document.getElementById("runBtn");
-    const downloadBtn = document.getElementById("downloadCSV");
-    const statusBox = document.getElementById("status");
-    const outputBox = document.getElementById("output");
-    const graphIslands = document.querySelectorAll(".graph-island");
-    let episodesInput = document.getElementById("episodes");
-    let repetitionsInput = document.getElementById("repetitions");
-    let lastRawLogs = [];
+    debugLog("Page loaded.");
 
-    // Allow clicking to toggle graph focus
-    graphIslands.forEach(island => {
-      island.addEventListener("click", () => {
-        island.classList.toggle("focused");
-      });
-    });
+    // ———————————
+    // DOM element references for controls and status
+    // ———————————
+    const runBtn = document.getElementById("runBtn"); // Run Simulation button
+    const saveBtn = document.getElementById("saveBtn"); // Save results button
+    const downloadCSVBtn = document.getElementById("downloadCSV"); // Export CSV button
+    const statusEl = document.getElementById("status"); // Status indicator
+    let latestLogs = null; // Holds the array of simulation log packets for most recent run
 
+    // ———————————
+    // Uptime stopwatch variables for simulation run timer
+    // ———————————
+    let uptimeInterval = null; // setInterval handle for updating uptime display
+    let uptimeStart = null;    // Timestamp when simulation run started
+
+    // ———————————
+    // Config Modal logic and elements
+    // ———————————
+    const configBtn = document.getElementById("configBtn"); // "Configure" button
+    const configModal = document.getElementById("configModal"); // Modal dialog container
+    const configSaveBtn = document.getElementById("configSaveBtn"); // "Save" in modal
+    const configCancelBtn = document.getElementById("configCancelBtn"); // "Cancel" in modal
+
+    // ———————————
+    // Simulation Config State
+    // Holds the settings for salience decay and event rate used for simulation runs
+    // This config object is sent to the backend and also used to update UI displays
+    // ———————————
+    let config = {
+      salience_decay: 0.01, // Default salience decay parameter
+      event_rate: 3,        // Default event rate parameter
+    };
+
+    // ———————————
+    // Updates the "Current Settings" display below the stat cards
+    // Ensures the UI always reflects the config that will be sent to the backend
+    // ———————————
+    // ————————————————————————————————————————————————————————————————
+    // Updates the "Current Settings" display below the stat cards
+    // Handles missing or backend-variant config keys gracefully.
+    // ————————————————————————————————————————————————————————————————
+    function updateConfigDisplay() {
+      // Use fallback defaults if keys are missing
+      let salience = (typeof config.salience_decay === "number" && !isNaN(config.salience_decay))
+        ? config.salience_decay : 0.01;
+      let eventRate = (typeof config.event_rate === "number" && !isNaN(config.event_rate))
+        ? config.event_rate : 3;
+      document.getElementById('displaySalienceDecay').textContent = Number(salience).toFixed(3);
+      document.getElementById('displayEventRate').textContent = eventRate;
+    }
+    // Initial update on page load to show default config values
+    updateConfigDisplay();
+
+    // ———————————
+    // Event handler: Show config modal and preload fields from current config when Configure button is clicked
+    // ———————————
+    configBtn.onclick = () => {
+      // Safely preload modal fields from config, fallback to defaults if missing
+      document.getElementById("configSalienceDecay").value =
+        (typeof config.salience_decay === "number" && !isNaN(config.salience_decay)) ? config.salience_decay : 0.01;
+      document.getElementById("configEventRate").value =
+        (typeof config.event_rate === "number" && !isNaN(config.event_rate)) ? config.event_rate : 3;
+      configModal.style.display = "flex";
+    };
+
+    // ———————————
+    // Event handler: Save config from modal fields to live config, update display, and close modal
+    // ———————————
+    configSaveBtn.onclick = () => {
+      // Read modal fields and clamp to valid ranges to prevent invalid config
+      let dec = parseFloat(document.getElementById("configSalienceDecay").value);
+      let evt = parseInt(document.getElementById("configEventRate").value, 10);
+      // Clamp salience_decay between 0 and 1, fallback to 0.01 if invalid
+      if (isNaN(dec)) dec = 0.01;
+      dec = Math.max(0, Math.min(1, dec));
+      // Clamp event_rate between 1 and 10, fallback to 3 if invalid
+      if (isNaN(evt)) evt = 3;
+      evt = Math.max(1, Math.min(10, evt));
+      config.salience_decay = dec;
+      config.event_rate = evt;
+      configModal.style.display = "none";
+      updateConfigDisplay();
+    };
+
+    // ———————————
+    // Event handler: Cancel config modal (close without saving changes)
+    // ———————————
+    configCancelBtn.onclick = () => {
+      configModal.style.display = "none";
+    };
+
+    // ——————————————————————————————————————————————————————————————————————————————
+    // Event handler: Run Simulation button
+    // Initiates the simulation run, disables buttons, updates UI, sends live config,
+    // handles backend response, updates stats, plots, and table, and manages UI state.
+    // ——————————————————————————————————————————————————————————————————————————————
     runBtn.addEventListener("click", async () => {
-      const episodes = parseInt(episodesInput.value, 10) || 500;
-      const repetitions = parseInt(repetitionsInput.value, 10) || 1;
+      debugLog('"Run Simulation" clicked.');
+      // Get episodes and repetitions from input fields
+      // Read and validate episodes/repetitions inputs, fallback to safe defaults
+      let episodes = parseInt(document.getElementById("episodes").value, 10);
+      let repetitions = parseInt(document.getElementById("repetitions").value, 10);
+      if (isNaN(episodes) || episodes < 1) episodes = 2400;
+      if (isNaN(repetitions) || repetitions < 1) repetitions = 1;
 
-      statusBox.textContent = "[ running simulation... ]";
-      logDebug(`Run clicked. Episodes=${episodes} Repetitions=${repetitions}`);
+      // Disable UI buttons during simulation run
+      runBtn.disabled = true;
+      saveBtn.disabled = true;
+      downloadCSVBtn.disabled = true;
+      statusEl.textContent = "[running…]";
 
+      // Show loading spinner while backend is processing
+      const spinner = document.getElementById("loadingSpinner");
+      spinner.style.display = "flex";
+
+      // Start uptime stopwatch for visual feedback of elapsed time
+      uptimeStart = Date.now();
+      if (uptimeInterval) clearInterval(uptimeInterval);
+      // Stopwatch interval now updates with fractional seconds for smoother display
+      uptimeInterval = setInterval(() => {
+        const now = Date.now();
+        const elapsedSec = (now - uptimeStart) / 1000;
+        document.getElementById("statUptime").textContent = formatSeconds(elapsedSec);
+      }, 100);
+
+      // Prepare backend endpoint and request body with config and run parameters
+      let fetchUrl = "http://127.0.0.1:8000/run";
+      let fetchBody = JSON.stringify({
+        episodes,
+        repetitions,
+        ...config
+      });
+      debugLog(`About to fetch: ${fetchUrl}`);
+      debugLog(`Request body: ${fetchBody}`);
+
+      let resp = null;
+      let json = null;
       try {
-        logDebug(`Sending POST request to backend with episodes=${episodes}, repetitions=${repetitions}`);
-        const response = await fetch("http://127.0.0.1:8000/run", {
+        // Send POST request to backend to start simulation
+        resp = await fetch(fetchUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ episodes, repetitions })
+          body: fetchBody
         });
-        logDebug(`Received response: ${response.status}`);
 
-        if (!response.ok) throw new Error(`Network response not OK, status ${response.status}`);
+        debugLog(`Fetch response status: ${resp.status} (${resp.statusText})`);
+        // Handle HTTP/network errors
+        if (!resp.ok) {
+          let errorMsg = `Network response was not ok. Status: ${resp.status} (${resp.statusText})`;
+          try {
+            const bodyText = await resp.text();
+            errorMsg += `\nResponse body: ${bodyText}`;
+          } catch {}
+          debugLog(errorMsg);
+          throw new Error(errorMsg);
+        }
 
-        const result = await response.json();
-        logDebug(`Result received with data length: ${result.data ? result.data.length : 'undefined'}`);
+        // Parse JSON response from backend with error handling
+        try {
+          json = await resp.json();
+        } catch (parseErr) {
+          debugLog("JSON parse error: " + (parseErr && parseErr.message ? parseErr.message : parseErr));
+          throw new Error("Failed to parse backend JSON response.");
+        }
+        debugLog("Fetch succeeded. Response JSON:");
+        debugLog(JSON.stringify(json, null, 2));
 
-        // Flatten all repetitions for easier processing
-        const rawLogs = (result.data && Array.isArray(result.data)) ? result.data.flat() : [];
-        lastRawLogs = rawLogs;
+        // If backend returns config, update local config and UI display (with safety checks)
+        if (json.config && typeof json.config === "object") {
+          if ('salience_decay' in json.config && typeof json.config.salience_decay === "number") {
+            config.salience_decay = json.config.salience_decay;
+          }
+          if ('event_rate' in json.config && typeof json.config.event_rate === "number") {
+            config.event_rate = json.config.event_rate;
+          }
+          updateConfigDisplay();
+        }
 
-        document.getElementById("downloadCSV").disabled = !rawLogs.length;
-        logDebug(`Raw logs length: ${rawLogs.length}`);
+        // Check if simulation completed successfully
+        if (!json.status || json.status !== "complete") {
+          debugLog("Simulation did not complete. Full JSON: " + JSON.stringify(json));
+          throw new Error("Simulation did not complete");
+        }
 
-        renderSpreadsheet(rawLogs);
-        showAverages(rawLogs);
+        // ——— Process simulation data from backend ———
+        // allReps: array of repetitions, each is an array of log packets
+        const allReps = Array.isArray(json.data) ? json.data : [];
+        // For single-rep mode, use the first (and only) repetition's logs
+        const logsByRep = (Array.isArray(allReps[0]) ? allReps[0] : []);
 
-        const attunement = rawLogs.map(d => +d.attunement_score || 0);
-        const stress = rawLogs.map(d => +d.schema_stress || 0);
-        const affect = rawLogs.map(d => +d.avg_affect_feedback || 0);
+        latestLogs = logsByRep; // Store for Save/Export
+        const N = logsByRep.length; // Number of steps/episodes in this run
 
-        animateGraph("attunementGraph", attunement, "Attunement Score");
-        animateGraph("stressGraph", stress, "Schema Stress");
-        animateGraph("affectGraph", affect, "Affect Feedback");
+        // ——— Compute summary stats for stat cards ———
+        let sumAttunement = 0, sumStress = 0, sumAffect = 0;
+        logsByRep.forEach(pkt => {
+          sumAttunement += (typeof pkt.attunement_score === "number" ? pkt.attunement_score : 0);
+          sumStress += (typeof pkt.schema_stress === "number" ? pkt.schema_stress : 0);
+          sumAffect += (typeof pkt.avg_affect_feedback === "number" ? pkt.avg_affect_feedback : 0);
+        });
+        const avgAttune = N > 0 ? sumAttunement / N : 0;
+        const avgStress = N > 0 ? sumStress / N : 0;
+        // Use the last clock value if present, else use episodes
+        const clockVal = (N > 0 && logsByRep[N - 1] && logsByRep[N - 1].clock !== undefined)
+          ? logsByRep[N - 1].clock
+          : episodes;
+        // Uptime string for stat display (show actual number of steps)
+        const uptimeStr = formatSeconds(N);
 
-        logDebug("Graphs rendered successfully.");
-        statusBox.textContent = "[ simulation complete ]";
+        // Update stat card elements with computed values
+        document.getElementById("statAttunement").textContent = avgAttune.toFixed(2);
+        document.getElementById("statStress").textContent = avgStress.toFixed(2);
+        document.getElementById("statClock").textContent = String(clockVal).padStart(3, "0");
+        document.getElementById("statUptime").textContent = uptimeStr;
 
-      } catch (err) {
-        statusBox.textContent = "[ error occurred ]";
-        logDebug("ERROR: " + err.toString());
-        console.error(err);
-        renderSpreadsheet([]);
-        showAverages([]);
+        // ——— Plot graphs using Plotly ———
+        // Prepare x axis (episode index) and y values for each metric
+        const x = Array.from({length: N}, (_, i) => i + 1);
+        const yAttune = logsByRep.map(pkt => pkt.attunement_score !== undefined ? pkt.attunement_score : null);
+        const yStress = logsByRep.map(pkt => pkt.schema_stress !== undefined ? pkt.schema_stress : null);
+        const yAffect = logsByRep.map(pkt => pkt.avg_affect_feedback !== undefined ? pkt.avg_affect_feedback : null);
+
+        // Attunement Score graph
+        Plotly.newPlot("attunementGraph", [{ x, y: yAttune, mode: "lines", name: "Attunement" }], {
+          margin: { t: 30, b: 30 }, yaxis: { title: "Attunement" }
+        });
+        // Schema Stress graph
+        Plotly.newPlot("stressGraph", [{ x, y: yStress, mode: "lines", name: "Stress" }], {
+          margin: { t: 30, b: 30 }, yaxis: { title: "Schema Stress" }
+        });
+        // Affect Feedback graph
+        Plotly.newPlot("affectGraph", [{ x, y: yAffect, mode: "lines", name: "Affect" }], {
+          margin: { t: 30, b: 30 }, yaxis: { title: "Affect Feedback" }
+        });
+
+        // ——— Build and display raw-data HTML table in spreadsheet section ———
+        const container = document.getElementById("spreadsheet");
+        container.innerHTML = "";
+        if (N > 0) {
+          // Use keys of first log packet as columns
+          const columns = Object.keys(logsByRep[0]);
+          const table = document.createElement("table");
+          table.id = "spreadsheet-table";
+          // Build table header
+          const thead = document.createElement("thead");
+          const headerRow = document.createElement("tr");
+          columns.forEach(col => {
+            const th = document.createElement("th");
+            th.textContent = col;
+            headerRow.appendChild(th);
+          });
+          thead.appendChild(headerRow);
+          table.appendChild(thead);
+          // Build table body
+          const tbody = document.createElement("tbody");
+          logsByRep.forEach(pkt => {
+            const tr = document.createElement("tr");
+            columns.forEach(col => {
+              const td = document.createElement("td");
+              const val = pkt[col];
+              // Show empty cell for undefined/null/NaN values
+              td.textContent = (val === undefined || val === null || (typeof val === "number" && isNaN(val))) ? "" : val;
+              tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+          container.appendChild(table);
+        }
+
+        // Enable Save and Export buttons now that results are available
+        saveBtn.disabled = false;
+        downloadCSVBtn.disabled = false;
+        statusEl.textContent = "[complete]";
+      }
+      catch (err) {
+        // Improved error logging and UI consistency
+        debugLog('Error during fetch: ' + (err && err.message ? err.message : err));
+        debugLog(`Current URL: ${window.location.href}`);
+        debugLog(`Backend fetch URL: ${fetchUrl}`);
+        debugLog(`Request body: ${fetchBody}`);
+        if (err instanceof TypeError && err.message && err.message.includes('Failed to fetch')) {
+          debugLog("Likely causes: Backend is not running or wrong port, or CORS/network issue.");
+        }
+        statusEl.textContent = "[error]";
+        // Ensure UI state is consistent even on error
+        saveBtn.disabled = true;
+        downloadCSVBtn.disabled = true;
+        latestLogs = null;
+      }
+      finally {
+        // Always stop the uptime stopwatch and update display, even if error
+        if (uptimeInterval) {
+          clearInterval(uptimeInterval);
+          uptimeInterval = null;
+          const now = Date.now();
+          const elapsedSec = (now - uptimeStart) / 1000;
+          document.getElementById("statUptime").textContent = formatSeconds(elapsedSec);
+        }
+        // Hide loading spinner and re-enable Run button
+        const spinner = document.getElementById("loadingSpinner");
+        spinner.style.display = "none";
+        runBtn.disabled = false;
       }
     });
 
-    downloadBtn.addEventListener("click", () => {
-      if (!lastRawLogs.length) return;
-      const csv = arrayToCSV(lastRawLogs);
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      const now = new Date();
-      const dateStr = now.toISOString().slice(0, 10);
-      link.download = `simulation_results_${dateStr}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      logDebug("CSV exported.");
+    // ————————————————————————————————————————————————————————————————
+    // Save button handler: POST the latestLogs to backend for saving
+    // Disables button while saving, updates status, and logs result
+    // ————————————————————————————————————————————————————————————————
+    saveBtn.addEventListener("click", async () => {
+      if (!latestLogs) return; // No data to save
+      debugLog('"Save" clicked.');
+      saveBtn.disabled = true;
+      statusEl.textContent = "[saving…]";
+      try {
+        // POST logs to /save-logs endpoint
+        const resp = await fetch("http://127.0.0.1:8000/save-logs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ logs: latestLogs })
+        });
+        if (!resp.ok) throw new Error("Save failed");
+        statusEl.textContent = "[saved]";
+        debugLog('Save succeeded.');
+      } catch (err) {
+        debugLog('Save failed: ' + (err && err.message ? err.message : err));
+        console.error(err);
+        statusEl.textContent = "[save error]";
+      } finally {
+        saveBtn.disabled = false;
+      }
     });
 
-    logDebug("Page loaded.");
+    // ————————————————————————————————————————————————————————————————
+    // Export CSV button handler: Convert latestLogs to CSV and trigger download
+    // Builds CSV from log array, creates Blob, and downloads as file
+    // ————————————————————————————————————————————————————————————————
+    downloadCSVBtn.addEventListener("click", () => {
+      if (!latestLogs || !Array.isArray(latestLogs) || latestLogs.length === 0) return; // No data to export
+      debugLog('"Export CSV" clicked.');
+      // CSV header row from keys of first packet
+      const columns = Object.keys(latestLogs[0]);
+      const lines = [];
+      lines.push(columns.join(","));
+      latestLogs.forEach(pkt => {
+        const row = columns.map(col => {
+          let val = pkt[col];
+          // Handle undefined/null/NaN values gracefully as empty string
+          if (val === undefined || val === null || (typeof val === "number" && isNaN(val))) return "";
+          // Escape any double quotes for CSV format
+          return String(val).replace(/"/g, '""');
+        });
+        lines.push(row.join(","));
+      });
+      const csvContent = lines.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "simulation_results.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
   });
 </script>
 </body>

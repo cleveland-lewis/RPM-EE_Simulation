@@ -1,16 +1,23 @@
 #!/bin/zsh
 
-# --- Step 1: (One time) install dependencies ---
-pip install uvicorn transitions fastapi
+# Kill any process using backend port 8000
+lsof -ti :8000 | xargs -r kill -9
 
-# --- Step 2: Start backend server in the background ---
-uvicorn src.simulation:app --reload &
+# Kill any process using frontend port 8081
+lsof -ti :8081 | xargs -r kill -9
 
-# --- Step 3: Wait a moment to ensure the server starts ---
+# Start the FastAPI backend (RPMEE simulation engine) on port 8000
+uvicorn src.simulation:app --reload --host 127.0.0.1 --port 8000 &
+
+# Wait briefly to ensure backend starts first
 sleep 2
 
-# --- Step 4: Open the frontend UI in the default browser ---
-open frontend/dashboard.html
+# Change directory to frontend folder and start HTTP server on port 8081
+cd /Users/clevelandlewis/Library/Mobile\ Documents/com~apple~CloudDocs/Inbox/Zips/RPMEE_v1.1.0_Simulation/frontend || exit
+python3 -m http.server 8081
 
-# (Optional) Show a message to kill the background server later
-echo "When done, use 'kill %1' to stop the backend server if needed."
+# Automatically open the app page in the default browser
+open "http://localhost:8081/trials.html"
+
+# When done, you may need to manually kill the background backend with:
+# kill %1

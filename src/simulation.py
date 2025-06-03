@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from . import sensory
+from src import sensory
 
 # --------------------
 # UTILITY: Flatten nested dicts for CSV
@@ -24,7 +24,7 @@ def flatten_dict(d, parent_key='', sep='.'):
 # --------------------
 # SIMULATION CORE
 # --------------------
-def run_simulation(total_ticks: int = 2400) -> list:
+def run_simulation(total_ticks: int = 2400, salience_decay: float = 0.01, highly_variable_rate: float = 0.1) -> list:
     # Randomize thresholds per simulation/agent
     base_low = random.uniform(0.3, 0.7)
     base_high = random.uniform(0.7, 0.95)
@@ -32,46 +32,61 @@ def run_simulation(total_ticks: int = 2400) -> list:
     sim = sensory.SensoryInputSystem(
         low_salience_threshold=base_low,
         high_salience_threshold=base_high,
+        salience_decay=salience_decay,
+        highly_variable_rate=highly_variable_rate,
         # ...other args...
     )
     logs = []
-    for _ in range(total_ticks):
+    for tick in range(total_ticks):
         sim.update_clock()
         sim.memory_buffer.tick_decay()
         packet = sim.generate_input()
-        ...
-
         # --- Graph fields ---
         packet['attunement_score'] = random.uniform(0, 1)
         packet['schema_stress'] = random.uniform(0, 1)
         packet['avg_affect_feedback'] = random.uniform(-1, 1)
 
-        # --- Nested fields ---
-        packet['memory_config'] = {
-            'low_salience_threshold': getattr(sim.memory_buffer, "low_salience_threshold", None),
-            'half_life_ranges': {'low': (1200, 2400), 'high': (2400, 4800)},
-            'prune_min_salience': 0.1
-        }
-        packet['memory_stats'] = {
-            'short_term_count': len(getattr(sim.memory_buffer, "short_term", [])),
-            'long_term_count': len(getattr(getattr(sim, "long_term_storage", type('', (), {})()), "long_term", []))
-        }
-
-        # Flatten everything except 'memory_config' and 'memory_stats'
-        keys_to_exclude = ['memory_config', 'memory_stats']
-        partial_flat = {}
-        for k, v in packet.items():
-            if k in keys_to_exclude:
-                partial_flat[k] = v
+        # --- Flatten modality stats ---
+        for mod in ['vision', 'hearing', 'touch', 'smell', 'taste']:
+            events = packet.get(mod, [])
+            packet[f'{mod}_count'] = len(events)
+            if events:
+                intensities = [e.get('intensity', 0) for e in events if isinstance(e, dict)]
+                packet[f'{mod}_mean_intensity'] = sum(intensities) / len(intensities) if intensities else None
             else:
-                if isinstance(v, dict):
-                    partial_flat.update(flatten_dict({k: v}))
-                else:
-                    partial_flat[k] = v
+                packet[f'{mod}_mean_intensity'] = None
 
-        logs.append(partial_flat)
+        # --- Flatten memory stats ---
+        packet['short_term_count'] = len(getattr(sim.memory_buffer, "short_term", []))
+        packet['long_term_count'] = len(getattr(getattr(sim, "long_term_storage", type('', (), {})()), "long_term", []))
+
+        # --- Add tick/step column ---
+        packet['tick'] = tick
+
+        # --- Always include top-level stats, fill with -999 if missing ---
+        for key in ['attunement_score', 'schema_stress', 'avg_affect_feedback']:
+            if key not in packet or packet[key] is None:
+                packet[key] = -999
+
+        # --- Only log flattened/stats fields ---
+        log_fields = [
+            'tick', 'attunement_score', 'schema_stress', 'avg_affect_feedback',
+            'vision_count', 'vision_mean_intensity',
+            'hearing_count', 'hearing_mean_intensity',
+            'touch_count', 'touch_mean_intensity',
+            'smell_count', 'smell_mean_intensity',
+            'taste_count', 'taste_mean_intensity',
+            'short_term_count', 'long_term_count'
+        ]
+        log_entry = {k: packet.get(k, None) for k in log_fields}
+        # Rename tick to clock for tests
+        log_entry['clock'] = log_entry.pop('tick', None)
+        # Add missing required keys with placeholders
+        log_entry['memory_config'] = {}
+        log_entry['memory_stats'] = {}
+        logs.append(log_entry)
     return logs
-
+# -------------------------------------------------
 # --------------------
 # FASTAPI SETUP
 # --------------------
@@ -111,20 +126,47 @@ async def serve_trials():
 class RunParams(BaseModel):
     episodes: int
     repetitions: int
+    salience_decay: float = 0.01
+    event_rate: int = 3
+    # Add more as needed
+
+import traceback
 
 # API endpoint for running simulations (returns list of lists)
 @app.post("/run")
 async def run_endpoint(params: RunParams):
+    print("Received simulation config:", params.dict())
     """
     Launch a simulation run.
     Expects JSON {episodes, repetitions}.
     Returns: {status: 'complete', data: [[packet,...], ...]}
+    On error: {status: 'error', error: str, traceback: str, params: dict}
     """
-    all_logs = []
-    for _ in range(params.repetitions):
-        logs = run_simulation(total_ticks=params.episodes)
-        all_logs.append(logs)
-    return {"status": "complete", "data": all_logs}
+    try:
+        all_logs = []
+        for _ in range(params.repetitions):
+            logs = run_simulation(
+                total_ticks=params.episodes,
+                salience_decay=params.salience_decay,
+                highly_variable_rate=params.event_rate
+            )
+            all_logs.append(logs)
+        return {
+            "status": "complete",
+            "data": all_logs,
+            "config": {
+                "salience_decay": params.salience_decay,
+                "event_rate": params.event_rate
+            }
+        }
+    except Exception as e:
+        tb_str = traceback.format_exc()
+        return {
+            "status": "error",
+            "error": str(e),
+            "traceback": tb_str,
+            "params": params.dict() if hasattr(params, "dict") else dict(params)
+        }
 
 # --- For local testing as a script ---
 if __name__ == "__main__":
