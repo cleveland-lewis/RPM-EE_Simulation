@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from src.sensory import SensoryInputSystem  # Core class for simulating sensory input and memory
+from config import load_config, save_config
 
 #
 # --------------------
@@ -153,6 +154,18 @@ async def serve_trials():
             html = f.read()
     except FileNotFoundError:
         return HTMLResponse(status_code=404, content="trials.html not found")
+    # Inject loading spinner/message for config modal if not present
+    # This is a simple string replace for demonstration; in production, use a template engine.
+    if "</body>" in html:
+        loading_span = '<span id="configLoading" style="color:#555; margin-bottom:8px; display:none;">Loading config...</span>\n'
+        # Try to inject just before modal close, if present
+        if 'id="configModal"' in html and 'id="saveBtn"' in html:
+            # Insert after configModal open div or before saveBtn
+            import re
+            # Try to insert after the first <div ... id="configModal"...>
+            html = re.sub(r'(<div[^>]*id="configModal"[^>]*>)', r'\1\n' + loading_span, html, count=1)
+        else:
+            html = html.replace("</body>", loading_span + "</body>")
     return HTMLResponse(content=html, media_type="text/html")
 
 # --------------------
@@ -210,8 +223,46 @@ async def run_endpoint(params: RunParams):
             "params": params.dict() if hasattr(params, "dict") else dict(params)
         }
 
+
+# --- Utility functions for flattening/unflattening config dicts ---
+def flatten_dict(d, parent_key='', sep='_'):
+    items = {}
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict):
+            items.update(flatten_dict(v, new_key, sep=sep))
+        else:
+            items[new_key] = v
+    return items
+
+def unflatten_dict(d, sep='_'):
+    result = {}
+    for k, v in d.items():
+        keys = k.split(sep)
+        cur = result
+        for part in keys[:-1]:
+            if part not in cur:
+                cur[part] = {}
+            cur = cur[part]
+        cur[keys[-1]] = v
+    return result
+
 # --- For local testing as a script ---
 # This block allows running the FastAPI app directly with uvicorn for local testing.
+@app.get("/config")
+def get_config():
+    """Returns the current simulation configuration as a flattened JSON dict."""
+    cfg = load_config()
+    flat_cfg = flatten_dict(cfg)
+    return flat_cfg
+
+@app.post("/config")
+def update_config(cfg: dict):
+    """Accepts and saves a new simulation configuration."""
+    nested_cfg = unflatten_dict(cfg)
+    save_config(nested_cfg)
+    return {"status": "success"}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("src.simulation:app", host="0.0.0.0", port=8000, reload=True)

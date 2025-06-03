@@ -6,6 +6,26 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <link rel="stylesheet" href="style.css" />
   <style>
+    body.dev-mode {
+      background-color: #222 !important;
+      color: #eee !important;
+    }
+    body.dev-mode .stat-card {
+      border-color: #0f0 !important;
+    }
+    body.dev-mode #debug-panel {
+      display: block !important;
+      background-color: #111 !important;
+      color: #0f0 !important;
+      font-weight: bold;
+      padding: 1rem;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 2px solid #0f0;
+    }
+    #debug-panel {
+      display: none;
+    }
     html, body {
       height: 100%;
       margin: 0;
@@ -406,6 +426,7 @@
       </label>
       <button id="runBtn">▶ Run Simulation</button>
       <button id="configBtn" type="button">Configure</button>
+      <button id="testSimBtn" style="display:none;">Test Simulation</button>
       <button id="saveBtn" disabled>Save</button>
       <button id="downloadCSV" disabled>Export CSV</button>
       <span id="status">[waiting]</span>
@@ -539,8 +560,116 @@
 
     function toggleDevMode() {
       document.body.classList.toggle('dev-mode');
-      // Add your dev mode logic here
+      const isDev = document.body.classList.contains('dev-mode');
+      debugLog(`Dev Mode ${isDev ? 'Enabled' : 'Disabled'}`);
+      const debugPanel = document.getElementById('debug-panel');
+      if (debugPanel) {
+        debugPanel.style.display = isDev ? 'block' : 'none';
+      }
     }
+
+    // Show/hide Test Simulation button based on dev mode
+    function updateDevUI() {
+      const isDev = document.body.classList.contains('dev-mode');
+      // The Test Simulation button is now in controls section, not in menu
+      const testBtn = document.querySelector('section.controls #testSimBtn');
+      if (testBtn) testBtn.style.display = isDev ? 'block' : 'none';
+    }
+
+    // Patch into toggleDevMode
+    const oldToggleDevMode = toggleDevMode;
+    window.toggleDevMode = function() {
+      oldToggleDevMode();
+      updateDevUI();
+    };
+
+    // Show/hide on load
+    document.addEventListener('DOMContentLoaded', updateDevUI);
+
+    // Test Simulation Preset/Runner (MutationObserver-based)
+    document.addEventListener('DOMContentLoaded', function() {
+      const testBtn = document.querySelector('section.controls #testSimBtn');
+      if (testBtn) {
+        testBtn.onclick = async function() {
+          // Save original config (shallow clone)
+          const originalConfig = Object.assign({}, config);
+          // Set config to test values
+          config.salience_decay = 0.02;
+          config.event_rate = 2;
+          config.memory_buffer_size = 500;
+          config.memory_decay = 0.02;
+          config.memory_prune_threshold = 0.3;
+          config.high_salience_var_rate = 0.05;
+          config.low_salience_var_rate = 0.05;
+          updateConfigDisplay();
+          debugLog("Test Simulation config loaded. Running simulation...");
+          // Disable test button and set label
+          testBtn.disabled = true;
+          testBtn.textContent = "Running…";
+          // Click runBtn to trigger simulation
+          document.getElementById("runBtn").click();
+          // Observe status span for change to [complete]
+          const statusEl = document.getElementById("status");
+          let done = false;
+          let timeoutId = null;
+          let cleanup = () => {};
+          // Set up MutationObserver on statusEl
+          const observer = new MutationObserver(function(mutationsList, observerInstance) {
+            if (done) return;
+            for (let mutation of mutationsList) {
+              if (mutation.type === "childList" || mutation.type === "characterData") {
+                const statusText = statusEl.textContent.trim();
+                if (statusText === "[complete]") {
+                  done = true;
+                  observerInstance.disconnect();
+                  if (timeoutId) clearTimeout(timeoutId);
+                  // Check stat card values
+                  const att = parseFloat(document.getElementById("statAttunement").textContent);
+                  const stress = parseFloat(document.getElementById("statStress").textContent);
+                  // Example expected ranges (can be adjusted)
+                  let inRange = false;
+                  if (!isNaN(att) && !isNaN(stress)) {
+                    if (att > 0 && att < 1 && stress > 0 && stress < 2) {
+                      inRange = true;
+                    }
+                  }
+                  if (inRange) {
+                    testBtn.textContent = "PASS";
+                  } else {
+                    testBtn.textContent = "FAIL";
+                  }
+                  // Restore config, update display, re-enable button after 1s
+                  setTimeout(() => {
+                    Object.assign(config, originalConfig);
+                    updateConfigDisplay();
+                    testBtn.disabled = false;
+                    testBtn.textContent = "Test Simulation";
+                  }, 1000);
+                  // Log result
+                  debugLog("Test Simulation: " + (inRange ? "PASS" : "FAIL"));
+                }
+              }
+            }
+          });
+          observer.observe(statusEl, { childList: true, characterData: true, subtree: true });
+          // Timeout logic: if no [complete] in 20s, show TIMEOUT
+          timeoutId = setTimeout(() => {
+            if (done) return;
+            done = true;
+            observer.disconnect();
+            testBtn.textContent = "TIMEOUT";
+            debugLog("Test Simulation: TIMEOUT");
+            // Restore config after 2s
+            setTimeout(() => {
+              Object.assign(config, originalConfig);
+              updateConfigDisplay();
+              testBtn.disabled = false;
+              testBtn.textContent = "Test Simulation";
+            }, 2000);
+          }, 20000);
+        };
+      }
+    });
 
     document.addEventListener('DOMContentLoaded', function () {
       const now = new Date();
@@ -651,26 +780,63 @@
     updateConfigDisplay();
 
     // ———————————
-    // Event handler: Show config modal and preload fields from current config when Configure button is clicked
+    // Config is now loaded from backend. The "Configure" button will fetch config from server before showing modal.
     // ———————————
-    configBtn.onclick = () => {
-      // Safely preload modal fields from config, fallback to defaults if missing
-      document.getElementById("configSalienceDecay").value =
-        (typeof config.salience_decay === "number" && !isNaN(config.salience_decay)) ? config.salience_decay : 0.01;
-      document.getElementById("configEventRate").value =
-        (typeof config.event_rate === "number" && !isNaN(config.event_rate)) ? config.event_rate : 3;
-      document.getElementById("configMemoryBufferSize").value =
-        (typeof config.memory_buffer_size === "number" && !isNaN(config.memory_buffer_size)) ? config.memory_buffer_size : 1000;
-      document.getElementById("configMemoryDecay").value =
-        (typeof config.memory_decay === "number" && !isNaN(config.memory_decay)) ? config.memory_decay : 0.01;
-      document.getElementById("configMemoryPruneThreshold").value =
-        (typeof config.memory_prune_threshold === "number" && !isNaN(config.memory_prune_threshold)) ? config.memory_prune_threshold : 0.2;
-      document.getElementById("configHighSalienceVarRate").value =
-        (typeof config.high_salience_var_rate === "number" && !isNaN(config.high_salience_var_rate)) ? config.high_salience_var_rate : 0.1;
-      document.getElementById("configLowSalienceVarRate").value =
-        (typeof config.low_salience_var_rate === "number" && !isNaN(config.low_salience_var_rate)) ? config.low_salience_var_rate : 0.1;
+    // Fetch config from backend and update modal inputs and current config state
+    async function loadConfigFromServer() {
+      try {
+        const resp = await fetch("http://127.0.0.1:8000/config");
+        if (!resp.ok) throw new Error(`Failed to fetch config: ${resp.status}`);
+        const serverConfig = await resp.json();
+
+        // Update global config object with server values
+        config.salience_decay = serverConfig.salience_decay ?? config.salience_decay;
+        config.event_rate = serverConfig.event_rate ?? config.event_rate;
+        config.memory_buffer_size = serverConfig.memory_buffer_size ?? config.memory_buffer_size;
+        config.memory_decay = serverConfig.memory_decay ?? config.memory_decay;
+        config.memory_prune_threshold = serverConfig.memory_prune_threshold ?? config.memory_prune_threshold;
+        config.high_salience_var_rate = serverConfig.high_salience_var_rate ?? config.high_salience_var_rate;
+        config.low_salience_var_rate = serverConfig.low_salience_var_rate ?? config.low_salience_var_rate;
+
+        // Update modal input fields values and set min, max, step dynamically if provided
+        const mapping = [
+          { id: "configSalienceDecay", key: "salience_decay", min: 0, max: 1, step: 0.001 },
+          { id: "configEventRate", key: "event_rate", min: 1, max: 10, step: 1 },
+          { id: "configMemoryBufferSize", key: "memory_buffer_size", min: 100, max: 10000, step: 100 },
+          { id: "configMemoryDecay", key: "memory_decay", min: 0, max: 1, step: 0.001 },
+          { id: "configMemoryPruneThreshold", key: "memory_prune_threshold", min: 0, max: 1, step: 0.01 },
+          { id: "configHighSalienceVarRate", key: "high_salience_var_rate", min: 0, max: 1, step: 0.01 },
+          { id: "configLowSalienceVarRate", key: "low_salience_var_rate", min: 0, max: 1, step: 0.01 },
+        ];
+
+        mapping.forEach(({id, key, min, max, step}) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          const val = config[key];
+          el.value = val;
+          el.min = min;
+          el.max = max;
+          el.step = step;
+        });
+
+        updateConfigDisplay();
+      } catch (err) {
+        debugLog(`Error loading config from server: ${err.message || err}`);
+      }
+    }
+
+    // Modify Configure button handler to load config before showing modal
+    configBtn.onclick = async () => {
+      try {
+        await loadConfigFromServer();
+      } catch (e) {
+        // Error already logged to debug panel
+      }
       configModal.style.display = "flex";
     };
+
+    // Initial load of config on page load
+    loadConfigFromServer();
 
     // ———————————
     // Event handler: Save config from modal fields to live config, update display, and close modal
