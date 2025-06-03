@@ -5,10 +5,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from src import sensory
+from src.sensory import SensoryInputSystem  # Core class for simulating sensory input and memory
 
+#
 # --------------------
 # UTILITY: Flatten nested dicts for CSV
+# Used to prepare nested simulation output for CSV export.
 # --------------------
 def flatten_dict(d, parent_key='', sep='.'):
     """Recursively flatten a nested dictionary (for CSV)."""
@@ -21,32 +23,43 @@ def flatten_dict(d, parent_key='', sep='.'):
             items.append((new_key, v))
     return dict(items)
 
+#
 # --------------------
 # SIMULATION CORE
 # --------------------
+# The main simulation function.
+# Simulates a sequence of sensory events and memory state over time.
+# Parameters:
+#   total_ticks: Number of simulation time steps (episodes)
+#   salience_decay: Rate at which salience decays in memory
+#   highly_variable_rate: Controls frequency of highly variable sensory events
+# Returns a list of dicts, each representing the state/log at a time tick.
+#
 def run_simulation(total_ticks: int = 2400, salience_decay: float = 0.01, highly_variable_rate: float = 0.1) -> list:
-    # Randomize thresholds per simulation/agent
+    # Randomize initial thresholds for this simulation run
     base_low = random.uniform(0.3, 0.7)
     base_high = random.uniform(0.7, 0.95)
-    # Assuming SensoryInputSystem accepts these as args and passes to MemoryBuffer
-    sim = sensory.SensoryInputSystem(
+    # Create the sensory input system with randomized thresholds and config
+    sim = SensoryInputSystem(
         low_salience_threshold=base_low,
         high_salience_threshold=base_high,
         salience_decay=salience_decay,
         highly_variable_rate=highly_variable_rate,
-        # ...other args...
     )
     logs = []
     for tick in range(total_ticks):
+        # Advance simulation clock and decay memory buffer
         sim.update_clock()
         sim.memory_buffer.tick_decay()
+        # Generate a new sensory input event packet for this tick
         packet = sim.generate_input()
-        # --- Graph fields ---
+
+        # Add simulated "attunement", "schema stress", and affect feedback values
         packet['attunement_score'] = random.uniform(0, 1)
         packet['schema_stress'] = random.uniform(0, 1)
         packet['avg_affect_feedback'] = random.uniform(-1, 1)
 
-        # --- Flatten modality stats ---
+        # For each sensory modality, count events and calculate mean intensity
         for mod in ['vision', 'hearing', 'touch', 'smell', 'taste']:
             events = packet.get(mod, [])
             packet[f'{mod}_count'] = len(events)
@@ -56,19 +69,37 @@ def run_simulation(total_ticks: int = 2400, salience_decay: float = 0.01, highly
             else:
                 packet[f'{mod}_mean_intensity'] = None
 
-        # --- Flatten memory stats ---
-        packet['short_term_count'] = len(getattr(sim.memory_buffer, "short_term", []))
+        # Collect memory buffer stats for short-term and long-term storage
+        mem_buf = sim.memory_buffer
+        packet['short_term_count'] = len(getattr(mem_buf, "short_term", []))
         packet['long_term_count'] = len(getattr(getattr(sim, "long_term_storage", type('', (), {})()), "long_term", []))
 
-        # --- Add tick/step column ---
+        # Store the memory configuration used for this run
+        memory_config = {
+            'low_salience_threshold': getattr(sim, 'low_salience_threshold', None),
+            'high_salience_threshold': getattr(sim, 'high_salience_threshold', None),
+            'salience_decay': getattr(sim, 'salience_decay', None),
+            'highly_variable_rate': getattr(sim, 'highly_variable_rate', None),
+        }
+        packet['memory_config'] = memory_config
+
+        # Store memory statistics for this tick
+        memory_stats = {
+            'short_term_size': len(getattr(mem_buf, 'short_term', [])),
+            'long_term_size': len(getattr(getattr(sim, 'long_term_storage', type('', (), {})()), 'long_term', [])),
+            'tick': tick,
+        }
+        packet['memory_stats'] = memory_stats
+
+        # Store current tick in the packet
         packet['tick'] = tick
 
-        # --- Always include top-level stats, fill with -999 if missing ---
+        # Fill in missing or None values for core scores
         for key in ['attunement_score', 'schema_stress', 'avg_affect_feedback']:
             if key not in packet or packet[key] is None:
                 packet[key] = -999
 
-        # --- Only log flattened/stats fields ---
+        # Select which fields to log for each tick
         log_fields = [
             'tick', 'attunement_score', 'schema_stress', 'avg_affect_feedback',
             'vision_count', 'vision_mean_intensity',
@@ -76,22 +107,23 @@ def run_simulation(total_ticks: int = 2400, salience_decay: float = 0.01, highly
             'touch_count', 'touch_mean_intensity',
             'smell_count', 'smell_mean_intensity',
             'taste_count', 'taste_mean_intensity',
-            'short_term_count', 'long_term_count'
+            'short_term_count', 'long_term_count',
+            'memory_config', 'memory_stats'
         ]
+        # Prepare log entry for this tick
         log_entry = {k: packet.get(k, None) for k in log_fields}
-        # Rename tick to clock for tests
         log_entry['clock'] = log_entry.pop('tick', None)
-        # Add missing required keys with placeholders
-        log_entry['memory_config'] = {}
-        log_entry['memory_stats'] = {}
         logs.append(log_entry)
+
     return logs
 # -------------------------------------------------
 # --------------------
 # FASTAPI SETUP
 # --------------------
+# Set up FastAPI app to provide simulation API endpoints.
 app = FastAPI()
 
+# Allow cross-origin requests for all domains and methods (dev use)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -99,9 +131,9 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-
 # --------------------
 # Saving as .JSON file
+# Endpoint to save simulation logs as a JSON file on the server.
 # --------------------
 class LogSaveRequest(BaseModel):
     logs: list
@@ -111,7 +143,8 @@ async def save_logs(payload: LogSaveRequest):
     with open("saved_logs.json", "w") as f:
         json.dump(payload.logs, f, indent=2)
     return {"status": "success"}
-# Serve main HTML (e.g., /src/trials.html)
+
+# Serve main HTML page (e.g., /src/trials.html) for browser access
 @app.get("/", include_in_schema=False)
 async def serve_trials():
     html_path = os.path.join(os.path.dirname(__file__), "trials.html")
@@ -122,7 +155,10 @@ async def serve_trials():
         return HTMLResponse(status_code=404, content="trials.html not found")
     return HTMLResponse(content=html, media_type="text/html")
 
-# Model for /run params
+# --------------------
+# Input validation model for simulation runs
+# Used for validating and parsing input to the /run API endpoint.
+# --------------------
 class RunParams(BaseModel):
     episodes: int
     repetitions: int
@@ -132,7 +168,11 @@ class RunParams(BaseModel):
 
 import traceback
 
-# API endpoint for running simulations (returns list of lists)
+# --------------------
+# Simulation API endpoint
+# Runs the simulation with given parameters.
+# Handles errors gracefully and returns logs or error details.
+# --------------------
 @app.post("/run")
 async def run_endpoint(params: RunParams):
     print("Received simulation config:", params.dict())
@@ -144,6 +184,7 @@ async def run_endpoint(params: RunParams):
     """
     try:
         all_logs = []
+        # Repeat the simulation for the requested number of repetitions
         for _ in range(params.repetitions):
             logs = run_simulation(
                 total_ticks=params.episodes,
@@ -160,6 +201,7 @@ async def run_endpoint(params: RunParams):
             }
         }
     except Exception as e:
+        # On error, return error message and stack trace for debugging
         tb_str = traceback.format_exc()
         return {
             "status": "error",
@@ -169,6 +211,7 @@ async def run_endpoint(params: RunParams):
         }
 
 # --- For local testing as a script ---
+# This block allows running the FastAPI app directly with uvicorn for local testing.
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("src.simulation:app", host="0.0.0.0", port=8000, reload=True)

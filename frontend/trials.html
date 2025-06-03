@@ -415,6 +415,15 @@
         <h3>Configure Simulation</h3>
         <label>Salience Decay: <input id="configSalienceDecay" type="number" min="0" max="1" step="0.01" value="0.01"></label><br>
         <label>Event Rate: <input id="configEventRate" type="number" min="1" max="10" step="1" value="3"></label><br>
+        <label>Memory Buffer Size: <input id="configMemoryBufferSize" type="number" min="100" max="10000" step="100" value="1000"></label><br>
+        <label>Memory Decay Rate: <input id="configMemoryDecay" type="number" min="0" max="1" step="0.001" value="0.01"></label><br>
+        <label>Memory Prune Threshold: <input id="configMemoryPruneThreshold" type="number" min="0" max="1" step="0.01" value="0.2"></label><br>
+        <label>High Salience Event Variability Rate:
+          <input id="configHighSalienceVarRate" type="number" min="0" max="1" step="0.01" value="0.1">
+        </label><br>
+        <label>Low Salience Event Variability Rate:
+          <input id="configLowSalienceVarRate" type="number" min="0" max="1" step="0.01" value="0.1">
+        </label><br>
         <button id="configSaveBtn" type="button">Save</button>
         <button id="configCancelBtn" type="button">Cancel</button>
       </div>
@@ -424,35 +433,30 @@
     </div>
 
     <!--
-      Layout: Split into left info column (vertical stat/graph boxes) and right main column (stat cards, settings, graphs, data)
-      Left: ATTUNEMENT SCORE, SCHEMA STRESS, AFFECT FEEDBACK, debug
-      Right: Stat cards, current settings (horizontal), graphs, spreadsheet
+      Previous layout: stat cards in a horizontal row at the top below controls,
+      "Current Settings" inline on the right of the status row,
+      then vertically stacked graphs, then debug, then spreadsheet.
     -->
-    <div class="content-layout">
-      <!-- Left info column: vertical stack of info/graph/debug -->
-      <div class="left-info-col">
-        <!-- Left: Attunement Score graph -->
-        <div class="graph-island">
-          <h3>Attunement Score</h3>
-          <div id="attunementGraph"></div>
+    <div style="width: 100%; margin-top: 2.5rem;">
+      <!-- Current Settings displayed above stat cards -->
+      <div style="display: flex; align-items: center; gap: 1.5rem; flex-shrink: 0; justify-content: center;">
+        <span id="status" style="font-weight: 700; color: #007700; margin-right: 1.2em;"></span>
+        <h3 style="margin: 0 0.5em 0 0; font-size: 1.1em; font-weight: 900;">Current Settings:</h3>
+        <div id="configDisplay" style="display: flex; gap: 2.2rem; align-items: center; font-weight: 700; border: 1px solid #888; border-radius: 6px; padding: 0.3rem 0.8rem;">
+          <div>Salience Decay: <span id="displaySalienceDecay">0.01</span></div>
+          <div>Event Rate: <span id="displayEventRate">3</span></div>
+          <div>Memory Buffer Size: <span id="displayMemoryBufferSize">1000</span></div>
+          <div>Memory Decay Rate: <span id="displayMemoryDecay">0.01</span></div>
+          <div>Memory Prune Threshold: <span id="displayMemoryPruneThreshold">0.2</span></div>
+          <div>High Salience Var Rate: <span id="displayHighSalienceVarRate">0.10</span></div>
+          <div>Low Salience Var Rate: <span id="displayLowSalienceVarRate">0.10</span></div>
         </div>
-        <!-- Left: Schema Stress graph -->
-        <div class="graph-island">
-          <h3>Schema Stress</h3>
-          <div id="stressGraph"></div>
-        </div>
-        <!-- Left: Affect Feedback graph -->
-        <div class="graph-island">
-          <h3>Affect Feedback</h3>
-          <div id="affectGraph"></div>
-        </div>
-        <!-- Debug panel -->
-        <div id="debug-panel"></div>
       </div>
-      <!-- Right main column: stat cards, settings, spreadsheet -->
-      <div class="right-main-col">
-        <!-- Stat cards grid (summary stats) -->
-        <div class="stat-grid">
+      <br>
+      <!-- Stat cards row -->
+      <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 2.5rem 1.5rem;">
+        <!-- Stat cards (horizontal row) -->
+        <div class="stat-grid" style="margin-bottom: 0; flex: 1 1 auto; min-width: 320px;">
           <div class="stat-card">
             <div class="stat-label">Avg. Attunement</div>
             <div class="stat-value" id="statAttunement">0.00</div>
@@ -470,25 +474,29 @@
             <div class="stat-value" id="statUptime">00:00.00</div>
           </div>
         </div>
-        <!-- Horizontal current settings display -->
-        <!--
-          Settings are displayed in a horizontal flex row, aligned with stat cards.
-          This wrapper ensures "Current Settings" and values are on the right, horizontally.
-        -->
-        <div class="current-settings-row" style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;">
-          <h3 style="margin: 0 0.5em 0 0; font-size: 1.15em;">Current Settings</h3>
-          <div id="configDisplay" style="display: flex; gap: 2.2rem; align-items: center; font-weight: 700;">
-            <div>Salience Decay: <span id="displaySalienceDecay">0.01</span></div>
-            <div>Event Rate: <span id="displayEventRate">3</span></div>
-          </div>
-        </div>
-        <!-- Spreadsheet and output -->
-        <pre id="output" style="display:none;"></pre>
-        <h2 id="spreadsheet-title">Raw Data Spreadsheet</h2>
-        <div id="spreadsheet"></div>
       </div>
+      <!-- Vertically stacked graphs -->
+      <div style="margin-top: 2.2rem;">
+        <div class="graph-island">
+          <h3>Attunement Score</h3>
+          <div id="attunementGraph"></div>
+        </div>
+        <div class="graph-island">
+          <h3>Schema Stress</h3>
+          <div id="stressGraph"></div>
+        </div>
+        <div class="graph-island">
+          <h3>Affect Feedback</h3>
+          <div id="affectGraph"></div>
+        </div>
+      </div>
+      <!-- Debug panel below the graphs -->
+      <div id="debug-panel" style="margin-top: 1.5rem;"></div>
+      <!-- Spreadsheet and output -->
+      <pre id="output" style="display:none;"></pre>
+      <h2 id="spreadsheet-title">Raw Data Spreadsheet</h2>
+      <div id="spreadsheet"></div>
     </div>
-    <!-- End content-layout -->
   </div>
   <script>
 
@@ -602,6 +610,11 @@
     let config = {
       salience_decay: 0.01, // Default salience decay parameter
       event_rate: 3,        // Default event rate parameter
+      memory_buffer_size: 1000,
+      memory_decay: 0.01,
+      memory_prune_threshold: 0.2,
+      high_salience_var_rate: 0.1,
+      low_salience_var_rate: 0.1
     };
 
     // ———————————
@@ -618,8 +631,21 @@
         ? config.salience_decay : 0.01;
       let eventRate = (typeof config.event_rate === "number" && !isNaN(config.event_rate))
         ? config.event_rate : 3;
+      let memBuf = (typeof config.memory_buffer_size === "number" && !isNaN(config.memory_buffer_size))
+        ? config.memory_buffer_size : 1000;
+      let memDecay = (typeof config.memory_decay === "number" && !isNaN(config.memory_decay))
+        ? config.memory_decay : 0.01;
+      let memPrune = (typeof config.memory_prune_threshold === "number" && !isNaN(config.memory_prune_threshold))
+        ? config.memory_prune_threshold : 0.2;
+      let highVar = (typeof config.high_salience_var_rate === "number" && !isNaN(config.high_salience_var_rate)) ? config.high_salience_var_rate : 0.1;
+      let lowVar = (typeof config.low_salience_var_rate === "number" && !isNaN(config.low_salience_var_rate)) ? config.low_salience_var_rate : 0.1;
       document.getElementById('displaySalienceDecay').textContent = Number(salience).toFixed(3);
       document.getElementById('displayEventRate').textContent = eventRate;
+      document.getElementById('displayMemoryBufferSize').textContent = memBuf;
+      document.getElementById('displayMemoryDecay').textContent = Number(memDecay).toFixed(3);
+      document.getElementById('displayMemoryPruneThreshold').textContent = Number(memPrune).toFixed(2);
+      document.getElementById('displayHighSalienceVarRate').textContent = Number(highVar).toFixed(2);
+      document.getElementById('displayLowSalienceVarRate').textContent = Number(lowVar).toFixed(2);
     }
     // Initial update on page load to show default config values
     updateConfigDisplay();
@@ -633,6 +659,16 @@
         (typeof config.salience_decay === "number" && !isNaN(config.salience_decay)) ? config.salience_decay : 0.01;
       document.getElementById("configEventRate").value =
         (typeof config.event_rate === "number" && !isNaN(config.event_rate)) ? config.event_rate : 3;
+      document.getElementById("configMemoryBufferSize").value =
+        (typeof config.memory_buffer_size === "number" && !isNaN(config.memory_buffer_size)) ? config.memory_buffer_size : 1000;
+      document.getElementById("configMemoryDecay").value =
+        (typeof config.memory_decay === "number" && !isNaN(config.memory_decay)) ? config.memory_decay : 0.01;
+      document.getElementById("configMemoryPruneThreshold").value =
+        (typeof config.memory_prune_threshold === "number" && !isNaN(config.memory_prune_threshold)) ? config.memory_prune_threshold : 0.2;
+      document.getElementById("configHighSalienceVarRate").value =
+        (typeof config.high_salience_var_rate === "number" && !isNaN(config.high_salience_var_rate)) ? config.high_salience_var_rate : 0.1;
+      document.getElementById("configLowSalienceVarRate").value =
+        (typeof config.low_salience_var_rate === "number" && !isNaN(config.low_salience_var_rate)) ? config.low_salience_var_rate : 0.1;
       configModal.style.display = "flex";
     };
 
@@ -643,14 +679,40 @@
       // Read modal fields and clamp to valid ranges to prevent invalid config
       let dec = parseFloat(document.getElementById("configSalienceDecay").value);
       let evt = parseInt(document.getElementById("configEventRate").value, 10);
+      let memBufSize = parseInt(document.getElementById("configMemoryBufferSize").value, 10);
+      let memDecay = parseFloat(document.getElementById("configMemoryDecay").value);
+      let memPrune = parseFloat(document.getElementById("configMemoryPruneThreshold").value);
+      let highVar = parseFloat(document.getElementById("configHighSalienceVarRate").value);
+      let lowVar = parseFloat(document.getElementById("configLowSalienceVarRate").value);
+
       // Clamp salience_decay between 0 and 1, fallback to 0.01 if invalid
       if (isNaN(dec)) dec = 0.01;
       dec = Math.max(0, Math.min(1, dec));
       // Clamp event_rate between 1 and 10, fallback to 3 if invalid
       if (isNaN(evt)) evt = 3;
       evt = Math.max(1, Math.min(10, evt));
+      // Clamp memory_buffer_size between 100 and 10000, fallback to 1000 if invalid
+      if (isNaN(memBufSize) || memBufSize < 100) memBufSize = 1000;
+      memBufSize = Math.min(10000, Math.max(100, memBufSize));
+      // Clamp memory_decay between 0 and 1, fallback to 0.01 if invalid
+      if (isNaN(memDecay)) memDecay = 0.01;
+      memDecay = Math.min(1, Math.max(0, memDecay));
+      // Clamp memory_prune_threshold between 0 and 1, fallback to 0.2 if invalid
+      if (isNaN(memPrune)) memPrune = 0.2;
+      memPrune = Math.min(1, Math.max(0, memPrune));
+      // Clamp high/low salience var rates between 0 and 1, fallback to 0.1 if invalid
+      if (isNaN(highVar)) highVar = 0.1;
+      highVar = Math.min(1, Math.max(0, highVar));
+      if (isNaN(lowVar)) lowVar = 0.1;
+      lowVar = Math.min(1, Math.max(0, lowVar));
+
       config.salience_decay = dec;
       config.event_rate = evt;
+      config.memory_buffer_size = memBufSize;
+      config.memory_decay = memDecay;
+      config.memory_prune_threshold = memPrune;
+      config.high_salience_var_rate = highVar;
+      config.low_salience_var_rate = lowVar;
       configModal.style.display = "none";
       updateConfigDisplay();
     };
@@ -832,7 +894,13 @@
               const td = document.createElement("td");
               const val = pkt[col];
               // Show empty cell for undefined/null/NaN values
-              td.textContent = (val === undefined || val === null || (typeof val === "number" && isNaN(val))) ? "" : val;
+              if (val === undefined || val === null || (typeof val === "number" && isNaN(val))) {
+                td.textContent = "";
+              } else if (typeof val === "object") {
+                td.textContent = JSON.stringify(val, null, 2);
+              } else {
+                td.textContent = val;
+              }
               tr.appendChild(td);
             });
             tbody.appendChild(tr);
