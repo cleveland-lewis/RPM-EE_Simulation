@@ -1,12 +1,41 @@
+def downsample_logs(logs, bin_size):
+    """Downsample logs by averaging over bins of bin_size for selected keys."""
+    if bin_size <= 1 or len(logs) <= 1:
+        return logs
+    keys_to_avg = ['attunement_score', 'schema_stress', 'avg_affect_feedback']
+    # All keys to keep (fill with last value in bin)
+    keep_keys = set(logs[0].keys())
+    result = []
+    n = len(logs)
+    for i in range(0, n, bin_size):
+        bin_logs = logs[i : i + bin_size]
+        avg_entry = {}
+        for k in keep_keys:
+            if k in keys_to_avg:
+                # Compute mean, ignoring None and -999
+                vals = [entry.get(k) for entry in bin_logs if entry.get(k) not in (None, -999)]
+                avg_entry[k] = float(np.mean(vals)) if vals else -999
+            else:
+                # Use last value in bin for other keys
+                avg_entry[k] = bin_logs[-1].get(k)
+        result.append(avg_entry)
+    return result
 import os
 import json
 import random
+import time
+import numpy as np
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
 from src.sensory import SensoryInputSystem  # Core class for simulating sensory input and memory
-from config import load_config, save_config
+from .config import load_config, save_config
+
+import datashader as ds
+import datashader.transfer_functions as tf
+import pandas as pd
+import colorcet
 
 #
 # --------------------
@@ -36,10 +65,22 @@ def flatten_dict(d, parent_key='', sep='.'):
 #   highly_variable_rate: Controls frequency of highly variable sensory events
 # Returns a list of dicts, each representing the state/log at a time tick.
 #
-def run_simulation(total_ticks: int = 2400, salience_decay: float = 0.01, highly_variable_rate: float = 0.1) -> list:
+def run_simulation(
+    total_ticks: int = 2400,
+    salience_decay: float = 0.01,
+    highly_variable_rate: float = 0.1,
+    memory_buffer_size: int = 1000,
+    memory_decay: float = 0.01,
+    memory_prune_threshold: float = 0.2,
+    low_salience_var_rate: float = 0.1,
+) -> list:
+    start = time.perf_counter()
     # Randomize initial thresholds for this simulation run
     base_low = random.uniform(0.3, 0.7)
     base_high = random.uniform(0.7, 0.95)
+    # The following parameters should be integrated into your simulation logic as needed:
+    # memory_buffer_size, memory_decay, memory_prune_threshold, low_salience_var_rate
+    # For now, these are received and can be logged or passed to SensoryInputSystem
     # Create the sensory input system with randomized thresholds and config
     sim = SensoryInputSystem(
         low_salience_threshold=base_low,
@@ -47,8 +88,14 @@ def run_simulation(total_ticks: int = 2400, salience_decay: float = 0.01, highly
         salience_decay=salience_decay,
         highly_variable_rate=highly_variable_rate,
     )
+    attunement_scores = np.random.uniform(0, 1, total_ticks)
+    schema_stress = np.random.uniform(0, 1, total_ticks)
+    avg_affect_feedback = np.random.uniform(-1, 1, total_ticks)
     logs = []
+    tick_time_sum = 0.0
+    tick_time_count = 0
     for tick in range(total_ticks):
+        t0 = time.perf_counter()
         # Advance simulation clock and decay memory buffer
         sim.update_clock()
         sim.memory_buffer.tick_decay()
@@ -56,9 +103,9 @@ def run_simulation(total_ticks: int = 2400, salience_decay: float = 0.01, highly
         packet = sim.generate_input()
 
         # Add simulated "attunement", "schema stress", and affect feedback values
-        packet['attunement_score'] = random.uniform(0, 1)
-        packet['schema_stress'] = random.uniform(0, 1)
-        packet['avg_affect_feedback'] = random.uniform(-1, 1)
+        packet['attunement_score'] = float(attunement_scores[tick])
+        packet['schema_stress'] = float(schema_stress[tick])
+        packet['avg_affect_feedback'] = float(avg_affect_feedback[tick])
 
         # For each sensory modality, count events and calculate mean intensity
         for mod in ['vision', 'hearing', 'touch', 'smell', 'taste']:
@@ -114,8 +161,21 @@ def run_simulation(total_ticks: int = 2400, salience_decay: float = 0.01, highly
         # Prepare log entry for this tick
         log_entry = {k: packet.get(k, None) for k in log_fields}
         log_entry['clock'] = log_entry.pop('tick', None)
+        t1 = time.perf_counter()
+        tick_time_sum += (t1 - t0)
+        tick_time_count += 1
+        if tick % 10000 == 0 and tick > 0:
+            avg_tick = tick_time_sum / tick_time_count
+            print(f"[PROFILE] Tick {tick}: {avg_tick:.6f} seconds per tick (avg over last {tick_time_count} ticks)")
+            tick_time_sum = 0.0
+            tick_time_count = 0
         logs.append(log_entry)
 
+    if tick_time_count > 0:
+        avg_tick = tick_time_sum / tick_time_count
+        print(f"[PROFILE] FINAL: Avg tick duration for last {tick_time_count} ticks: {avg_tick:.6f} seconds")
+    end = time.perf_counter()
+    print(f"[PROFILE] Total simulation run time: {end - start:.3f} seconds for {total_ticks} episodes")
     return logs
 # -------------------------------------------------
 # --------------------
@@ -136,14 +196,19 @@ app.add_middleware(
 # Saving as .JSON file
 # Endpoint to save simulation logs as a JSON file on the server.
 # --------------------
+from datetime import datetime
+
 class LogSaveRequest(BaseModel):
     logs: list
-# Overwrites each time; for append, open with 'a' and write jsonlines
+
 @app.post("/save-logs")
 async def save_logs(payload: LogSaveRequest):
-    with open("saved_logs.json", "w") as f:
+    os.makedirs("saved_logs", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"saved_logs/log_{timestamp}.json"
+    with open(filename, "w") as f:
         json.dump(payload.logs, f, indent=2)
-    return {"status": "success"}
+    return {"status": "success", "filename": filename}
 
 # Serve main HTML page (e.g., /src/trials.html) for browser access
 @app.get("/", include_in_schema=False)
@@ -166,6 +231,58 @@ async def serve_trials():
             html = re.sub(r'(<div[^>]*id="configModal"[^>]*>)', r'\1\n' + loading_span, html, count=1)
         else:
             html = html.replace("</body>", loading_span + "</body>")
+    # Inject debug panel div near the end of the body if not present
+    if '<div id="debug-panel"></div>' not in html:
+        if "</body>" in html:
+            debug_panel_div = '\n<div id="debug-panel"></div>\n'
+            html = html.replace("</body>", debug_panel_div + "</body>")
+    # Inject CSS for debug panel and dev-mode if not present
+    if "<style>" not in html or "#debug-panel" not in html:
+        style_block = """
+<style>
+body.dev-mode #debug-panel {
+  display: block !important;
+  background-color: #111;
+  color: #0f0;
+  font-weight: bold;
+  padding: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 2px solid #0f0;
+}
+#debug-panel {
+  display: none;
+}
+</style>
+"""
+        if "</head>" in html:
+            html = html.replace("</head>", style_block + "</head>")
+        else:
+            # If no head tag, prepend style at start
+            html = style_block + html
+    # Inject JavaScript functions debugLog and toggleDevMode if not present
+    if "function debugLog" not in html or "function toggleDevMode" not in html:
+        js_block = """
+<script>
+function debugLog(msg) {
+  const debugPanel = document.getElementById("debug-panel");
+  if (debugPanel) {
+    debugPanel.textContent += msg + "\\n";
+  }
+}
+function toggleDevMode() {
+  document.body.classList.toggle('dev-mode');
+  const debugPanel = document.getElementById('debug-panel');
+  if (debugPanel) {
+    debugPanel.style.display = document.body.classList.contains('dev-mode') ? 'block' : 'none';
+  }
+}
+</script>
+"""
+        if "</body>" in html:
+            html = html.replace("</body>", js_block + "</body>")
+        else:
+            html += js_block
     return HTMLResponse(content=html, media_type="text/html")
 
 # --------------------
@@ -177,7 +294,14 @@ class RunParams(BaseModel):
     repetitions: int
     salience_decay: float = 0.01
     event_rate: int = 3
-    # Add more as needed
+    memory_buffer_size: int = 1000
+    memory_decay: float = 0.01
+    memory_prune_threshold: float = 0.2
+    high_salience_var_rate: float = 0.1
+    low_salience_var_rate: float = 0.1
+
+    class Config:
+        extra = "allow"
 
 import traceback
 
@@ -189,33 +313,80 @@ import traceback
 @app.post("/run")
 async def run_endpoint(params: RunParams):
     print("Received simulation config:", params.dict())
-    """
-    Launch a simulation run.
-    Expects JSON {episodes, repetitions}.
-    Returns: {status: 'complete', data: [[packet,...], ...]}
-    On error: {status: 'error', error: str, traceback: str, params: dict}
-    """
+    import sys
+    sys.stdout.flush()
+    print("Params parsed OK.")
+    sys.stdout.flush()
     try:
         all_logs = []
-        # Repeat the simulation for the requested number of repetitions
-        for _ in range(params.repetitions):
-            logs = run_simulation(
-                total_ticks=params.episodes,
-                salience_decay=params.salience_decay,
-                highly_variable_rate=params.event_rate
-            )
-            all_logs.append(logs)
-        return {
-            "status": "complete",
-            "data": all_logs,
-            "config": {
-                "salience_decay": params.salience_decay,
-                "event_rate": params.event_rate
+        total_samples = params.episodes * params.repetitions
+        # If total_samples > 500_000, do not return raw logs
+        if total_samples > 500_000:
+            # Run simulations but do not return logs
+            for _ in range(params.repetitions):
+                print("Starting simulation run (large, logs not returned)...")
+                sys.stdout.flush()
+                _ = run_simulation(
+                    total_ticks=params.episodes,
+                    salience_decay=params.salience_decay,
+                    highly_variable_rate=params.high_salience_var_rate,
+                    memory_buffer_size=params.memory_buffer_size,
+                    memory_decay=params.memory_decay,
+                    memory_prune_threshold=params.memory_prune_threshold,
+                    low_salience_var_rate=params.low_salience_var_rate,
+                )
+                print("Simulation run complete.")
+                sys.stdout.flush()
+            print("All simulation runs complete (logs not returned).")
+            sys.stdout.flush()
+            return {
+                "status": "complete",
+                "message": "Log data is too large to return directly. Please use the Datashader cluster plots for visualization.",
+                "config": {
+                    "salience_decay": params.salience_decay,
+                    "event_rate": params.event_rate
+                }
             }
-        }
+        else:
+            # For <=500,000, apply adaptive downsampling
+            for _ in range(params.repetitions):
+                print("Starting simulation run...")
+                sys.stdout.flush()
+                logs = run_simulation(
+                    total_ticks=params.episodes,
+                    salience_decay=params.salience_decay,
+                    highly_variable_rate=params.high_salience_var_rate,
+                    memory_buffer_size=params.memory_buffer_size,
+                    memory_decay=params.memory_decay,
+                    memory_prune_threshold=params.memory_prune_threshold,
+                    low_salience_var_rate=params.low_salience_var_rate,
+                )
+                # Calculate bin_size for downsampling
+                N = len(logs)
+                if N <= 1000:
+                    bin_size = 1
+                else:
+                    bin_size = max(1, int(1.1 ** ((N - 1000)//1000)))
+                logs_downsampled = downsample_logs(logs, bin_size)
+                all_logs.append(logs_downsampled)
+                print("Simulation run complete (downsampled).")
+                sys.stdout.flush()
+            print("All simulation runs complete.")
+            sys.stdout.flush()
+            return {
+                "status": "complete",
+                "data": all_logs,
+                "config": {
+                    "salience_decay": params.salience_decay,
+                    "event_rate": params.event_rate
+                }
+            }
     except Exception as e:
         # On error, return error message and stack trace for debugging
         tb_str = traceback.format_exc()
+        print("Error in /run:", tb_str)  # Log error to terminal
+        import sys
+        sys.stdout.flush()
         return {
             "status": "error",
             "error": str(e),
@@ -262,6 +433,41 @@ def update_config(cfg: dict):
     nested_cfg = unflatten_dict(cfg)
     save_config(nested_cfg)
     return {"status": "success"}
+
+# New endpoint for datashader plots
+@app.post("/datashader-plots")
+async def datashader_plots(payload: LogSaveRequest):
+    os.makedirs("saved_logs", exist_ok=True)
+    df = pd.DataFrame(payload.logs)
+    # Cluster: attunement (x), stress (y), color by clock
+    cvs = ds.Canvas(plot_width=600, plot_height=600)
+    agg1 = cvs.points(df, 'attunement_score', 'schema_stress', agg=ds.mean('clock'))
+    img1 = tf.shade(agg1, cmap=colorcet.fire, how='eq_hist')
+    img1.to_pil().save("saved_logs/plot_attn_stress.png")
+    # Cluster: clock (x), stress (y), color by attunement
+    agg2 = cvs.points(df, 'clock', 'schema_stress', agg=ds.mean('attunement_score'))
+    img2 = tf.shade(agg2, cmap=colorcet.kbc, how='eq_hist')
+    img2.to_pil().save("saved_logs/plot_clock_stress.png")
+    # Cluster: clock (x), attunement (y), color by stress
+    agg3 = cvs.points(df, 'clock', 'attunement_score', agg=ds.mean('schema_stress'))
+    img3 = tf.shade(agg3, cmap=colorcet.bgy, how='eq_hist')
+    img3.to_pil().save("saved_logs/plot_clock_attn.png")
+    return {
+        "status": "success",
+        "plots": [
+            "saved_logs/plot_attn_stress.png",
+            "saved_logs/plot_clock_stress.png",
+            "saved_logs/plot_clock_attn.png"
+        ]
+    }
+
+# Optional static file serving endpoint for saved PNG files
+@app.get("/static/{filename}")
+async def serve_static(filename: str):
+    file_path = os.path.join("saved_logs", filename)
+    if os.path.isfile(file_path):
+        return FileResponse(file_path, media_type="image/png")
+    return HTMLResponse(status_code=404, content="File not found")
 
 if __name__ == "__main__":
     import uvicorn

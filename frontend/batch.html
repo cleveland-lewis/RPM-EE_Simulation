@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Trial Simulation</n  >
+  <title>Trial Simulation</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <link rel="stylesheet" href="style.css" />
   <style>
@@ -286,6 +286,34 @@
       .stat-grid { flex-direction: column; gap: 1rem; }
       .stat-card { min-width: 0; }
     }
+
+    .modal-overlay {
+      position: fixed; top:0; left:0; width:100vw; height:100vh;
+      background: rgba(30,30,30,0.42); z-index: 3000;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-content {
+      background: #faf8f0;
+      border: 2.5px solid #333; border-radius: 16px;
+      box-shadow: 0 6px 48px #2225;
+      padding: 2.3rem 2rem 2.3rem 2rem;
+      width: 90vw; max-width: 480px; max-height: 90vh; overflow-y: auto;
+    }
+    .agent-card {
+      border: 2px solid #aaa;
+      border-radius: 9px;
+      background: #fff;
+      padding: 1rem 0.7rem 0.9rem 0.7rem;
+      margin-bottom: 1.2em;
+    }
+    .agent-title {
+      font-weight: bold; margin-bottom: 0.6em;
+      font-size: 1.11em;
+    }
+    .agent-remove {
+      float:right;
+      color: #c00; background:none; border:none; cursor:pointer; font-weight:bold;
+    }
   </style>
 </head>
 <body>
@@ -318,6 +346,7 @@
         <button id="runBtn">▶ Run Simulation</button>
         <button id="saveBtn" disabled>Save</button>
         <button id="downloadCSV" disabled>Export CSV</button>
+        <button id="agentsBtn">Agents</button>
         <span id="status">[waiting]</span>
       </section>
       <div class="progress-label">Simulation Progress</div>
@@ -347,6 +376,19 @@
       <input style="margin:0.4rem 0 1.7rem 0;width:100%;font-size:1em;padding:0.65em 1em; border:1.2px solid #bbb; border-radius:7px;" readonly placeholder="AFFECT FEEDBACK">
       <h2 id="spreadsheet-title">Raw Data Spreadsheet</h2>
       <div id="spreadsheet"></div>
+    </div>
+  </div>
+  <div id="agentsModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h2>Configure Agents</h2>
+      <div style="margin-bottom:1em;">
+        <button id="setSameParamsBtn">Set Same Parameters for All</button>
+        <button id="addAgentBtn">Add Agent</button>
+      </div>
+      <div id="agentCards"></div>
+      <div style="margin-top:1.5em;">
+        <button id="saveAgentsBtn" style="font-weight:bold;">Save &amp; Close</button>
+      </div>
     </div>
   </div>
   <script>
@@ -394,6 +436,79 @@
       const dateElement = document.getElementById("sim-date");
       if (dateElement) {
         dateElement.textContent = now.toDateString();
+      }
+    });
+
+    // ==== Agent Modal Logic ====
+    let agents = [
+      { episodes: 2400, repetitions: 1 }
+    ];
+
+    function showAgentsModal() {
+      const modal = document.getElementById("agentsModal");
+      const agentCards = document.getElementById("agentCards");
+      agentCards.innerHTML = "";
+      agents.forEach((agent, idx) => {
+        const card = document.createElement("div");
+        card.className = "agent-card";
+        card.innerHTML = `
+          <div class="agent-title">Agent ${idx + 1}
+            <button class="agent-remove" data-idx="${idx}" title="Remove Agent" ${agents.length <= 1 ? "disabled" : ""}>&times;</button>
+          </div>
+          <label>Episodes <input type="number" class="agent-episodes" value="${agent.episodes}" min="1" style="width:70px;"></label>
+          <label style="margin-left:1em;">Repetitions <input type="number" class="agent-repetitions" value="${agent.repetitions}" min="1" style="width:60px;"></label>
+        `;
+        agentCards.appendChild(card);
+      });
+      modal.style.display = "flex";
+    }
+
+    function updateAgentsFromModal() {
+      // Read values from modal into agents array
+      const cards = document.querySelectorAll(".agent-card");
+      agents = Array.from(cards).map(card => {
+        return {
+          episodes: parseInt(card.querySelector(".agent-episodes").value, 10) || 1,
+          repetitions: parseInt(card.querySelector(".agent-repetitions").value, 10) || 1
+        };
+      });
+    }
+
+    document.getElementById("agentsBtn").onclick = function() {
+      showAgentsModal();
+    };
+    document.getElementById("addAgentBtn").onclick = function() {
+      updateAgentsFromModal();
+      agents.push({ ...agents[agents.length-1] });
+      showAgentsModal();
+    };
+    document.getElementById("setSameParamsBtn").onclick = function() {
+      updateAgentsFromModal();
+      if (agents.length > 1) {
+        for (let i = 1; i < agents.length; ++i) {
+          agents[i] = { ...agents[0] };
+        }
+        showAgentsModal();
+      }
+    };
+    document.getElementById("saveAgentsBtn").onclick = function() {
+      updateAgentsFromModal();
+      document.getElementById("agentsModal").style.display = "none";
+    };
+    // Remove agent button logic (delegated)
+    document.getElementById("agentCards").onclick = function(e) {
+      if (e.target.classList.contains("agent-remove")) {
+        const idx = parseInt(e.target.dataset.idx, 10);
+        if (agents.length > 1) {
+          agents.splice(idx, 1);
+          showAgentsModal();
+        }
+      }
+    };
+    // Close modal on Escape key
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        document.getElementById("agentsModal").style.display = "none";
       }
     });
   </script>

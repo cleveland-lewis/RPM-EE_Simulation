@@ -17,7 +17,7 @@ cd /Users/clevelandlewis/Library/Mobile\ Documents/com~apple~CloudDocs/Inbox/Zip
 python3 -m http.server 8081
 
 # Automatically open the app page in the default browser
-open "http://localhost:8081/trials.html"
+open "http://localhost:8081/dashboard.html"
 
 # When done, you may need to manually kill the background backend with:
 # kill %1

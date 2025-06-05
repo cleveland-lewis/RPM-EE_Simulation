@@ -199,9 +199,13 @@
 
     /* --- Hamburger + Dropdown Styles --- */
     .hamburger {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 4.5px !important;
+      width: 38px !important;
+      height: 38px !important;
       cursor: pointer;
       padding: 12px 10px;
       border-radius: 6px;
@@ -214,10 +218,12 @@
       outline: 2px solid #000;
     }
     .hamburger-bar {
-      width: 22px;
-      height: 2.5px;
-      background: #111;
-      border-radius: 2px;
+      width: 22px !important;
+      height: 2.5px !important;
+      background-color: #111 !important;
+      margin: 4.5px 0 !important;
+      border-radius: 2px !important;
+      transition: background 0.15s ease-in-out !important;
     }
     .menu-dropdown {
       position: absolute;

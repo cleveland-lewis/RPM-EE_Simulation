@@ -8,7 +8,10 @@
   <style>
     body.dev-mode {
       background-color: #222 !important;
-      color: #eee !important;
+      color: #000 !important;
+    }
+    body.dev-mode * {
+      color: #000 !important;
     }
     body.dev-mode .stat-card {
       border-color: #0f0 !important;
@@ -204,7 +207,7 @@
       width: 38px;
       height: 38px;
       border: 2.5px solid #000;
-      border-radius: 7px;
+      border-radius: 0;
       cursor: pointer;
       display: flex;
       flex-direction: column;
@@ -397,6 +400,9 @@
         outline: 2px solid #6abfff;
       }
     }
+    #episodes {
+      width: 8rem;
+    }
   </style>
 </head>
 <body>
@@ -426,11 +432,12 @@
       </label>
       <button id="runBtn">▶ Run Simulation</button>
       <button id="configBtn" type="button">Configure</button>
-      <button id="testSimBtn" style="display:none;">Test Simulation</button>
+      <button id="testSimBtn" style="display: none;">Test Simulation</button>
       <button id="saveBtn" disabled>Save</button>
       <button id="downloadCSV" disabled>Export CSV</button>
-      <span id="status">[waiting]</span>
+      <span id="status">[waiting]</span> <span id="episodeCounter">[0/2400]</span>
     </section>
+    <div id="testSimNotice" style="display:none; font-weight:800; font-size:1.3em; text-align:center; margin-top:1rem; margin-bottom:0.5rem;"></div>
     <div id="configModal" class="config-modal" style="display: none;">
       <div class="config-content">
         <h3>Configure Simulation</h3>
@@ -461,7 +468,7 @@
     <div style="width: 100%; margin-top: 2.5rem;">
       <!-- Current Settings displayed above stat cards -->
       <div style="display: flex; align-items: center; gap: 1.5rem; flex-shrink: 0; justify-content: center;">
-        <span id="status" style="font-weight: 700; color: #007700; margin-right: 1.2em;"></span>
+        <span id="statusDisplay" style="font-weight: 700; color: #007700; margin-right: 1.2em;"></span>
         <h3 style="margin: 0 0.5em 0 0; font-size: 1.1em; font-weight: 900;">Current Settings:</h3>
         <div id="configDisplay" style="display: flex; gap: 2.2rem; align-items: center; font-weight: 700; border: 1px solid #888; border-radius: 6px; padding: 0.3rem 0.8rem;">
           <div>Salience Decay: <span id="displaySalienceDecay">0.01</span></div>
@@ -520,6 +527,18 @@
     </div>
   </div>
   <script>
+    // ————————————————————————————————————————————————————————————————
+    // Global simulation config object (default values)
+    // This config object is referenced everywhere in the page logic.
+    let config = {
+      salience_decay: 0.01,
+      event_rate: 3,
+      memory_buffer_size: 1000,
+      memory_decay: 0.01,
+      memory_prune_threshold: 0.2,
+      high_salience_var_rate: 0.1,
+      low_salience_var_rate: 0.1
+    };
 
     // Hamburger Menu Logic (unified)
     const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -566,116 +585,582 @@
       if (debugPanel) {
         debugPanel.style.display = isDev ? 'block' : 'none';
       }
-    }
-
-    // Show/hide Test Simulation button based on dev mode
-    function updateDevUI() {
-      const isDev = document.body.classList.contains('dev-mode');
-      // The Test Simulation button is now in controls section, not in menu
-      const testBtn = document.querySelector('section.controls #testSimBtn');
-      if (testBtn) testBtn.style.display = isDev ? 'block' : 'none';
-    }
-
-    // Patch into toggleDevMode
-    const oldToggleDevMode = toggleDevMode;
-    window.toggleDevMode = function() {
-      oldToggleDevMode();
-      updateDevUI();
-    };
-
-    // Show/hide on load
-    document.addEventListener('DOMContentLoaded', updateDevUI);
-
-    // Test Simulation Preset/Runner (MutationObserver-based)
-    document.addEventListener('DOMContentLoaded', function() {
-      const testBtn = document.querySelector('section.controls #testSimBtn');
+      // Show or hide the Test Simulation button in dev mode
+      const testBtn = document.getElementById('testSimBtn');
       if (testBtn) {
-        testBtn.onclick = async function() {
+        testBtn.style.display = isDev ? 'inline-block' : 'none';
+      }
+    }
+
+    // All event listeners, simulation logic, and config/UI logic are unified below in a single DOMContentLoaded block.
+    document.addEventListener('DOMContentLoaded', async function () {
+      debugLog("Page loaded.");
+
+      // Set simulation date
+      const now = new Date();
+      const dateElement = document.getElementById("sim-date");
+      if (dateElement) {
+        dateElement.textContent = now.toDateString();
+      }
+
+      // ——— DOM element references for controls and status ———
+      const runBtn = document.getElementById("runBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const downloadCSVBtn = document.getElementById("downloadCSV");
+      const statusEl = document.getElementById("status");
+      const testBtn = document.getElementById('testSimBtn');
+      // Config modal controls
+      const configBtn = document.getElementById("configBtn");
+      const configModal = document.getElementById("configModal");
+      const configSaveBtn = document.getElementById("configSaveBtn");
+      const configCancelBtn = document.getElementById("configCancelBtn");
+
+      let latestLogs = null;
+      let uptimeInterval = null;
+      let uptimeStart = null;
+
+      // ——— Config/UI update logic ———
+      function updateConfigDisplay() {
+        let salience = (typeof config.salience_decay === "number" && !isNaN(config.salience_decay))
+          ? config.salience_decay : 0.01;
+        let eventRate = (typeof config.event_rate === "number" && !isNaN(config.event_rate))
+          ? config.event_rate : 3;
+        let memBuf = (typeof config.memory_buffer_size === "number" && !isNaN(config.memory_buffer_size))
+          ? config.memory_buffer_size : 1000;
+        let memDecay = (typeof config.memory_decay === "number" && !isNaN(config.memory_decay))
+          ? config.memory_decay : 0.01;
+        let memPrune = (typeof config.memory_prune_threshold === "number" && !isNaN(config.memory_prune_threshold))
+          ? config.memory_prune_threshold : 0.2;
+        let highVar = (typeof config.high_salience_var_rate === "number" && !isNaN(config.high_salience_var_rate)) ? config.high_salience_var_rate : 0.1;
+        let lowVar = (typeof config.low_salience_var_rate === "number" && !isNaN(config.low_salience_var_rate)) ? config.low_salience_var_rate : 0.1;
+        document.getElementById('displaySalienceDecay').textContent = Number(salience).toFixed(3);
+        document.getElementById('displayEventRate').textContent = eventRate;
+        document.getElementById('displayMemoryBufferSize').textContent = memBuf;
+        document.getElementById('displayMemoryDecay').textContent = Number(memDecay).toFixed(3);
+        document.getElementById('displayMemoryPruneThreshold').textContent = Number(memPrune).toFixed(2);
+        document.getElementById('displayHighSalienceVarRate').textContent = Number(highVar).toFixed(2);
+        document.getElementById('displayLowSalienceVarRate').textContent = Number(lowVar).toFixed(2);
+      }
+      updateConfigDisplay();
+
+      // ——— Fetch config from backend and update modal fields ———
+      async function loadConfigFromServer() {
+        try {
+          const resp = await fetch("http://127.0.0.1:8000/config");
+          if (!resp.ok) throw new Error(`Failed to fetch config: ${resp.status}`);
+          const serverConfig = await resp.json();
+          config.salience_decay = serverConfig.salience_decay ?? config.salience_decay;
+          config.event_rate = serverConfig.event_rate ?? config.event_rate;
+          config.memory_buffer_size = serverConfig.memory_buffer_size ?? config.memory_buffer_size;
+          config.memory_decay = serverConfig.memory_decay ?? config.memory_decay;
+          config.memory_prune_threshold = serverConfig.memory_prune_threshold ?? config.memory_prune_threshold;
+          config.high_salience_var_rate = serverConfig.high_salience_var_rate ?? config.high_salience_var_rate;
+          config.low_salience_var_rate = serverConfig.low_salience_var_rate ?? config.low_salience_var_rate;
+          // Update modal input fields values
+          const mapping = [
+            { id: "configSalienceDecay", key: "salience_decay", min: 0, max: 1, step: 0.001 },
+            { id: "configEventRate", key: "event_rate", min: 1, max: 10, step: 1 },
+            { id: "configMemoryBufferSize", key: "memory_buffer_size", min: 100, max: 10000, step: 100 },
+            { id: "configMemoryDecay", key: "memory_decay", min: 0, max: 1, step: 0.001 },
+            { id: "configMemoryPruneThreshold", key: "memory_prune_threshold", min: 0, max: 1, step: 0.01 },
+            { id: "configHighSalienceVarRate", key: "high_salience_var_rate", min: 0, max: 1, step: 0.01 },
+            { id: "configLowSalienceVarRate", key: "low_salience_var_rate", min: 0, max: 1, step: 0.01 },
+          ];
+          mapping.forEach(({id, key, min, max, step}) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const val = config[key];
+            el.value = val;
+            el.min = min;
+            el.max = max;
+            el.step = step;
+          });
+          updateConfigDisplay();
+        } catch (err) {
+          debugLog(`Error loading config from server: ${err.message || err}`);
+        }
+      }
+      // Initial config load
+      await loadConfigFromServer();
+
+      // ——— Configure button handler ———
+      configBtn.onclick = async () => {
+        try {
+          await loadConfigFromServer();
+        } catch (e) {}
+        configModal.style.display = "flex";
+      };
+
+      // ——— Save config from modal fields ———
+      configSaveBtn.onclick = () => {
+        let dec = parseFloat(document.getElementById("configSalienceDecay").value);
+        let evt = parseInt(document.getElementById("configEventRate").value, 10);
+        let memBufSize = parseInt(document.getElementById("configMemoryBufferSize").value, 10);
+        let memDecay = parseFloat(document.getElementById("configMemoryDecay").value);
+        let memPrune = parseFloat(document.getElementById("configMemoryPruneThreshold").value);
+        let highVar = parseFloat(document.getElementById("configHighSalienceVarRate").value);
+        let lowVar = parseFloat(document.getElementById("configLowSalienceVarRate").value);
+        if (isNaN(dec)) dec = 0.01;
+        dec = Math.max(0, Math.min(1, dec));
+        if (isNaN(evt)) evt = 3;
+        evt = Math.max(1, Math.min(10, evt));
+        if (isNaN(memBufSize) || memBufSize < 100) memBufSize = 1000;
+        memBufSize = Math.min(10000, Math.max(100, memBufSize));
+        if (isNaN(memDecay)) memDecay = 0.01;
+        memDecay = Math.min(1, Math.max(0, memDecay));
+        if (isNaN(memPrune)) memPrune = 0.2;
+        memPrune = Math.min(1, Math.max(0, memPrune));
+        if (isNaN(highVar)) highVar = 0.1;
+        highVar = Math.min(1, Math.max(0, highVar));
+        if (isNaN(lowVar)) lowVar = 0.1;
+        lowVar = Math.min(1, Math.max(0, lowVar));
+        config.salience_decay = dec;
+        config.event_rate = evt;
+        config.memory_buffer_size = memBufSize;
+        config.memory_decay = memDecay;
+        config.memory_prune_threshold = memPrune;
+        config.high_salience_var_rate = highVar;
+        config.low_salience_var_rate = lowVar;
+        configModal.style.display = "none";
+        updateConfigDisplay();
+      };
+      configCancelBtn.onclick = () => {
+        configModal.style.display = "none";
+      };
+
+      // ——— Run Simulation button handler ———
+      // Uptime timer stop/clear logic extracted here for reuse
+      function stopUptimeTimer(finalStepCount) {
+        if (uptimeInterval) {
+          clearInterval(uptimeInterval);
+          uptimeInterval = null;
+        }
+        // Show either step count as MM:SS.ss or elapsed wall time if not available
+        let displayVal = "00:00.00";
+        if (typeof finalStepCount === "number" && !isNaN(finalStepCount)) {
+          displayVal = formatSeconds(finalStepCount);
+        } else if (uptimeStart) {
+          const now = Date.now();
+          const elapsedSec = (now - uptimeStart) / 1000;
+          displayVal = formatSeconds(elapsedSec);
+        }
+        document.getElementById("statUptime").textContent = displayVal;
+      }
+
+      runBtn.addEventListener("click", async () => {
+        // Hide testSimNotice banner at the start of a run
+        const testSimNotice = document.getElementById("testSimNotice");
+        if (testSimNotice) testSimNotice.style.display = "none";
+        debugLog('"Run Simulation" clicked.');
+        let episodes = parseInt(document.getElementById("episodes").value, 10);
+        document.getElementById("episodeCounter").textContent = "[0/" + episodes + "]";
+        let repetitions = parseInt(document.getElementById("repetitions").value, 10);
+        if (isNaN(episodes) || episodes < 1) episodes = 2400;
+        if (isNaN(repetitions) || repetitions < 1) repetitions = 1;
+        runBtn.disabled = true;
+        saveBtn.disabled = true;
+        downloadCSVBtn.disabled = true;
+        statusEl.textContent = "[running…]";
+        const spinner = document.getElementById("loadingSpinner");
+        spinner.style.display = "flex";
+        uptimeStart = Date.now();
+        if (uptimeInterval) clearInterval(uptimeInterval);
+        uptimeInterval = setInterval(() => {
+          const now = Date.now();
+          const elapsedSec = (now - uptimeStart) / 1000;
+          document.getElementById("statUptime").textContent = formatSeconds(elapsedSec);
+        }, 100);
+        // --- Begin episode counter estimation ---
+        let counterInterval = null;
+        let estimatedEpisodes = 0;
+        counterInterval = setInterval(() => {
+          if (uptimeStart && episodes && episodes > 0) {
+            const now = Date.now();
+            const elapsedSec = (now - uptimeStart) / 1000;
+            // Simple linear estimate: completed episodes = elapsed fraction * total
+            estimatedEpisodes = Math.min(episodes, Math.floor((elapsedSec / (elapsedSec + 0.01)) * episodes));
+            document.getElementById("episodeCounter").textContent = `[${estimatedEpisodes}/${episodes}]`;
+          }
+        }, 1000);
+        let fetchUrl = "http://127.0.0.1:8000/run";
+        let fetchBody = JSON.stringify({
+          episodes,
+          repetitions,
+          ...config
+        });
+        debugLog(`About to fetch: ${fetchUrl}`);
+        debugLog(`Request body: ${fetchBody}`);
+        let resp = null;
+        let json = null;
+        let simStepCount = null;
+        try {
+          resp = await fetch(fetchUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: fetchBody
+          });
+          debugLog(`Fetch response status: ${resp.status} (${resp.statusText})`);
+          if (!resp.ok) {
+            let errorMsg = `Network response was not ok. Status: ${resp.status} (${resp.statusText})`;
+            try {
+              const bodyText = await resp.text();
+              errorMsg += `\nResponse body: ${bodyText}`;
+            } catch {}
+            debugLog(errorMsg);
+            throw new Error(errorMsg);
+          }
+          try {
+            json = await resp.json();
+          } catch (parseErr) {
+            debugLog("JSON parse error: " + (parseErr && parseErr.message ? parseErr.message : parseErr));
+            throw new Error("Failed to parse backend JSON response.");
+          }
+          debugLog("Fetch succeeded. Response JSON:");
+          debugLog(JSON.stringify(json, null, 2));
+          if (json.config && typeof json.config === "object") {
+            if ('salience_decay' in json.config && typeof json.config.salience_decay === "number") {
+              config.salience_decay = json.config.salience_decay;
+            }
+            if ('event_rate' in json.config && typeof json.config.event_rate === "number") {
+              config.event_rate = json.config.event_rate;
+            }
+            updateConfigDisplay();
+          }
+          if (!json.status || json.status !== "complete") {
+            debugLog("Simulation did not complete. Full JSON: " + JSON.stringify(json));
+            throw new Error("Simulation did not complete");
+          }
+          const allReps = Array.isArray(json.data) ? json.data : [];
+          const logsByRep = (Array.isArray(allReps[0]) ? allReps[0] : []);
+          latestLogs = logsByRep;
+          const N = logsByRep.length;
+          document.getElementById("episodeCounter").textContent = "[" + N + "/" + episodes + "]";
+          simStepCount = N;
+          let sumAttunement = 0, sumStress = 0, sumAffect = 0;
+          logsByRep.forEach(pkt => {
+            sumAttunement += (typeof pkt.attunement_score === "number" ? pkt.attunement_score : 0);
+            sumStress += (typeof pkt.schema_stress === "number" ? pkt.schema_stress : 0);
+            sumAffect += (typeof pkt.avg_affect_feedback === "number" ? pkt.avg_affect_feedback : 0);
+          });
+          const avgAttune = N > 0 ? sumAttunement / N : 0;
+          const avgStress = N > 0 ? sumStress / N : 0;
+          const clockVal = (N > 0 && logsByRep[N - 1] && logsByRep[N - 1].clock !== undefined)
+            ? logsByRep[N - 1].clock
+            : episodes;
+          // const uptimeStr = formatSeconds(N);
+          document.getElementById("statAttunement").textContent = avgAttune.toFixed(2);
+          document.getElementById("statStress").textContent = avgStress.toFixed(2);
+          document.getElementById("statClock").textContent = String(clockVal).padStart(3, "0");
+          // document.getElementById("statUptime").textContent = uptimeStr;
+          const x = Array.from({length: N}, (_, i) => i + 1);
+          const yAttune = logsByRep.map(pkt => pkt.attunement_score !== undefined ? pkt.attunement_score : null);
+          const yStress = logsByRep.map(pkt => pkt.schema_stress !== undefined ? pkt.schema_stress : null);
+          const yAffect = logsByRep.map(pkt => pkt.avg_affect_feedback !== undefined ? pkt.avg_affect_feedback : null);
+          Plotly.newPlot("attunementGraph", [{ x, y: yAttune, mode: "lines", name: "Attunement" }], {
+            margin: { t: 30, b: 30 }, yaxis: { title: "Attunement" }
+          });
+          Plotly.newPlot("stressGraph", [{ x, y: yStress, mode: "lines", name: "Stress" }], {
+            margin: { t: 30, b: 30 }, yaxis: { title: "Schema Stress" }
+          });
+          Plotly.newPlot("affectGraph", [{ x, y: yAffect, mode: "lines", name: "Affect" }], {
+            margin: { t: 30, b: 30 }, yaxis: { title: "Affect Feedback" }
+          });
+          const container = document.getElementById("spreadsheet");
+          container.innerHTML = "";
+          if (N > 0) {
+            const columns = Object.keys(logsByRep[0]);
+            const table = document.createElement("table");
+            table.id = "spreadsheet-table";
+            const thead = document.createElement("thead");
+            const headerRow = document.createElement("tr");
+            columns.forEach(col => {
+              const th = document.createElement("th");
+              th.textContent = col;
+              headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+            const tbody = document.createElement("tbody");
+            logsByRep.forEach(pkt => {
+              const tr = document.createElement("tr");
+              columns.forEach(col => {
+                const td = document.createElement("td");
+                const val = pkt[col];
+                if (val === undefined || val === null || (typeof val === "number" && isNaN(val))) {
+                  td.textContent = "";
+                } else if (typeof val === "object") {
+                  td.textContent = JSON.stringify(val, null, 2);
+                } else {
+                  td.textContent = val;
+                }
+                tr.appendChild(td);
+              });
+              tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            container.appendChild(table);
+          }
+          saveBtn.disabled = false;
+          downloadCSVBtn.disabled = false;
+          statusEl.textContent = "[complete]";
+        }
+        catch (err) {
+          debugLog('Error during fetch: ' + (err && err.message ? err.message : err));
+          debugLog(`Current URL: ${window.location.href}`);
+          debugLog(`Backend fetch URL: ${fetchUrl}`);
+          debugLog(`Request body: ${fetchBody}`);
+          if (err instanceof TypeError && err.message && err.message.includes('Failed to fetch')) {
+            debugLog("Likely causes: Backend is not running or wrong port, or CORS/network issue.");
+          }
+          statusEl.textContent = "[error]";
+          document.getElementById("episodeCounter").textContent = "[0/" + episodes + "]";
+          saveBtn.disabled = true;
+          downloadCSVBtn.disabled = true;
+          latestLogs = null;
+        }
+        finally {
+          // Always clear uptime timer and set uptime display to elapsed wall time if possible
+          if (uptimeInterval) {
+            clearInterval(uptimeInterval);
+            uptimeInterval = null;
+          }
+          // Clear episode counter interval if running
+          if (counterInterval) {
+            clearInterval(counterInterval);
+            counterInterval = null;
+          }
+          if (uptimeStart) {
+            const now = Date.now();
+            const elapsedSec = (now - uptimeStart) / 1000;
+            document.getElementById("statUptime").textContent = formatSeconds(elapsedSec);
+          }
+          // Only hide spinner and enable buttons here
+          const spinner = document.getElementById("loadingSpinner");
+          spinner.style.display = "none";
+          runBtn.disabled = false;
+        }
+      });
+
+      // ——— Save button handler ———
+      saveBtn.addEventListener("click", async () => {
+        if (!latestLogs) return;
+        debugLog('"Save" clicked.');
+        saveBtn.disabled = true;
+        statusEl.textContent = "[saving…]";
+        try {
+          const resp = await fetch("http://127.0.0.1:8000/save-logs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ logs: latestLogs })
+          });
+          if (!resp.ok) throw new Error("Save failed");
+          statusEl.textContent = "[saved]";
+          debugLog('Save succeeded.');
+        } catch (err) {
+          debugLog('Save failed: ' + (err && err.message ? err.message : err));
+          console.error(err);
+          statusEl.textContent = "[save error]";
+        } finally {
+          saveBtn.disabled = false;
+        }
+      });
+
+      // ——— Export CSV button handler ———
+      downloadCSVBtn.addEventListener("click", () => {
+        if (!latestLogs || !Array.isArray(latestLogs) || latestLogs.length === 0) return;
+        debugLog('"Export CSV" clicked.');
+        const columns = Object.keys(latestLogs[0]);
+        const lines = [];
+        lines.push(columns.join(","));
+        latestLogs.forEach(pkt => {
+          const row = columns.map(col => {
+            let val = pkt[col];
+            if (val === undefined || val === null || (typeof val === "number" && isNaN(val))) return "";
+            return String(val).replace(/"/g, '""');
+          });
+          lines.push(row.join(","));
+        });
+        const csvContent = lines.join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "simulation_results.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      // ——— Test Simulation Button Handler ———
+      if (testBtn) {
+        testBtn.disabled = false;
+        testBtn.onclick = async function () {
+          // Hide testSimNotice banner at the start of a test
+          const testSimNotice = document.getElementById("testSimNotice");
+          if (testSimNotice) testSimNotice.style.display = "none";
+          console.debug("[DEBUG] Test Simulation button clicked."); // Debug log at top
           // Save original config (shallow clone)
           const originalConfig = Object.assign({}, config);
-          // Set config to test values
-          config.salience_decay = 0.02;
+          // Set config to predictable test values
+          config.salience_decay = 0.05;
           config.event_rate = 2;
           config.memory_buffer_size = 500;
-          config.memory_decay = 0.02;
-          config.memory_prune_threshold = 0.3;
-          config.high_salience_var_rate = 0.05;
-          config.low_salience_var_rate = 0.05;
+          config.memory_decay = 0.01;
+          config.memory_prune_threshold = 0.2;
+          config.high_salience_var_rate = 0.00;
+          config.low_salience_var_rate = 0.00;
           updateConfigDisplay();
           debugLog("Test Simulation config loaded. Running simulation...");
-          // Disable test button and set label
           testBtn.disabled = true;
           testBtn.textContent = "Running…";
-          // Click runBtn to trigger simulation
-          document.getElementById("runBtn").click();
-          // Observe status span for change to [complete]
-          const statusEl = document.getElementById("status");
-          let done = false;
-          let timeoutId = null;
-          let cleanup = () => {};
-          // Set up MutationObserver on statusEl
-          const observer = new MutationObserver(function(mutationsList, observerInstance) {
-            if (done) return;
-            for (let mutation of mutationsList) {
-              if (mutation.type === "childList" || mutation.type === "characterData") {
-                const statusText = statusEl.textContent.trim();
-                if (statusText === "[complete]") {
-                  done = true;
-                  observerInstance.disconnect();
-                  if (timeoutId) clearTimeout(timeoutId);
-                  // Check stat card values
-                  const att = parseFloat(document.getElementById("statAttunement").textContent);
-                  const stress = parseFloat(document.getElementById("statStress").textContent);
-                  // Example expected ranges (can be adjusted)
-                  let inRange = false;
-                  if (!isNaN(att) && !isNaN(stress)) {
-                    if (att > 0 && att < 1 && stress > 0 && stress < 2) {
-                      inRange = true;
-                    }
-                  }
-                  if (inRange) {
-                    testBtn.textContent = "PASS";
-                  } else {
-                    testBtn.textContent = "FAIL";
-                  }
-                  // Restore config, update display, re-enable button after 1s
-                  setTimeout(() => {
-                    Object.assign(config, originalConfig);
-                    updateConfigDisplay();
-                    testBtn.disabled = false;
-                    testBtn.textContent = "Test Simulation";
-                  }, 1000);
-                  // Log result
-                  debugLog("Test Simulation: " + (inRange ? "PASS" : "FAIL"));
-                }
-              }
-            }
+          testBtn.style.backgroundColor = "#e0e0e0";
+          testBtn.style.color = "#222";
+          // Uptime timer for test simulation
+          let testUptimeStart = Date.now();
+          let testUptimeInterval = setInterval(() => {
+            const now = Date.now();
+            const elapsedSec = (now - testUptimeStart) / 1000;
+            document.getElementById("statUptime").textContent = formatSeconds(elapsedSec);
+          }, 100);
+          // Run simulation logic (same as runBtn, but hardcoded params)
+          let episodes = 500, repetitions = 1;
+          document.getElementById("episodeCounter").textContent = "[0/" + episodes + "]";
+          let fetchUrl = "http://127.0.0.1:8000/run";
+          let fetchBody = JSON.stringify({
+            episodes,
+            repetitions,
+            ...config
           });
-          observer.observe(statusEl, { childList: true, characterData: true, subtree: true });
-          // Timeout logic: if no [complete] in 20s, show TIMEOUT
-          timeoutId = setTimeout(() => {
-            if (done) return;
-            done = true;
-            observer.disconnect();
-            testBtn.textContent = "TIMEOUT";
-            debugLog("Test Simulation: TIMEOUT");
-            // Restore config after 2s
+          let resp = null;
+          let json = null;
+          let N = null;
+          // Start spinner
+          const spinner = document.getElementById("loadingSpinner");
+          spinner.style.display = "flex";
+          statusEl.textContent = "[running…]";
+          let testSimResult = null; // "PASS", "FAIL", "TIMEOUT"
+          let timeoutId = null;
+          try {
+            resp = await fetch(fetchUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: fetchBody
+            });
+            if (!resp.ok) throw new Error("Test simulation fetch failed");
+            json = await resp.json();
+            if (!json.status || json.status !== "complete") throw new Error("Test simulation did not complete");
+            const allReps = Array.isArray(json.data) ? json.data : [];
+            const logsByRep = (Array.isArray(allReps[0]) ? allReps[0] : []);
+            latestLogs = logsByRep;
+            N = logsByRep.length;
+            document.getElementById("episodeCounter").textContent = "[" + N + "/" + episodes + "]";
+            let sumAttunement = 0, sumStress = 0;
+            logsByRep.forEach(pkt => {
+              sumAttunement += (typeof pkt.attunement_score === "number" ? pkt.attunement_score : 0);
+              sumStress += (typeof pkt.schema_stress === "number" ? pkt.schema_stress : 0);
+            });
+            const avgAttune = N > 0 ? sumAttunement / N : 0;
+            const avgStress = N > 0 ? sumStress / N : 0;
+            document.getElementById("statAttunement").textContent = avgAttune.toFixed(2);
+            document.getElementById("statStress").textContent = avgStress.toFixed(2);
+            document.getElementById("statClock").textContent = String(N).padStart(3, "0");
+            // document.getElementById("statUptime").textContent = formatSeconds(N);
+            // Graphs
+            const x = Array.from({length: N}, (_, i) => i + 1);
+            const yAttune = logsByRep.map(pkt => pkt.attunement_score !== undefined ? pkt.attunement_score : null);
+            const yStress = logsByRep.map(pkt => pkt.schema_stress !== undefined ? pkt.schema_stress : null);
+            const yAffect = logsByRep.map(pkt => pkt.avg_affect_feedback !== undefined ? pkt.avg_affect_feedback : null);
+            Plotly.newPlot("attunementGraph", [{ x, y: yAttune, mode: "lines", name: "Attunement" }], {
+              margin: { t: 30, b: 30 }, yaxis: { title: "Attunement" }
+            });
+            Plotly.newPlot("stressGraph", [{ x, y: yStress, mode: "lines", name: "Stress" }], {
+              margin: { t: 30, b: 30 }, yaxis: { title: "Schema Stress" }
+            });
+            Plotly.newPlot("affectGraph", [{ x, y: yAffect, mode: "lines", name: "Affect" }], {
+              margin: { t: 30, b: 30 }, yaxis: { title: "Affect Feedback" }
+            });
+            // Table
+            const container = document.getElementById("spreadsheet");
+            container.innerHTML = "";
+            if (N > 0) {
+              const columns = Object.keys(logsByRep[0]);
+              const table = document.createElement("table");
+              table.id = "spreadsheet-table";
+              const thead = document.createElement("thead");
+              const headerRow = document.createElement("tr");
+              columns.forEach(col => {
+                const th = document.createElement("th");
+                th.textContent = col;
+                headerRow.appendChild(th);
+              });
+              thead.appendChild(headerRow);
+              table.appendChild(thead);
+              const tbody = document.createElement("tbody");
+              logsByRep.forEach(pkt => {
+                const tr = document.createElement("tr");
+                columns.forEach(col => {
+                  const td = document.createElement("td");
+                  const val = pkt[col];
+                  if (val === undefined || val === null || (typeof val === "number" && isNaN(val))) {
+                    td.textContent = "";
+                  } else if (typeof val === "object") {
+                    td.textContent = JSON.stringify(val, null, 2);
+                  } else {
+                    td.textContent = val;
+                  }
+                  tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+              });
+              table.appendChild(tbody);
+              container.appendChild(table);
+            }
+            statusEl.textContent = "[complete]";
+          } catch (err) {
+            testBtn.textContent = "FAIL";
+            document.getElementById("episodeCounter").textContent = "[0/" + episodes + "]";
+            testBtn.style.backgroundColor = "#e53935";
+            testBtn.style.color = "#fff";
+            testSimResult = "FAIL";
+            if (testSimNotice) {
+              testSimNotice.textContent = "Test Simulation: FAIL";
+              testSimNotice.style.color = "#e53935";
+              testSimNotice.style.display = "block";
+              setTimeout(() => {
+                testSimNotice.style.display = "none";
+              }, 3000);
+            }
             setTimeout(() => {
               Object.assign(config, originalConfig);
               updateConfigDisplay();
               testBtn.disabled = false;
               testBtn.textContent = "Test Simulation";
-            }, 2000);
-          }, 20000);
+              testBtn.style.backgroundColor = "";
+              testBtn.style.color = "";
+            }, 1500);
+          } finally {
+            // Always clear test uptime interval and set uptime display to wall time if possible
+            if (testUptimeInterval) {
+              clearInterval(testUptimeInterval);
+              testUptimeInterval = null;
+            }
+            if (testUptimeStart) {
+              const now = Date.now();
+              const elapsedSec = (now - testUptimeStart) / 1000;
+              document.getElementById("statUptime").textContent = formatSeconds(elapsedSec);
+            }
+            spinner.style.display = "none";
+          }
+          // Now, after the finally block, for the success path, also clear test uptime and set display (in case not yet set)
+          if (testUptimeInterval) {
+            clearInterval(testUptimeInterval);
+            testUptimeInterval = null;
+          }
+          if (testUptimeStart) {
+            const now = Date.now();
+            const elapsedSec = (now - testUptimeStart) / 1000;
+            document.getElementById("statUptime").textContent = formatSeconds(elapsedSec);
+          }
         };
-      }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const now = new Date();
-      const dateElement = document.getElementById("sim-date");
-      if (dateElement) {
-        dateElement.textContent = now.toDateString();
       }
     });
   </script>
@@ -703,473 +1188,8 @@
     panel.innerHTML = newMsg + "<br>" + panel.innerHTML;
   }
 
-  // ————————————————————————————————————————————————————————————————
-  // Main simulation page logic runs after DOM loaded
-  document.addEventListener("DOMContentLoaded", () => {
-    debugLog("Page loaded.");
-
-    // ———————————
-    // DOM element references for controls and status
-    // ———————————
-    const runBtn = document.getElementById("runBtn"); // Run Simulation button
-    const saveBtn = document.getElementById("saveBtn"); // Save results button
-    const downloadCSVBtn = document.getElementById("downloadCSV"); // Export CSV button
-    const statusEl = document.getElementById("status"); // Status indicator
-    let latestLogs = null; // Holds the array of simulation log packets for most recent run
-
-    // ———————————
-    // Uptime stopwatch variables for simulation run timer
-    // ———————————
-    let uptimeInterval = null; // setInterval handle for updating uptime display
-    let uptimeStart = null;    // Timestamp when simulation run started
-
-    // ———————————
-    // Config Modal logic and elements
-    // ———————————
-    const configBtn = document.getElementById("configBtn"); // "Configure" button
-    const configModal = document.getElementById("configModal"); // Modal dialog container
-    const configSaveBtn = document.getElementById("configSaveBtn"); // "Save" in modal
-    const configCancelBtn = document.getElementById("configCancelBtn"); // "Cancel" in modal
-
-    // ———————————
-    // Simulation Config State
-    // Holds the settings for salience decay and event rate used for simulation runs
-    // This config object is sent to the backend and also used to update UI displays
-    // ———————————
-    let config = {
-      salience_decay: 0.01, // Default salience decay parameter
-      event_rate: 3,        // Default event rate parameter
-      memory_buffer_size: 1000,
-      memory_decay: 0.01,
-      memory_prune_threshold: 0.2,
-      high_salience_var_rate: 0.1,
-      low_salience_var_rate: 0.1
-    };
-
-    // ———————————
-    // Updates the "Current Settings" display below the stat cards
-    // Ensures the UI always reflects the config that will be sent to the backend
-    // ———————————
-    // ————————————————————————————————————————————————————————————————
-    // Updates the "Current Settings" display below the stat cards
-    // Handles missing or backend-variant config keys gracefully.
-    // ————————————————————————————————————————————————————————————————
-    function updateConfigDisplay() {
-      // Use fallback defaults if keys are missing
-      let salience = (typeof config.salience_decay === "number" && !isNaN(config.salience_decay))
-        ? config.salience_decay : 0.01;
-      let eventRate = (typeof config.event_rate === "number" && !isNaN(config.event_rate))
-        ? config.event_rate : 3;
-      let memBuf = (typeof config.memory_buffer_size === "number" && !isNaN(config.memory_buffer_size))
-        ? config.memory_buffer_size : 1000;
-      let memDecay = (typeof config.memory_decay === "number" && !isNaN(config.memory_decay))
-        ? config.memory_decay : 0.01;
-      let memPrune = (typeof config.memory_prune_threshold === "number" && !isNaN(config.memory_prune_threshold))
-        ? config.memory_prune_threshold : 0.2;
-      let highVar = (typeof config.high_salience_var_rate === "number" && !isNaN(config.high_salience_var_rate)) ? config.high_salience_var_rate : 0.1;
-      let lowVar = (typeof config.low_salience_var_rate === "number" && !isNaN(config.low_salience_var_rate)) ? config.low_salience_var_rate : 0.1;
-      document.getElementById('displaySalienceDecay').textContent = Number(salience).toFixed(3);
-      document.getElementById('displayEventRate').textContent = eventRate;
-      document.getElementById('displayMemoryBufferSize').textContent = memBuf;
-      document.getElementById('displayMemoryDecay').textContent = Number(memDecay).toFixed(3);
-      document.getElementById('displayMemoryPruneThreshold').textContent = Number(memPrune).toFixed(2);
-      document.getElementById('displayHighSalienceVarRate').textContent = Number(highVar).toFixed(2);
-      document.getElementById('displayLowSalienceVarRate').textContent = Number(lowVar).toFixed(2);
-    }
-    // Initial update on page load to show default config values
-    updateConfigDisplay();
-
-    // ———————————
-    // Config is now loaded from backend. The "Configure" button will fetch config from server before showing modal.
-    // ———————————
-    // Fetch config from backend and update modal inputs and current config state
-    async function loadConfigFromServer() {
-      try {
-        const resp = await fetch("http://127.0.0.1:8000/config");
-        if (!resp.ok) throw new Error(`Failed to fetch config: ${resp.status}`);
-        const serverConfig = await resp.json();
-
-        // Update global config object with server values
-        config.salience_decay = serverConfig.salience_decay ?? config.salience_decay;
-        config.event_rate = serverConfig.event_rate ?? config.event_rate;
-        config.memory_buffer_size = serverConfig.memory_buffer_size ?? config.memory_buffer_size;
-        config.memory_decay = serverConfig.memory_decay ?? config.memory_decay;
-        config.memory_prune_threshold = serverConfig.memory_prune_threshold ?? config.memory_prune_threshold;
-        config.high_salience_var_rate = serverConfig.high_salience_var_rate ?? config.high_salience_var_rate;
-        config.low_salience_var_rate = serverConfig.low_salience_var_rate ?? config.low_salience_var_rate;
-
-        // Update modal input fields values and set min, max, step dynamically if provided
-        const mapping = [
-          { id: "configSalienceDecay", key: "salience_decay", min: 0, max: 1, step: 0.001 },
-          { id: "configEventRate", key: "event_rate", min: 1, max: 10, step: 1 },
-          { id: "configMemoryBufferSize", key: "memory_buffer_size", min: 100, max: 10000, step: 100 },
-          { id: "configMemoryDecay", key: "memory_decay", min: 0, max: 1, step: 0.001 },
-          { id: "configMemoryPruneThreshold", key: "memory_prune_threshold", min: 0, max: 1, step: 0.01 },
-          { id: "configHighSalienceVarRate", key: "high_salience_var_rate", min: 0, max: 1, step: 0.01 },
-          { id: "configLowSalienceVarRate", key: "low_salience_var_rate", min: 0, max: 1, step: 0.01 },
-        ];
-
-        mapping.forEach(({id, key, min, max, step}) => {
-          const el = document.getElementById(id);
-          if (!el) return;
-          const val = config[key];
-          el.value = val;
-          el.min = min;
-          el.max = max;
-          el.step = step;
-        });
-
-        updateConfigDisplay();
-      } catch (err) {
-        debugLog(`Error loading config from server: ${err.message || err}`);
-      }
-    }
-
-    // Modify Configure button handler to load config before showing modal
-    configBtn.onclick = async () => {
-      try {
-        await loadConfigFromServer();
-      } catch (e) {
-        // Error already logged to debug panel
-      }
-      configModal.style.display = "flex";
-    };
-
-    // Initial load of config on page load
-    loadConfigFromServer();
-
-    // ———————————
-    // Event handler: Save config from modal fields to live config, update display, and close modal
-    // ———————————
-    configSaveBtn.onclick = () => {
-      // Read modal fields and clamp to valid ranges to prevent invalid config
-      let dec = parseFloat(document.getElementById("configSalienceDecay").value);
-      let evt = parseInt(document.getElementById("configEventRate").value, 10);
-      let memBufSize = parseInt(document.getElementById("configMemoryBufferSize").value, 10);
-      let memDecay = parseFloat(document.getElementById("configMemoryDecay").value);
-      let memPrune = parseFloat(document.getElementById("configMemoryPruneThreshold").value);
-      let highVar = parseFloat(document.getElementById("configHighSalienceVarRate").value);
-      let lowVar = parseFloat(document.getElementById("configLowSalienceVarRate").value);
-
-      // Clamp salience_decay between 0 and 1, fallback to 0.01 if invalid
-      if (isNaN(dec)) dec = 0.01;
-      dec = Math.max(0, Math.min(1, dec));
-      // Clamp event_rate between 1 and 10, fallback to 3 if invalid
-      if (isNaN(evt)) evt = 3;
-      evt = Math.max(1, Math.min(10, evt));
-      // Clamp memory_buffer_size between 100 and 10000, fallback to 1000 if invalid
-      if (isNaN(memBufSize) || memBufSize < 100) memBufSize = 1000;
-      memBufSize = Math.min(10000, Math.max(100, memBufSize));
-      // Clamp memory_decay between 0 and 1, fallback to 0.01 if invalid
-      if (isNaN(memDecay)) memDecay = 0.01;
-      memDecay = Math.min(1, Math.max(0, memDecay));
-      // Clamp memory_prune_threshold between 0 and 1, fallback to 0.2 if invalid
-      if (isNaN(memPrune)) memPrune = 0.2;
-      memPrune = Math.min(1, Math.max(0, memPrune));
-      // Clamp high/low salience var rates between 0 and 1, fallback to 0.1 if invalid
-      if (isNaN(highVar)) highVar = 0.1;
-      highVar = Math.min(1, Math.max(0, highVar));
-      if (isNaN(lowVar)) lowVar = 0.1;
-      lowVar = Math.min(1, Math.max(0, lowVar));
-
-      config.salience_decay = dec;
-      config.event_rate = evt;
-      config.memory_buffer_size = memBufSize;
-      config.memory_decay = memDecay;
-      config.memory_prune_threshold = memPrune;
-      config.high_salience_var_rate = highVar;
-      config.low_salience_var_rate = lowVar;
-      configModal.style.display = "none";
-      updateConfigDisplay();
-    };
-
-    // ———————————
-    // Event handler: Cancel config modal (close without saving changes)
-    // ———————————
-    configCancelBtn.onclick = () => {
-      configModal.style.display = "none";
-    };
-
-    // ——————————————————————————————————————————————————————————————————————————————
-    // Event handler: Run Simulation button
-    // Initiates the simulation run, disables buttons, updates UI, sends live config,
-    // handles backend response, updates stats, plots, and table, and manages UI state.
-    // ——————————————————————————————————————————————————————————————————————————————
-    runBtn.addEventListener("click", async () => {
-      debugLog('"Run Simulation" clicked.');
-      // Get episodes and repetitions from input fields
-      // Read and validate episodes/repetitions inputs, fallback to safe defaults
-      let episodes = parseInt(document.getElementById("episodes").value, 10);
-      let repetitions = parseInt(document.getElementById("repetitions").value, 10);
-      if (isNaN(episodes) || episodes < 1) episodes = 2400;
-      if (isNaN(repetitions) || repetitions < 1) repetitions = 1;
-
-      // Disable UI buttons during simulation run
-      runBtn.disabled = true;
-      saveBtn.disabled = true;
-      downloadCSVBtn.disabled = true;
-      statusEl.textContent = "[running…]";
-
-      // Show loading spinner while backend is processing
-      const spinner = document.getElementById("loadingSpinner");
-      spinner.style.display = "flex";
-
-      // Start uptime stopwatch for visual feedback of elapsed time
-      uptimeStart = Date.now();
-      if (uptimeInterval) clearInterval(uptimeInterval);
-      // Stopwatch interval now updates with fractional seconds for smoother display
-      uptimeInterval = setInterval(() => {
-        const now = Date.now();
-        const elapsedSec = (now - uptimeStart) / 1000;
-        document.getElementById("statUptime").textContent = formatSeconds(elapsedSec);
-      }, 100);
-
-      // Prepare backend endpoint and request body with config and run parameters
-      let fetchUrl = "http://127.0.0.1:8000/run";
-      let fetchBody = JSON.stringify({
-        episodes,
-        repetitions,
-        ...config
-      });
-      debugLog(`About to fetch: ${fetchUrl}`);
-      debugLog(`Request body: ${fetchBody}`);
-
-      let resp = null;
-      let json = null;
-      try {
-        // Send POST request to backend to start simulation
-        resp = await fetch(fetchUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: fetchBody
-        });
-
-        debugLog(`Fetch response status: ${resp.status} (${resp.statusText})`);
-        // Handle HTTP/network errors
-        if (!resp.ok) {
-          let errorMsg = `Network response was not ok. Status: ${resp.status} (${resp.statusText})`;
-          try {
-            const bodyText = await resp.text();
-            errorMsg += `\nResponse body: ${bodyText}`;
-          } catch {}
-          debugLog(errorMsg);
-          throw new Error(errorMsg);
-        }
-
-        // Parse JSON response from backend with error handling
-        try {
-          json = await resp.json();
-        } catch (parseErr) {
-          debugLog("JSON parse error: " + (parseErr && parseErr.message ? parseErr.message : parseErr));
-          throw new Error("Failed to parse backend JSON response.");
-        }
-        debugLog("Fetch succeeded. Response JSON:");
-        debugLog(JSON.stringify(json, null, 2));
-
-        // If backend returns config, update local config and UI display (with safety checks)
-        if (json.config && typeof json.config === "object") {
-          if ('salience_decay' in json.config && typeof json.config.salience_decay === "number") {
-            config.salience_decay = json.config.salience_decay;
-          }
-          if ('event_rate' in json.config && typeof json.config.event_rate === "number") {
-            config.event_rate = json.config.event_rate;
-          }
-          updateConfigDisplay();
-        }
-
-        // Check if simulation completed successfully
-        if (!json.status || json.status !== "complete") {
-          debugLog("Simulation did not complete. Full JSON: " + JSON.stringify(json));
-          throw new Error("Simulation did not complete");
-        }
-
-        // ——— Process simulation data from backend ———
-        // allReps: array of repetitions, each is an array of log packets
-        const allReps = Array.isArray(json.data) ? json.data : [];
-        // For single-rep mode, use the first (and only) repetition's logs
-        const logsByRep = (Array.isArray(allReps[0]) ? allReps[0] : []);
-
-        latestLogs = logsByRep; // Store for Save/Export
-        const N = logsByRep.length; // Number of steps/episodes in this run
-
-        // ——— Compute summary stats for stat cards ———
-        let sumAttunement = 0, sumStress = 0, sumAffect = 0;
-        logsByRep.forEach(pkt => {
-          sumAttunement += (typeof pkt.attunement_score === "number" ? pkt.attunement_score : 0);
-          sumStress += (typeof pkt.schema_stress === "number" ? pkt.schema_stress : 0);
-          sumAffect += (typeof pkt.avg_affect_feedback === "number" ? pkt.avg_affect_feedback : 0);
-        });
-        const avgAttune = N > 0 ? sumAttunement / N : 0;
-        const avgStress = N > 0 ? sumStress / N : 0;
-        // Use the last clock value if present, else use episodes
-        const clockVal = (N > 0 && logsByRep[N - 1] && logsByRep[N - 1].clock !== undefined)
-          ? logsByRep[N - 1].clock
-          : episodes;
-        // Uptime string for stat display (show actual number of steps)
-        const uptimeStr = formatSeconds(N);
-
-        // Update stat card elements with computed values
-        document.getElementById("statAttunement").textContent = avgAttune.toFixed(2);
-        document.getElementById("statStress").textContent = avgStress.toFixed(2);
-        document.getElementById("statClock").textContent = String(clockVal).padStart(3, "0");
-        document.getElementById("statUptime").textContent = uptimeStr;
-
-        // ——— Plot graphs using Plotly ———
-        // Prepare x axis (episode index) and y values for each metric
-        const x = Array.from({length: N}, (_, i) => i + 1);
-        const yAttune = logsByRep.map(pkt => pkt.attunement_score !== undefined ? pkt.attunement_score : null);
-        const yStress = logsByRep.map(pkt => pkt.schema_stress !== undefined ? pkt.schema_stress : null);
-        const yAffect = logsByRep.map(pkt => pkt.avg_affect_feedback !== undefined ? pkt.avg_affect_feedback : null);
-
-        // Attunement Score graph
-        Plotly.newPlot("attunementGraph", [{ x, y: yAttune, mode: "lines", name: "Attunement" }], {
-          margin: { t: 30, b: 30 }, yaxis: { title: "Attunement" }
-        });
-        // Schema Stress graph
-        Plotly.newPlot("stressGraph", [{ x, y: yStress, mode: "lines", name: "Stress" }], {
-          margin: { t: 30, b: 30 }, yaxis: { title: "Schema Stress" }
-        });
-        // Affect Feedback graph
-        Plotly.newPlot("affectGraph", [{ x, y: yAffect, mode: "lines", name: "Affect" }], {
-          margin: { t: 30, b: 30 }, yaxis: { title: "Affect Feedback" }
-        });
-
-        // ——— Build and display raw-data HTML table in spreadsheet section ———
-        const container = document.getElementById("spreadsheet");
-        container.innerHTML = "";
-        if (N > 0) {
-          // Use keys of first log packet as columns
-          const columns = Object.keys(logsByRep[0]);
-          const table = document.createElement("table");
-          table.id = "spreadsheet-table";
-          // Build table header
-          const thead = document.createElement("thead");
-          const headerRow = document.createElement("tr");
-          columns.forEach(col => {
-            const th = document.createElement("th");
-            th.textContent = col;
-            headerRow.appendChild(th);
-          });
-          thead.appendChild(headerRow);
-          table.appendChild(thead);
-          // Build table body
-          const tbody = document.createElement("tbody");
-          logsByRep.forEach(pkt => {
-            const tr = document.createElement("tr");
-            columns.forEach(col => {
-              const td = document.createElement("td");
-              const val = pkt[col];
-              // Show empty cell for undefined/null/NaN values
-              if (val === undefined || val === null || (typeof val === "number" && isNaN(val))) {
-                td.textContent = "";
-              } else if (typeof val === "object") {
-                td.textContent = JSON.stringify(val, null, 2);
-              } else {
-                td.textContent = val;
-              }
-              tr.appendChild(td);
-            });
-            tbody.appendChild(tr);
-          });
-          table.appendChild(tbody);
-          container.appendChild(table);
-        }
-
-        // Enable Save and Export buttons now that results are available
-        saveBtn.disabled = false;
-        downloadCSVBtn.disabled = false;
-        statusEl.textContent = "[complete]";
-      }
-      catch (err) {
-        // Improved error logging and UI consistency
-        debugLog('Error during fetch: ' + (err && err.message ? err.message : err));
-        debugLog(`Current URL: ${window.location.href}`);
-        debugLog(`Backend fetch URL: ${fetchUrl}`);
-        debugLog(`Request body: ${fetchBody}`);
-        if (err instanceof TypeError && err.message && err.message.includes('Failed to fetch')) {
-          debugLog("Likely causes: Backend is not running or wrong port, or CORS/network issue.");
-        }
-        statusEl.textContent = "[error]";
-        // Ensure UI state is consistent even on error
-        saveBtn.disabled = true;
-        downloadCSVBtn.disabled = true;
-        latestLogs = null;
-      }
-      finally {
-        // Always stop the uptime stopwatch and update display, even if error
-        if (uptimeInterval) {
-          clearInterval(uptimeInterval);
-          uptimeInterval = null;
-          const now = Date.now();
-          const elapsedSec = (now - uptimeStart) / 1000;
-          document.getElementById("statUptime").textContent = formatSeconds(elapsedSec);
-        }
-        // Hide loading spinner and re-enable Run button
-        const spinner = document.getElementById("loadingSpinner");
-        spinner.style.display = "none";
-        runBtn.disabled = false;
-      }
-    });
-
-    // ————————————————————————————————————————————————————————————————
-    // Save button handler: POST the latestLogs to backend for saving
-    // Disables button while saving, updates status, and logs result
-    // ————————————————————————————————————————————————————————————————
-    saveBtn.addEventListener("click", async () => {
-      if (!latestLogs) return; // No data to save
-      debugLog('"Save" clicked.');
-      saveBtn.disabled = true;
-      statusEl.textContent = "[saving…]";
-      try {
-        // POST logs to /save-logs endpoint
-        const resp = await fetch("http://127.0.0.1:8000/save-logs", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ logs: latestLogs })
-        });
-        if (!resp.ok) throw new Error("Save failed");
-        statusEl.textContent = "[saved]";
-        debugLog('Save succeeded.');
-      } catch (err) {
-        debugLog('Save failed: ' + (err && err.message ? err.message : err));
-        console.error(err);
-        statusEl.textContent = "[save error]";
-      } finally {
-        saveBtn.disabled = false;
-      }
-    });
-
-    // ————————————————————————————————————————————————————————————————
-    // Export CSV button handler: Convert latestLogs to CSV and trigger download
-    // Builds CSV from log array, creates Blob, and downloads as file
-    // ————————————————————————————————————————————————————————————————
-    downloadCSVBtn.addEventListener("click", () => {
-      if (!latestLogs || !Array.isArray(latestLogs) || latestLogs.length === 0) return; // No data to export
-      debugLog('"Export CSV" clicked.');
-      // CSV header row from keys of first packet
-      const columns = Object.keys(latestLogs[0]);
-      const lines = [];
-      lines.push(columns.join(","));
-      latestLogs.forEach(pkt => {
-        const row = columns.map(col => {
-          let val = pkt[col];
-          // Handle undefined/null/NaN values gracefully as empty string
-          if (val === undefined || val === null || (typeof val === "number" && isNaN(val))) return "";
-          // Escape any double quotes for CSV format
-          return String(val).replace(/"/g, '""');
-        });
-        lines.push(row.join(","));
-      });
-      const csvContent = lines.join("\n");
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "simulation_results.csv";
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-  });
+    // (Removed duplicate DOMContentLoaded block and redundant uptime logic)
+    // All simulation, status, and result logic is now inside DOMContentLoaded above.
 </script>
 </body>
 </html>
