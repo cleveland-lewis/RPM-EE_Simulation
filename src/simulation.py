@@ -1,3 +1,9 @@
+import threading  # --- Added for job system ---
+import uuid # --- Added for job system ---
+import os
+from typing import Dict, Any  # --- Added for job system ---
+JOBS_DIR = "jobs"  # --- Directory for persistent job files ---
+os.makedirs(JOBS_DIR, exist_ok=True)  # Ensure jobs dir exists
 def downsample_logs(logs, bin_size):
     """Downsample logs by averaging over bins of bin_size for selected keys."""
     if bin_size <= 1 or len(logs) <= 1:
@@ -472,3 +478,212 @@ async def serve_static(filename: str):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("src.simulation:app", host="0.0.0.0", port=8000, reload=True)
+# --------------------
+# Persistent File-based Job System for Batch Agent Simulations
+# --------------------
+import glob
+
+# --- Helper functions for job state persistence ---
+def save_job_state(job_id: str, state: dict):
+    """Save the job state to disk (jobs/{job_id}.json)."""
+    path = os.path.join(JOBS_DIR, f"{job_id}.json")
+    with open(path, "w") as f:
+        json.dump(state, f, indent=2)
+
+def load_job_state(job_id: str) -> dict:
+    """Load the job state from disk."""
+    path = os.path.join(JOBS_DIR, f"{job_id}.json")
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Job {job_id} not found")
+    with open(path, "r") as f:
+        return json.load(f)
+
+def list_jobs() -> list:
+    """Return a list of all job IDs and their states."""
+    job_files = glob.glob(os.path.join(JOBS_DIR, "*.json"))
+    jobs = []
+    for jf in job_files:
+        try:
+            with open(jf, "r") as f:
+                state = json.load(f)
+                jobs.append({"job_id": state.get("job_id"), "status": state.get("status"), "created_at": state.get("created_at"), "agents": state.get("agents", [])})
+        except Exception:
+            continue
+    return jobs
+
+def update_job_progress(job_id: str, agent_idx: int, progress: int, total: int):
+    """Update progress for a given agent in the job."""
+    state = load_job_state(job_id)
+    if "agents" in state and 0 <= agent_idx < len(state["agents"]):
+        state["agents"][agent_idx]["progress"] = progress
+        state["agents"][agent_idx]["total"] = total
+        save_job_state(job_id, state)
+
+def mark_job_complete(job_id: str, agent_idx: int, result: Any):
+    """Mark agent as complete and store result."""
+    state = load_job_state(job_id)
+    if "agents" in state and 0 <= agent_idx < len(state["agents"]):
+        state["agents"][agent_idx]["progress"] = state["agents"][agent_idx].get("total", 0)
+        state["agents"][agent_idx]["status"] = "complete"
+        state["agents"][agent_idx]["result"] = result
+        # Check if all agents complete
+        all_done = all(a.get("status") == "complete" for a in state["agents"])
+        if all_done:
+            state["status"] = "complete"
+        save_job_state(job_id, state)
+
+def set_job_status(job_id: str, status: str):
+    """Set job overall status."""
+    state = load_job_state(job_id)
+    state["status"] = status
+    save_job_state(job_id, state)
+
+# --------------------
+# /batch-job endpoint for persistent background jobs
+# --------------------
+from fastapi import BackgroundTasks, Request
+from fastapi import HTTPException
+from datetime import datetime
+
+class BatchJobRequest(BaseModel):
+    agents: list
+
+def _run_agent_simulation(job_id: str, agent_idx: int, agent_params: dict):
+    """Background thread: run simulation for one agent, update job state."""
+    try:
+        episodes = agent_params.get("episodes", 1000)
+        repetitions = agent_params.get("repetitions", 1)
+        salience_decay = agent_params.get("salience_decay", 0.01)
+        high_salience_var_rate = agent_params.get("high_salience_var_rate", 0.1)
+        memory_buffer_size = agent_params.get("memory_buffer_size", 1000)
+        memory_decay = agent_params.get("memory_decay", 0.01)
+        memory_prune_threshold = agent_params.get("memory_prune_threshold", 0.2)
+        low_salience_var_rate = agent_params.get("low_salience_var_rate", 0.1)
+        # For progress reporting
+        total = episodes * repetitions
+        progress = 0
+        all_logs = []
+        for rep in range(repetitions):
+            logs = run_simulation(
+                total_ticks=episodes,
+                salience_decay=salience_decay,
+                highly_variable_rate=high_salience_var_rate,
+                memory_buffer_size=memory_buffer_size,
+                memory_decay=memory_decay,
+                memory_prune_threshold=memory_prune_threshold,
+                low_salience_var_rate=low_salience_var_rate,
+            )
+            all_logs.append(logs)
+            progress += episodes
+            # Save progress every repetition
+            update_job_progress(job_id, agent_idx, progress, total)
+        # Save result and mark complete
+        mark_job_complete(job_id, agent_idx, all_logs)
+    except Exception as e:
+        # On error, mark agent as failed
+        state = load_job_state(job_id)
+        if "agents" in state and 0 <= agent_idx < len(state["agents"]):
+            state["agents"][agent_idx]["status"] = "error"
+            state["agents"][agent_idx]["error"] = str(e)
+            save_job_state(job_id, state)
+
+@app.post("/batch-job")
+async def batch_job_endpoint(payload: BatchJobRequest):
+    """
+    Launch a persistent file-based batch job for background agent simulations.
+    Returns immediately with job_id.
+    """
+    agents = payload.agents
+    if not isinstance(agents, list) or len(agents) == 0:
+        raise HTTPException(status_code=400, detail="agents must be a non-empty list")
+    job_id = str(uuid.uuid4())
+    now = datetime.utcnow().isoformat()
+    # Prepare job state
+    job_state = {
+        "job_id": job_id,
+        "status": "running",
+        "created_at": now,
+        "agents": [
+            {
+                "index": i,
+                "params": agent,
+                "progress": 0,
+                "total": agent.get("episodes", 1000) * agent.get("repetitions", 1),
+                "status": "running",
+                "result": None,
+                "error": None,
+            }
+            for i, agent in enumerate(agents)
+        ],
+    }
+    save_job_state(job_id, job_state)
+    # Launch threads for each agent
+    for i, agent in enumerate(agents):
+        t = threading.Thread(target=_run_agent_simulation, args=(job_id, i, agent), daemon=True)
+        t.start()
+    return {"job_id": job_id}
+
+# --------------------
+# /job-status/{job_id} endpoint
+# --------------------
+@app.get("/job-status/{job_id}")
+async def job_status_endpoint(job_id: str):
+    """Return the state: overall job status, per-agent progress, whether complete."""
+    try:
+        state = load_job_state(job_id)
+        # Filter result data for status only (do not include full logs)
+        agents_status = [
+            {
+                "index": a.get("index"),
+                "progress": a.get("progress"),
+                "total": a.get("total"),
+                "status": a.get("status"),
+                "error": a.get("error"),
+            }
+            for a in state.get("agents", [])
+        ]
+        return {
+            "job_id": job_id,
+            "status": state.get("status"),
+            "created_at": state.get("created_at"),
+            "agents": agents_status,
+        }
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+# --------------------
+# /job-result/{job_id} endpoint
+# --------------------
+@app.get("/job-result/{job_id}")
+async def job_result_endpoint(job_id: str):
+    """Return job result if done."""
+    try:
+        state = load_job_state(job_id)
+        if state.get("status") != "complete":
+            return {"status": state.get("status"), "message": "Job not complete yet"}
+        # Only return results (logs) for each agent
+        agents_results = [
+            {
+                "index": a.get("index"),
+                "result": a.get("result"),
+                "params": a.get("params"),
+                "error": a.get("error"),
+            }
+            for a in state.get("agents", [])
+        ]
+        return {
+            "job_id": job_id,
+            "status": "complete",
+            "results": agents_results,
+        }
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+# --------------------
+# /jobs endpoint: list all jobs and their high-level state
+# --------------------
+@app.get("/jobs")
+async def jobs_list_endpoint():
+    """List all jobs and their high-level state."""
+    jobs = list_jobs()
+    return {"jobs": jobs}

@@ -343,7 +343,7 @@
         <label for="repetitions">REPETITIONS
           <input id="repetitions" type="number" min="1" value="1">
         </label>
-        <button id="runBtn">▶ Run Simulation</button>
+        <button id="runBatchBtn">▶ Run Simulation</button>
         <button id="saveBtn" disabled>Save</button>
         <button id="downloadCSV" disabled>Export CSV</button>
         <button id="agentsBtn">Agents</button>
@@ -374,6 +374,25 @@
       <input style="margin:1.5rem 0 0.2rem 0; width:100%;font-size:1em;padding:0.65em 1em; border:1.2px solid #bbb; border-radius:7px;" readonly placeholder="ATTUNEMENT SCORE">
       <input style="margin:0.4rem 0;width:100%;font-size:1em;padding:0.65em 1em; border:1.2px solid #bbb; border-radius:7px;" readonly placeholder="SCHEMA STRESS">
       <input style="margin:0.4rem 0 1.7rem 0;width:100%;font-size:1em;padding:0.65em 1em; border:1.2px solid #bbb; border-radius:7px;" readonly placeholder="AFFECT FEEDBACK">
+      <!-- Batch jobs section -->
+      <section id="jobs-section" style="margin-top:2.2rem;">
+        <h2>Current Jobs</h2>
+        <div id="jobs-table-container">
+          <table id="jobs-table" style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr>
+                <th style="border-bottom:1.5px solid #aaa;padding:0.4em;">Job ID</th>
+                <th style="border-bottom:1.5px solid #aaa;padding:0.4em;">Status</th>
+                <th style="border-bottom:1.5px solid #aaa;padding:0.4em;">Agent Progress</th>
+                <th style="border-bottom:1.5px solid #aaa;padding:0.4em;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="jobs-table-body">
+              <!-- Jobs will be dynamically rendered here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
       <h2 id="spreadsheet-title">Raw Data Spreadsheet</h2>
       <div id="spreadsheet"></div>
     </div>
@@ -510,6 +529,153 @@
       if (e.key === "Escape") {
         document.getElementById("agentsModal").style.display = "none";
       }
+    });
+
+    // ==== Batch Jobs Logic ====
+    document.addEventListener("DOMContentLoaded", function() {
+      // Run Simulation button logic (was Run Batch)
+      const runBatchBtn = document.getElementById("runBatchBtn");
+      let lastStartedJobId = null;
+      runBatchBtn.addEventListener("click", async function() {
+        runBatchBtn.disabled = true;
+        try {
+          // POST to /batch-job with current agents config
+          const resp = await fetch("/batch-job", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ agents: agents })
+          });
+          if (!resp.ok) throw new Error("Failed to start batch job");
+          const data = await resp.json();
+          lastStartedJobId = data.job_id;
+        } catch (e) {
+          alert("Error starting batch job: " + e.message);
+        }
+        runBatchBtn.disabled = false;
+      });
+
+      // Poll jobs
+      async function fetchJobsAndRender() {
+        try {
+          const resp = await fetch("/jobs");
+          if (!resp.ok) throw new Error("Failed to fetch jobs");
+          const jobs = await resp.json();
+          renderJobsTable(jobs);
+        } catch (e) {
+          // Optionally, display error
+        }
+      }
+
+      function renderJobsTable(jobs) {
+        const tbody = document.getElementById("jobs-table-body");
+        tbody.innerHTML = "";
+        if (!Array.isArray(jobs) || jobs.length === 0) {
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = 4;
+          td.style.textAlign = "center";
+          td.textContent = "No jobs found.";
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+          return;
+        }
+        jobs.forEach(job => {
+          const tr = document.createElement("tr");
+          // Job ID
+          const tdId = document.createElement("td");
+          tdId.textContent = job.job_id;
+          tdId.style.padding = "0.35em";
+          tdId.style.fontFamily = "monospace";
+          tr.appendChild(tdId);
+          // Status
+          const tdStatus = document.createElement("td");
+          tdStatus.textContent = job.status;
+          tdStatus.style.padding = "0.35em";
+          tr.appendChild(tdStatus);
+          // Agent Progress
+          const tdAgents = document.createElement("td");
+          tdAgents.style.padding = "0.35em";
+          if (Array.isArray(job.agent_progress)) {
+            // agent_progress: [{current, total, percent, status}, ...]
+            job.agent_progress.forEach((prog, idx) => {
+              const label = document.createElement("div");
+              label.textContent = `Agent ${idx+1}: ${prog.status || ""}`;
+              label.style.fontSize = "0.98em";
+              tdAgents.appendChild(label);
+              const barOuter = document.createElement("div");
+              barOuter.className = "progress-outer";
+              barOuter.style.height = "10px";
+              barOuter.style.margin = "2px 0 7px 0";
+              barOuter.style.background = "#ece8dc";
+              barOuter.style.width = "98%";
+              const barInner = document.createElement("div");
+              barInner.className = "progress-inner";
+              barInner.style.height = "100%";
+              barInner.style.background = "#222";
+              barInner.style.width = (prog.percent != null ? prog.percent : 0) + "%";
+              barInner.style.transition = "width 0.4s";
+              barOuter.appendChild(barInner);
+              tdAgents.appendChild(barOuter);
+              // Progress text
+              if (prog.current != null && prog.total != null) {
+                const txt = document.createElement("span");
+                txt.style.fontSize = "0.92em";
+                txt.textContent = `${prog.current} / ${prog.total}`;
+                tdAgents.appendChild(txt);
+              }
+              tdAgents.appendChild(document.createElement("br"));
+            });
+          } else {
+            tdAgents.textContent = "-";
+          }
+          tr.appendChild(tdAgents);
+          // Actions
+          const tdActions = document.createElement("td");
+          tdActions.style.padding = "0.35em";
+          // Only allow actions if job is running or paused
+          if (job.status === "running" || job.status === "paused") {
+            // Pause/Resume
+            if (job.status === "running") {
+              const pauseBtn = document.createElement("button");
+              pauseBtn.textContent = "Pause";
+              pauseBtn.style.marginRight = "6px";
+              pauseBtn.onclick = () => jobAction(job.job_id, "pause");
+              tdActions.appendChild(pauseBtn);
+            } else if (job.status === "paused") {
+              const resumeBtn = document.createElement("button");
+              resumeBtn.textContent = "Resume";
+              resumeBtn.style.marginRight = "6px";
+              resumeBtn.onclick = () => jobAction(job.job_id, "resume");
+              tdActions.appendChild(resumeBtn);
+            }
+            // Cancel
+            const cancelBtn = document.createElement("button");
+            cancelBtn.textContent = "Cancel";
+            cancelBtn.onclick = () => jobAction(job.job_id, "cancel");
+            tdActions.appendChild(cancelBtn);
+          } else {
+            tdActions.textContent = "-";
+          }
+          tr.appendChild(tdActions);
+          tbody.appendChild(tr);
+        });
+      }
+
+      async function jobAction(job_id, action) {
+        try {
+          await fetch(`/job-action/${encodeURIComponent(job_id)}`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ action: action })
+          });
+        } catch (e) {
+          alert("Job action failed: " + e.message);
+        }
+      }
+
+      // Poll every 5 seconds
+      fetchJobsAndRender();
+      setInterval(fetchJobsAndRender, 5000);
     });
   </script>
 </body>
