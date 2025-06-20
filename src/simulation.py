@@ -2,9 +2,13 @@ import threading  # --- Added for job system ---
 import multiprocessing
 import uuid # --- Added for job system ---
 import os
+import json
 from typing import Dict, Any  # --- Added for job system ---
 JOBS_DIR = "jobs"  # --- Directory for persistent job files ---
 os.makedirs(JOBS_DIR, exist_ok=True)  # Ensure jobs dir exists
+# Directory for current jobs (active/running/paused jobs)
+CURRENT_JOBS_DIR = "current_jobs"
+os.makedirs(CURRENT_JOBS_DIR, exist_ok=True)
 def downsample_logs(logs, bin_size):
     """Downsample logs by averaging over bins of bin_size for selected keys."""
     if bin_size <= 1 or len(logs) <= 1:
@@ -47,27 +51,31 @@ if HAVE_NUMBA:
         Numba‐accelerated generator for per‑tick arrays.
         Returns the same tuple as _generate_base_arrays.
         """
-        import numpy as _np
-        att    = _np.random.rand(total_ticks).astype(_np.float32)
-        stress = _np.random.rand(total_ticks).astype(_np.float32)
-        affect = (_np.random.rand(total_ticks) * 2 - 1).astype(_np.float32)
+        att    = np.random.rand(total_ticks).astype(np.float32)
+        stress = np.random.rand(total_ticks).astype(np.float32)
+        affect = (np.random.rand(total_ticks) * 2 - 1).astype(np.float32)
 
-        vis   = _np.random.randint(0, 4, total_ticks, dtype=_np.int16)
-        hear  = _np.random.randint(0, 3, total_ticks, dtype=_np.int16)
-        touch = _np.random.randint(0, 2, total_ticks, dtype=_np.int16)
-        smell = _np.zeros(total_ticks, dtype=_np.int16)
-        taste = _np.zeros(total_ticks, dtype=_np.int16)
+        vis = np.random.randint(0, 4, total_ticks).astype(np.int16)
+        hear = np.random.randint(0, 3, total_ticks).astype(np.int16)
+        touch = np.random.randint(0, 2, total_ticks).astype(np.int16)
+        smell = np.zeros(total_ticks, dtype=np.int16)
+        taste = np.zeros(total_ticks, dtype=np.int16)
 
-        ticks = _np.arange(total_ticks, dtype=_np.int32)
-        st_sz = _np.maximum(0, 500 - (ticks % 500)).astype(_np.int32)
-        lt_sz = (ticks // 1000).astype(_np.int32)
+        ticks = np.arange(total_ticks, dtype=np.int32)
+        st_sz = np.maximum(0, 500 - (ticks % 500)).astype(np.int32)
+        lt_sz = (ticks // 1000).astype(np.int32)
 
         return (att, stress, affect,
                 vis, hear, touch, smell, taste,
                 st_sz, lt_sz)
+
+# Warm up Numba at startup to avoid compile delay on first real run
+if HAVE_NUMBA:
+    _ = _generate_base_arrays_numba(1)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from src.sensory import SensoryInputSystem  # Core class for simulating sensory input and memory
 from .config import load_config, save_config
@@ -93,9 +101,15 @@ def _generate_base_arrays(total_ticks: int):
     NOTE: In this first step we only create the function; run_simulation
     continues to use the existing logic until step 3.
     """
-    # Step 4.3: Dispatch to JIT version if available
+    global HAVE_NUMBA
+    # Step 4.3: Dispatch to JIT version if available, with fallback on error
     if HAVE_NUMBA:
-        return _generate_base_arrays_numba(total_ticks)
+        try:
+            return _generate_base_arrays_numba(total_ticks)
+        except Exception:
+            # Disable Numba for future calls if compilation/runtime fails
+            HAVE_NUMBA = False
+            # Fall through to NumPy fallback
     att    = np.random.rand(total_ticks).astype(np.float32)
     stress = np.random.rand(total_ticks).astype(np.float32)
     affect = (np.random.rand(total_ticks) * 2 - 1).astype(np.float32)
@@ -137,12 +151,14 @@ def flatten_dict(d, parent_key='', sep='.'):
 #   total_ticks: Number of simulation time steps (episodes)
 #   salience_decay: Rate at which salience decays in memory
 #   highly_variable_rate: Controls frequency of highly variable sensory events
+#   event_rate: Controls frequency of events per tick
 # Returns a list of dicts, each representing the state/log at a time tick.
 #
 def run_simulation(
     total_ticks: int = 2400,
     salience_decay: float = 0.01,
     highly_variable_rate: float = 0.1,
+    event_rate: int = 3,  # wired from popup
     memory_buffer_size: int = 1000,
     memory_decay: float = 0.01,
     memory_prune_threshold: float = 0.2,
@@ -157,11 +173,15 @@ def run_simulation(
     # memory_buffer_size, memory_decay, memory_prune_threshold, low_salience_var_rate
     # For now, these are received and can be logged or passed to SensoryInputSystem
     # Create the sensory input system with randomized thresholds and config
+    # event_rate is not a parameter of run_simulation, but if you want to integrate from config/UI, you may need to pass it in.
+    # For now, try to get event_rate from the caller's context or set a default.
+    event_rate = locals().get('event_rate', 3)  # fallback to 3 if not present
     sim = SensoryInputSystem(
         low_salience_threshold=base_low,
         high_salience_threshold=base_high,
         salience_decay=salience_decay,
         highly_variable_rate=highly_variable_rate,
+        event_rate=event_rate,  # integrated from config
     )
     attunement_scores = np.random.uniform(0, 1, total_ticks)
     schema_stress = np.random.uniform(0, 1, total_ticks)
@@ -236,6 +256,7 @@ def run_simulation(
         'high_salience_threshold': base_high,
         'salience_decay': salience_decay,
         'highly_variable_rate': highly_variable_rate,
+        'event_rate': event_rate,
     }
 
     # Build memory_stats array
@@ -287,6 +308,9 @@ def run_simulation(
 # Set up FastAPI app to provide simulation API endpoints.
 app = FastAPI()
 
+# Serve local Chart.js and other static assets
+app.mount("/js", StaticFiles(directory="js"), name="js")
+
 # Allow cross-origin requests for all domains and methods (dev use)
 app.add_middleware(
     CORSMiddleware,
@@ -312,6 +336,28 @@ async def save_logs(payload: LogSaveRequest):
     with open(filename, "w") as f:
         json.dump(payload.logs, f, indent=2)
     return {"status": "success", "filename": filename}
+
+
+# --------------------
+# List all jobs endpoint
+# --------------------
+@app.get("/jobs")
+async def list_jobs():
+    """
+    Return a list of current batch jobs stored in JOBS_DIR.
+    Each job is a JSON file containing job_id, status, progress, and summary.
+    """
+    jobs = []
+    for filename in os.listdir(JOBS_DIR):
+        filepath = os.path.join(JOBS_DIR, filename)
+        try:
+            with open(filepath, 'r') as f:
+                job_data = json.load(f)
+            jobs.append(job_data)
+        except Exception as e:
+            # Skip invalid files
+            continue
+    return jobs
 
 # Serve main HTML page (e.g., /src/trials.html) for browser access
 @app.get("/", include_in_schema=False)
@@ -413,183 +459,21 @@ class RunParams(BaseModel):
 import traceback
 
 # --------------------
-# Simulation API endpoint
-# Runs the simulation with given parameters.
-# Handles errors gracefully and returns logs or error details.
-# --------------------
-@app.post("/run")
-async def run_endpoint(params: RunParams):
-    print("Received simulation config:", params.dict())
-    import sys
-    sys.stdout.flush()
-    print("Params parsed OK.")
-    sys.stdout.flush()
-    try:
-        all_logs = []
-        total_samples = params.episodes * params.repetitions
-        # If total_samples > 500_000, do not return raw logs
-        if total_samples > 500_000:
-            # Run simulations but do not return logs
-            for _ in range(params.repetitions):
-                print("Starting simulation run (large, logs not returned)...")
-                sys.stdout.flush()
-                _ = run_simulation(
-                    total_ticks=params.episodes,
-                    salience_decay=params.salience_decay,
-                    highly_variable_rate=params.high_salience_var_rate,
-                    memory_buffer_size=params.memory_buffer_size,
-                    memory_decay=params.memory_decay,
-                    memory_prune_threshold=params.memory_prune_threshold,
-                    low_salience_var_rate=params.low_salience_var_rate,
-                )
-                print("Simulation run complete.")
-                sys.stdout.flush()
-            print("All simulation runs complete (logs not returned).")
-            sys.stdout.flush()
-            return {
-                "status": "complete",
-                "message": "Log data is too large to return directly. Please use the Datashader cluster plots for visualization.",
-                "config": {
-                    "salience_decay": params.salience_decay,
-                    "event_rate": params.event_rate
-                }
-            }
-        else:
-            # For <=500,000, apply adaptive downsampling
-            for _ in range(params.repetitions):
-                print("Starting simulation run...")
-                sys.stdout.flush()
-                logs = run_simulation(
-                    total_ticks=params.episodes,
-                    salience_decay=params.salience_decay,
-                    highly_variable_rate=params.high_salience_var_rate,
-                    memory_buffer_size=params.memory_buffer_size,
-                    memory_decay=params.memory_decay,
-                    memory_prune_threshold=params.memory_prune_threshold,
-                    low_salience_var_rate=params.low_salience_var_rate,
-                )
-                # Calculate bin_size for downsampling
-                N = len(logs)
-                if N <= 1000:
-                    bin_size = 1
-                else:
-                    bin_size = max(1, int(1.1 ** ((N - 1000)//1000)))
-                logs_downsampled = downsample_logs(logs, bin_size)
-                all_logs.append(logs_downsampled)
-                print("Simulation run complete (downsampled).")
-                sys.stdout.flush()
-            print("All simulation runs complete.")
-            sys.stdout.flush()
-            return {
-                "status": "complete",
-                "data": all_logs,
-                "config": {
-                    "salience_decay": params.salience_decay,
-                    "event_rate": params.event_rate
-                }
-            }
-    except Exception as e:
-        # On error, return error message and stack trace for debugging
-        tb_str = traceback.format_exc()
-        print("Error in /run:", tb_str)  # Log error to terminal
-        import sys
-        sys.stdout.flush()
-        return {
-            "status": "error",
-            "error": str(e),
-            "traceback": tb_str,
-            "params": params.dict() if hasattr(params, "dict") else dict(params)
-        }
-
-
-# --- Utility functions for flattening/unflattening config dicts ---
-def flatten_dict(d, parent_key='', sep='_'):
-    items = {}
-    for k, v in d.items():
-        new_key = f"{parent_key}{sep}{k}" if parent_key else k
-        if isinstance(v, dict):
-            items.update(flatten_dict(v, new_key, sep=sep))
-        else:
-            items[new_key] = v
-    return items
-
-def unflatten_dict(d, sep='_'):
-    result = {}
-    for k, v in d.items():
-        keys = k.split(sep)
-        cur = result
-        for part in keys[:-1]:
-            if part not in cur:
-                cur[part] = {}
-            cur = cur[part]
-        cur[keys[-1]] = v
-    return result
-
-# --- For local testing as a script ---
-# This block allows running the FastAPI app directly with uvicorn for local testing.
-@app.get("/config")
-def get_config():
-    """Returns the current simulation configuration as a flattened JSON dict."""
-    cfg = load_config()
-    flat_cfg = flatten_dict(cfg)
-    return flat_cfg
-
-@app.post("/config")
-def update_config(cfg: dict):
-    """Accepts and saves a new simulation configuration."""
-    nested_cfg = unflatten_dict(cfg)
-    save_config(nested_cfg)
-    return {"status": "success"}
-
-# New endpoint for datashader plots
-@app.post("/datashader-plots")
-async def datashader_plots(payload: LogSaveRequest):
-    os.makedirs("saved_logs", exist_ok=True)
-    df = pd.DataFrame(payload.logs)
-    # Cluster: attunement (x), stress (y), color by clock
-    cvs = ds.Canvas(plot_width=600, plot_height=600)
-    agg1 = cvs.points(df, 'attunement_score', 'schema_stress', agg=ds.mean('clock'))
-    img1 = tf.shade(agg1, cmap=colorcet.fire, how='eq_hist')
-    img1.to_pil().save("saved_logs/plot_attn_stress.png")
-    # Cluster: clock (x), stress (y), color by attunement
-    agg2 = cvs.points(df, 'clock', 'schema_stress', agg=ds.mean('attunement_score'))
-    img2 = tf.shade(agg2, cmap=colorcet.kbc, how='eq_hist')
-    img2.to_pil().save("saved_logs/plot_clock_stress.png")
-    # Cluster: clock (x), attunement (y), color by stress
-    agg3 = cvs.points(df, 'clock', 'attunement_score', agg=ds.mean('schema_stress'))
-    img3 = tf.shade(agg3, cmap=colorcet.bgy, how='eq_hist')
-    img3.to_pil().save("saved_logs/plot_clock_attn.png")
-    return {
-        "status": "success",
-        "plots": [
-            "saved_logs/plot_attn_stress.png",
-            "saved_logs/plot_clock_stress.png",
-            "saved_logs/plot_clock_attn.png"
-        ]
-    }
-
-# Optional static file serving endpoint for saved PNG files
-@app.get("/static/{filename}")
-async def serve_static(filename: str):
-    file_path = os.path.join("saved_logs", filename)
-    if os.path.isfile(file_path):
-        return FileResponse(file_path, media_type="image/png")
-    return HTMLResponse(status_code=404, content="File not found")
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("src.simulation:app", host="0.0.0.0", port=8000, reload=True)
-# --------------------
 # Persistent File-based Job System for Batch Agent Simulations
 # --------------------
 import glob
 
 # --- Helper functions for job state persistence ---
 def save_job_state(job_id: str, state: dict):
-    """Save the job state to disk (jobs/{job_id}.json)."""
+    """Save the job state to disk (jobs/{job_id}.json),
+    and also mirror to current_batches if running/paused."""
     path = os.path.join(JOBS_DIR, f"{job_id}.json")
     with open(path, "w") as f:
         json.dump(state, f, indent=2)
+    # Also persist to current jobs folder
+    current_path = os.path.join(CURRENT_JOBS_DIR, f"{job_id}.json")
+    with open(current_path, "w") as cf:
+        json.dump(state, cf, indent=2)
 
 def load_job_state(job_id: str) -> dict:
     """Load the job state from disk."""
@@ -640,6 +524,11 @@ def mark_job_complete(job_id: str, agent_idx: int, result: Any):
         if all_done:
             state["status"] = "complete"
         save_job_state(job_id, state)
+        # Remove from current jobs when job fully complete
+        try:
+            os.remove(os.path.join(CURRENT_JOBS_DIR, f"{job_id}.json"))
+        except FileNotFoundError:
+            pass
 
 def set_job_status(job_id: str, status: str):
     """Set job overall status."""
@@ -670,15 +559,24 @@ def _run_agent_simulation(job_id: str, agent_idx: int, agent_params: dict):
         memory_decay = agent_params.get("memory_decay", 0.01)
         memory_prune_threshold = agent_params.get("memory_prune_threshold", 0.2)
         low_salience_var_rate = agent_params.get("low_salience_var_rate", 0.1)
+        event_rate = agent_params.get("event_rate", 3)
         # For progress reporting
         total = episodes * repetitions
         progress = 0
         all_logs = []
         for rep in range(repetitions):
+            # Check for cancellation
+            state = load_job_state(job_id)
+            if state.get("status") == "cancelled":
+                # Mark this agent as cancelled and exit
+                state["agents"][agent_idx]["status"] = "cancelled"
+                save_job_state(job_id, state)
+                return
             logs = run_simulation(
                 total_ticks=episodes,
                 salience_decay=salience_decay,
                 highly_variable_rate=high_salience_var_rate,
+                event_rate=event_rate,
                 memory_buffer_size=memory_buffer_size,
                 memory_decay=memory_decay,
                 memory_prune_threshold=memory_prune_threshold,
@@ -779,11 +677,38 @@ async def job_action_endpoint(job_id: str, req: JobActionRequest):
             set_job_status(job_id, "running")
         elif action == "cancel":
             set_job_status(job_id, "cancelled")
+            # Remove from current jobs when cancelled
+            try:
+                os.remove(os.path.join(CURRENT_JOBS_DIR, f"{job_id}.json"))
+            except FileNotFoundError:
+                pass
         else:
             raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
         return {"status": "success", "job_id": job_id, "action": action}
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Job not found")
+
+# --------------------
+# /run endpoint for trial simulation
+# --------------------
+@app.post("/run", response_model=dict)
+async def run_trial_endpoint(params: RunParams):
+    """
+    Synchronous trial simulation endpoint.
+    """
+    # Run a single trial with the given parameters
+    logs = run_simulation(
+        total_ticks=params.episodes,
+        salience_decay=params.salience_decay,
+        highly_variable_rate=params.high_salience_var_rate,
+        event_rate=params.event_rate,
+        memory_buffer_size=params.memory_buffer_size,
+        memory_decay=params.memory_decay,
+        memory_prune_threshold=params.memory_prune_threshold,
+        low_salience_var_rate=params.low_salience_var_rate,
+    )
+    # Return status and nested data (one repetition)
+    return {"status": "complete", "data": [logs]}
 
 # --------------------
 # /job-result/{job_id} endpoint
@@ -812,3 +737,25 @@ async def job_result_endpoint(job_id: str):
         }
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Job not found")
+
+# --------------------
+# Fast endpoint for current jobs lookup
+# --------------------
+
+# Place this endpoint just below the jobs list routes:
+@app.get("/current-jobs")
+async def list_current_jobs():
+    """
+    Return only running or paused batch job states for quick UI lookup.
+    """
+    jobs = []
+    for fname in os.listdir(CURRENT_JOBS_DIR):
+        path = os.path.join(CURRENT_JOBS_DIR, fname)
+        try:
+            with open(path, 'r') as f:
+                state = json.load(f)
+            if state.get("status") in ("running", "paused"):
+                jobs.append(state)
+        except Exception:
+            continue
+    return jobs

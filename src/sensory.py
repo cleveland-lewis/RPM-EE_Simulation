@@ -32,7 +32,8 @@ class SensoryInputSystem:
         salience_decay=0.01,
         low_salience_threshold=None,
         high_salience_threshold=None,
-        highly_variable_rate=0.1
+        highly_variable_rate=0.1,
+        event_rate: int = 3
     ):
         """
         Initialize the sensory input system with parameters controlling sensory generation,
@@ -52,6 +53,7 @@ class SensoryInputSystem:
         - low_salience_threshold: float or None, threshold below which events are considered low salience
         - high_salience_threshold: float or None, threshold above which events are highly salient
         - highly_variable_rate: float, probability of generating rare, highly variable sensory events
+        - event_rate: int, number of sensory events generated per tick
         """
 
         # Initialize internal clock and state management
@@ -67,6 +69,8 @@ class SensoryInputSystem:
         self.intensity_range = intensity_range
         self.duration_range = duration_range
         self.highly_variable_rate = highly_variable_rate
+        # Rate of sensory events per tick, configured via batch UI
+        self.event_rate = event_rate
 
         # Randomize salience thresholds if not provided, to simulate individual variability
         if low_salience_threshold is None:
@@ -195,6 +199,10 @@ class SensoryInputSystem:
         # Add highly variable events rarely to simulate unexpected stimuli
         if random.random() < self.highly_variable_rate:
             events.extend(self._highly_variable_events())
+
+        # Enforce configured event rate
+        if len(events) > self.event_rate:
+            events = events[:self.event_rate]
 
         return events
 
