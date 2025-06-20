@@ -199,28 +199,29 @@
       font-weight: 700;
     }
 
-    /* Hamburger Styles (from style.css, adapted for fixed positioning) */
+    /* Hamburger Styles (Wikipedia SVG style) */
     .hamburger {
       position: fixed;
       top: 18px;
       right: 24px;
-      width: 38px;
-      height: 38px;
-      border: 2.5px solid #000;
-      border-radius: 0;
-      cursor: pointer;
+      width: 24px;
+      height: 24px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-around;
       align-items: center;
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
       z-index: 1001;
     }
     .hamburger-bar {
-      width: 22px;
-      height: 2.5px;
-      background: #111;
-      margin: 4.5px 0;
-      border-radius: 2px;
+      width: 24px;
+      height: 2px;
+      background: #000;
+      margin: 3px 0;
+      border-radius: 0;
       transition: background 0.15s;
     }
     .menu-dropdown {
@@ -498,7 +499,7 @@
             <div class="stat-value" id="statClock">000</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Simulation Uptime</div>
+            <div class="stat-label">Uptime</div>
             <div class="stat-value" id="statUptime">00:00.00</div>
           </div>
         </div>

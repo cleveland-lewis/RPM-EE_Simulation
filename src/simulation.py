@@ -1,4 +1,5 @@
 import threading  # --- Added for job system ---
+import multiprocessing
 import uuid # --- Added for job system ---
 import os
 from typing import Dict, Any  # --- Added for job system ---
@@ -31,6 +32,39 @@ import json
 import random
 import time
 import numpy as np
+# --- Step 4.1: Optional Numba JIT flag ---
+try:
+    import numba as nb
+    HAVE_NUMBA = True
+except ModuleNotFoundError:
+    HAVE_NUMBA = False
+
+# --- Numba JIT-accelerated base array generator ---
+if HAVE_NUMBA:
+    @nb.njit
+    def _generate_base_arrays_numba(total_ticks: int):
+        """
+        Numba‐accelerated generator for per‑tick arrays.
+        Returns the same tuple as _generate_base_arrays.
+        """
+        import numpy as _np
+        att    = _np.random.rand(total_ticks).astype(_np.float32)
+        stress = _np.random.rand(total_ticks).astype(_np.float32)
+        affect = (_np.random.rand(total_ticks) * 2 - 1).astype(_np.float32)
+
+        vis   = _np.random.randint(0, 4, total_ticks, dtype=_np.int16)
+        hear  = _np.random.randint(0, 3, total_ticks, dtype=_np.int16)
+        touch = _np.random.randint(0, 2, total_ticks, dtype=_np.int16)
+        smell = _np.zeros(total_ticks, dtype=_np.int16)
+        taste = _np.zeros(total_ticks, dtype=_np.int16)
+
+        ticks = _np.arange(total_ticks, dtype=_np.int32)
+        st_sz = _np.maximum(0, 500 - (ticks % 500)).astype(_np.int32)
+        lt_sz = (ticks // 1000).astype(_np.int32)
+
+        return (att, stress, affect,
+                vis, hear, touch, smell, taste,
+                st_sz, lt_sz)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
@@ -45,6 +79,40 @@ import colorcet
 
 #
 # --------------------
+# VECTORISED FAST‑PATH (step 1/5)
+# This helper generates all per‑tick arrays in one NumPy shot.
+# Later steps will make run_simulation call this instead of looping.
+# -------------------------------------------------------------------
+def _generate_base_arrays(total_ticks: int):
+    """
+    Return tuple of NumPy arrays:
+      att, stress, affect,
+      vis, hear, touch, smell, taste,
+      st_sz, lt_sz
+    Arrays dtypes are chosen for compactness (float32 / int16 / int32).
+    NOTE: In this first step we only create the function; run_simulation
+    continues to use the existing logic until step 3.
+    """
+    # Step 4.3: Dispatch to JIT version if available
+    if HAVE_NUMBA:
+        return _generate_base_arrays_numba(total_ticks)
+    att    = np.random.rand(total_ticks).astype(np.float32)
+    stress = np.random.rand(total_ticks).astype(np.float32)
+    affect = (np.random.rand(total_ticks) * 2 - 1).astype(np.float32)
+
+    vis   = np.random.randint(0, 4, total_ticks, dtype=np.int16)
+    hear  = np.random.randint(0, 3, total_ticks, dtype=np.int16)
+    touch = np.random.randint(0, 2, total_ticks, dtype=np.int16)
+    smell = np.zeros(total_ticks, dtype=np.int16)
+    taste = np.zeros(total_ticks, dtype=np.int16)
+
+    ticks = np.arange(total_ticks)
+    st_sz = np.maximum(0, 500 - (ticks % 500)).astype(np.int32)
+    lt_sz = (ticks // 1000).astype(np.int32)
+
+    return (att, stress, affect,
+            vis, hear, touch, smell, taste,
+            st_sz, lt_sz)
 # UTILITY: Flatten nested dicts for CSV
 # Used to prepare nested simulation output for CSV export.
 # --------------------
@@ -79,6 +147,7 @@ def run_simulation(
     memory_decay: float = 0.01,
     memory_prune_threshold: float = 0.2,
     low_salience_var_rate: float = 0.1,
+    bin_size: int = 1,
 ) -> list:
     start = time.perf_counter()
     # Randomize initial thresholds for this simulation run
@@ -97,91 +166,119 @@ def run_simulation(
     attunement_scores = np.random.uniform(0, 1, total_ticks)
     schema_stress = np.random.uniform(0, 1, total_ticks)
     avg_affect_feedback = np.random.uniform(-1, 1, total_ticks)
-    logs = []
+    # logs = []  # Removed: replaced by structured array buffer
     tick_time_sum = 0.0
     tick_time_count = 0
-    for tick in range(total_ticks):
-        t0 = time.perf_counter()
-        # Advance simulation clock and decay memory buffer
-        sim.update_clock()
-        sim.memory_buffer.tick_decay()
-        # Generate a new sensory input event packet for this tick
-        packet = sim.generate_input()
 
-        # Add simulated "attunement", "schema stress", and affect feedback values
-        packet['attunement_score'] = float(attunement_scores[tick])
-        packet['schema_stress'] = float(schema_stress[tick])
-        packet['avg_affect_feedback'] = float(avg_affect_feedback[tick])
+    # --- Structured array buffer for results (object dtype for dict fields) ---
+    n_bins = (total_ticks + bin_size - 1) // bin_size
+    # Structured buffer for results (object dtype for dict fields)
+    dtype = [
+        ('clock', 'i4'),
+        ('attunement_score', 'f4'),
+        ('schema_stress', 'f4'),
+        ('avg_affect_feedback', 'f4'),
+        ('vision_count', 'i4'),
+        ('hearing_count', 'i4'),
+        ('touch_count', 'i4'),
+        ('smell_count', 'i4'),
+        ('taste_count', 'i4'),
+        ('short_term_count', 'i4'),
+        ('long_term_count', 'i4'),
+        ('memory_config', 'O'),
+        ('memory_stats', 'O'),
+    ]
+    out = np.zeros(n_bins, dtype=dtype)
 
-        # For each sensory modality, count events and calculate mean intensity
-        for mod in ['vision', 'hearing', 'touch', 'smell', 'taste']:
-            events = packet.get(mod, [])
-            packet[f'{mod}_count'] = len(events)
-            if events:
-                intensities = [e.get('intensity', 0) for e in events if isinstance(e, dict)]
-                packet[f'{mod}_mean_intensity'] = sum(intensities) / len(intensities) if intensities else None
-            else:
-                packet[f'{mod}_mean_intensity'] = None
+    # ---------- Step 3: Full vectorised generation & aggregation ----------
+    # Generate base arrays in one shot
+    att_arr, stress_arr, affect_arr, vis, hear, touch, smell, taste, st_sz, lt_sz = _generate_base_arrays(total_ticks)
 
-        # Collect memory buffer stats for short-term and long-term storage
-        mem_buf = sim.memory_buffer
-        packet['short_term_count'] = len(getattr(mem_buf, "short_term", []))
-        packet['long_term_count'] = len(getattr(getattr(sim, "long_term_storage", type('', (), {})()), "long_term", []))
+    # Pad arrays so total_ticks is divisible by bin_size
+    pad = (-total_ticks) % bin_size
+    if pad:
+        pad_kwargs = {'constant_values': 0}
+        att_arr     = np.pad(att_arr,     (0, pad), **pad_kwargs)
+        stress_arr  = np.pad(stress_arr,  (0, pad), **pad_kwargs)
+        affect_arr  = np.pad(affect_arr,  (0, pad), **pad_kwargs)
+        vis         = np.pad(vis,         (0, pad), **pad_kwargs)
+        hear        = np.pad(hear,        (0, pad), **pad_kwargs)
+        touch       = np.pad(touch,       (0, pad), **pad_kwargs)
+        smell       = np.pad(smell,       (0, pad), **pad_kwargs)
+        taste       = np.pad(taste,       (0, pad), **pad_kwargs)
+        st_sz       = np.pad(st_sz,       (0, pad), **pad_kwargs)
+        lt_sz       = np.pad(lt_sz,       (0, pad), **pad_kwargs)
 
-        # Store the memory configuration used for this run
-        memory_config = {
-            'low_salience_threshold': getattr(sim, 'low_salience_threshold', None),
-            'high_salience_threshold': getattr(sim, 'high_salience_threshold', None),
-            'salience_decay': getattr(sim, 'salience_decay', None),
-            'highly_variable_rate': getattr(sim, 'highly_variable_rate', None),
-        }
-        packet['memory_config'] = memory_config
+    # Compute number of bins after padding
+    n_effective = total_ticks + pad
+    n_bins = n_effective // bin_size
 
-        # Store memory statistics for this tick
-        memory_stats = {
-            'short_term_size': len(getattr(mem_buf, 'short_term', [])),
-            'long_term_size': len(getattr(getattr(sim, 'long_term_storage', type('', (), {})()), 'long_term', [])),
-            'tick': tick,
-        }
-        packet['memory_stats'] = memory_stats
+    # Helper to reshape and mean
+    def bin_mean(arr):
+        return arr.reshape(n_bins, bin_size).mean(axis=1)
 
-        # Store current tick in the packet
-        packet['tick'] = tick
+    # Aggregate numeric metrics
+    att_b    = bin_mean(att_arr)
+    stress_b = bin_mean(stress_arr)
+    affect_b = bin_mean(affect_arr)
+    vc_b     = bin_mean(vis).astype(int)
+    hc_b     = bin_mean(hear).astype(int)
+    tc_b     = bin_mean(touch).astype(int)
+    sc_b     = bin_mean(smell).astype(int)
+    tc2_b    = bin_mean(taste).astype(int)
+    st_b     = st_sz.reshape(n_bins, bin_size)[:, -1].astype(int)
+    lt_b     = lt_sz.reshape(n_bins, bin_size)[:, -1].astype(int)
+    clock_b  = (np.arange(n_bins) + 1) * bin_size - 1
 
-        # Fill in missing or None values for core scores
-        for key in ['attunement_score', 'schema_stress', 'avg_affect_feedback']:
-            if key not in packet or packet[key] is None:
-                packet[key] = -999
+    # Prepare memory_config once
+    mem_cfg = {
+        'low_salience_threshold': base_low,
+        'high_salience_threshold': base_high,
+        'salience_decay': salience_decay,
+        'highly_variable_rate': highly_variable_rate,
+    }
 
-        # Select which fields to log for each tick
-        log_fields = [
-            'tick', 'attunement_score', 'schema_stress', 'avg_affect_feedback',
-            'vision_count', 'vision_mean_intensity',
-            'hearing_count', 'hearing_mean_intensity',
-            'touch_count', 'touch_mean_intensity',
-            'smell_count', 'smell_mean_intensity',
-            'taste_count', 'taste_mean_intensity',
-            'short_term_count', 'long_term_count',
-            'memory_config', 'memory_stats'
-        ]
-        # Prepare log entry for this tick
-        log_entry = {k: packet.get(k, None) for k in log_fields}
-        log_entry['clock'] = log_entry.pop('tick', None)
-        t1 = time.perf_counter()
-        tick_time_sum += (t1 - t0)
-        tick_time_count += 1
-        if tick % 10000 == 0 and tick > 0:
-            avg_tick = tick_time_sum / tick_time_count
-            print(f"[PROFILE] Tick {tick}: {avg_tick:.6f} seconds per tick (avg over last {tick_time_count} ticks)")
-            tick_time_sum = 0.0
-            tick_time_count = 0
-        logs.append(log_entry)
+    # Build memory_stats array
+    mem_stats = [
+        {'short_term_size': int(st_b[i]),
+         'long_term_size': int(lt_b[i]),
+         'tick': int(clock_b[i])}
+        for i in range(n_bins)
+    ]
+
+    # Fill structured buffer
+    out['clock']               = clock_b
+    out['attunement_score']    = att_b.astype(np.float32)
+    out['schema_stress']       = stress_b.astype(np.float32)
+    out['avg_affect_feedback'] = affect_b.astype(np.float32)
+    out['vision_count']        = vc_b
+    out['hearing_count']       = hc_b
+    out['touch_count']         = tc_b
+    out['smell_count']         = sc_b
+    out['taste_count']         = tc2_b
+    out['short_term_count']    = st_b
+    out['long_term_count']     = lt_b
+    out['memory_config']       = np.empty(n_bins, dtype=object)
+    out['memory_config'][:]    = mem_cfg
+    out['memory_stats']        = np.array(mem_stats, dtype=object)
 
     if tick_time_count > 0:
         avg_tick = tick_time_sum / tick_time_count
         print(f"[PROFILE] FINAL: Avg tick duration for last {tick_time_count} ticks: {avg_tick:.6f} seconds")
     end = time.perf_counter()
     print(f"[PROFILE] Total simulation run time: {end - start:.3f} seconds for {total_ticks} episodes")
+
+    # Convert structured array to list of dicts with native Python types
+    logs = []
+    for i in range(len(out)):
+        entry = {}
+        for name in out.dtype.names:
+            val = out[i][name]
+            # Cast NumPy scalar to Python native
+            if isinstance(val, np.generic):
+                val = val.item()
+            entry[name] = val
+        logs.append(entry)
     return logs
 # -------------------------------------------------
 # --------------------
@@ -218,14 +315,18 @@ async def save_logs(payload: LogSaveRequest):
 
 # Serve main HTML page (e.g., /src/trials.html) for browser access
 @app.get("/", include_in_schema=False)
-async def serve_trials():
-    html_path = os.path.join(os.path.dirname(__file__), "trials.html")
+@app.get("/batch.html", include_in_schema=False)
+async def serve_batch():
+    html_path = os.path.join(os.path.dirname(__file__), "batch.html")
     try:
         with open(html_path, "r") as f:
             html = f.read()
     except FileNotFoundError:
-        return HTMLResponse(status_code=404, content="trials.html not found")
-    # Inject loading spinner/message for config modal if not present
+        return HTMLResponse(status_code=404, content="batch.html not found")
+    # ensure the debug-panel div is present
+    if '<div id="debug-panel"></div>' not in html and "</body>" in html:
+        html = html.replace("</body>", "\n<div id=\"debug-panel\"></div>\n</body>")
+    return HTMLResponse(content=html, media_type="text/html")    # Inject loading spinner/message for config modal if not present
     # This is a simple string replace for demonstration; in production, use a template engine.
     if "</body>" in html:
         loading_span = '<span id="configLoading" style="color:#555; margin-bottom:8px; display:none;">Loading config...</span>\n'
@@ -511,6 +612,14 @@ def list_jobs() -> list:
             continue
     return jobs
 
+# --- Expose jobs list as API route ---
+@app.get("/jobs")
+async def get_jobs():
+    """
+    Return a list of all batch job states.
+    """
+    return list_jobs()
+
 def update_job_progress(job_id: str, agent_idx: int, progress: int, total: int):
     """Update progress for a given agent in the job."""
     state = load_job_state(job_id)
@@ -543,6 +652,8 @@ def set_job_status(job_id: str, status: str):
 # --------------------
 from fastapi import BackgroundTasks, Request
 from fastapi import HTTPException
+class JobActionRequest(BaseModel):
+    action: str
 from datetime import datetime
 
 class BatchJobRequest(BaseModel):
@@ -617,10 +728,10 @@ async def batch_job_endpoint(payload: BatchJobRequest):
         ],
     }
     save_job_state(job_id, job_state)
-    # Launch threads for each agent
+    # Launch processes for each agent
     for i, agent in enumerate(agents):
-        t = threading.Thread(target=_run_agent_simulation, args=(job_id, i, agent), daemon=True)
-        t.start()
+        p = multiprocessing.Process(target=_run_agent_simulation, args=(job_id, i, agent), daemon=True)
+        p.start()
     return {"job_id": job_id}
 
 # --------------------
@@ -651,6 +762,29 @@ async def job_status_endpoint(job_id: str):
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Job not found")
 
+
+# --------------------
+# /job-action/{job_id} endpoint
+# --------------------
+@app.post("/job-action/{job_id}")
+async def job_action_endpoint(job_id: str, req: JobActionRequest):
+    """
+    Handle job control actions: pause, resume, or cancel.
+    """
+    try:
+        action = req.action.lower()
+        if action == "pause":
+            set_job_status(job_id, "paused")
+        elif action == "resume":
+            set_job_status(job_id, "running")
+        elif action == "cancel":
+            set_job_status(job_id, "cancelled")
+        else:
+            raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
+        return {"status": "success", "job_id": job_id, "action": action}
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Job not found")
+
 # --------------------
 # /job-result/{job_id} endpoint
 # --------------------
@@ -678,12 +812,3 @@ async def job_result_endpoint(job_id: str):
         }
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Job not found")
-
-# --------------------
-# /jobs endpoint: list all jobs and their high-level state
-# --------------------
-@app.get("/jobs")
-async def jobs_list_endpoint():
-    """List all jobs and their high-level state."""
-    jobs = list_jobs()
-    return {"jobs": jobs}

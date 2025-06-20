@@ -30,6 +30,7 @@
       padding: 1rem 2rem;
       background: #fffdf9;
       box-shadow: 6px 6px 0 #000;
+      position: relative;
     }
 
     .title-bar {
@@ -197,62 +198,48 @@
       display: none;
     }
 
-    /* --- Hamburger + Dropdown Styles --- */
+    /* --- Hamburger + Dropdown Styles (Wikipedia SVG style) --- */
     .hamburger {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 4.5px !important;
-      width: 38px !important;
-      height: 38px !important;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      background: transparent;
+      border: none;
+      padding: 0;
       cursor: pointer;
-      padding: 12px 10px;
-      border-radius: 6px;
-      border: 1px solid #000;
-      background: #faf8f0;
-      margin-left: 1rem;
-      z-index: 10;
-    }
-    .hamburger:focus {
-      outline: 2px solid #000;
+      z-index: 1001;
     }
     .hamburger-bar {
-      width: 22px !important;
-      height: 2.5px !important;
-      background-color: #111 !important;
-      margin: 4.5px 0 !important;
-      border-radius: 2px !important;
-      transition: background 0.15s ease-in-out !important;
+      width: 24px;
+      height: 2px;
+      background: #000;
+      margin: 3px 0;
+      border-radius: 0;
+      transition: background 0.15s;
     }
     .menu-dropdown {
-      position: absolute;
-      top: 32px;
-      right: 0;
-      background: #fffdf9;
-      border: 1px solid #000;
-      box-shadow: 4px 4px 0 #000;
-      border-radius: 10px;
       display: none;
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0.5rem;
+      min-width: 162px;
+      border: 1.5px solid #000;
+      border-radius: 6px;
+      box-shadow: 4px 4px 0 #000;
+      z-index: 1002;
+      font-family: Menlo, Monaco, Consolas, monospace;
+      padding: 0.5rem 0.75rem;
       flex-direction: column;
-      min-width: 160px;
-      z-index: 20;
-      padding: 0.5rem 0;
+      gap: 0.5rem;
     }
-    .menu-dropdown a, .menu-dropdown button {
-      text-align: match-parent;
-      padding: 0.75rem 1rem;
-      border: none;
-      background: none;
-      font-family: inherit;
-      font-size: 1rem;
-      cursor: pointer;
-      color: #111;
-      outline: none;
-      border-radius: 0;
-    }
-    .menu-dropdown a:hover, .menu-dropdown button:hover {
-      background: #f4ece2;
+    .menu-dropdown.show {
+      display: flex;
     }
   </style>
 </head>
