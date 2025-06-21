@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <title>Batch Simulation</title>
-  <!-- Chart.js for offline histogram rendering -->
-  <script src="js/chart.min.js"></script>
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
+:  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
 :root {
   --primary-color: #2C3E50;
   --secondary-color: #186fbc;
@@ -680,6 +680,12 @@
             <h3>Distribution of Final Long-term Memory Size</h3>
             <canvas id="longTermCanvas"></canvas>
           </div>
+
+          <!-- ─── New Cluster Graph ───────────────────────────────── -->
+          <div class="graph-island">
+            <h3>Attunement vs. Stress Cluster</h3>
+            <canvas id="clusterCanvas"></canvas>
+          </div>
         </div>
         <h2 id="spreadsheet-title">Raw Data Spreadsheet</h2>
         <div id="spreadsheet"></div>
@@ -700,6 +706,31 @@
     </div>
   </div>
   <script>
+    // Quick runtime check for Chart.js presence
+    if (!window.Chart) {
+      console.warn('Chart.js not detected — graphs will not render.');
+    }
+    // Register scatter plot components for Chart.js
+    if (window.Chart) {
+      Chart.register(
+        Chart.BarController,
+        Chart.BarElement,
+        Chart.CategoryScale,
+        Chart.LinearScale,
+        Chart.Title,
+        Chart.Tooltip,
+        Chart.Legend,
+        // Scatter plot components
+        Chart.ScatterController,
+        Chart.PointElement,
+        Chart.LineElement
+      );
+    }
+    // Global palette for consistent agent colouring across every chart
+    const agentColors = [
+      '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+      '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'
+    ];
     // Global polling interval handle
     let pollInterval = null;
     const API_BASE = 'http://127.0.0.1:8000';
@@ -1039,6 +1070,12 @@ let agents = [
       const runBatchBtn = document.getElementById("runBatchBtn");
       let lastStartedJobId = null;
       runBatchBtn.addEventListener("click", async function() {
+        // --- BEGIN: Validate agents count before running batch ---
+        if (!Array.isArray(agents) || agents.length < 2) {
+          alert('You must configure at least TWO agents before starting a batch.');
+          return;
+        }
+        // --- END: Validation ---
         debugLog("Run Simulation button clicked.");
         // Start uptime timer
         batchStartTime = Date.now();
@@ -1339,10 +1376,24 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
       lastResults = payload.results;  // store for spreadsheet/export
       if (payload.status === 'complete') {
         debugLog(`Result payload: ${JSON.stringify(payload)}`);
-        // Flatten all agent run logs into a single array of entries
-        const allRuns = payload.results.flatMap(agent => agent.result.flat());
+        // Robust flatten with agentIndex annotation
+        const allRuns = [];
+        payload.results.forEach((agent, agentIdx) => {
+          if (Array.isArray(agent.result)) {
+            agent.result.forEach(repLogs => {
+              if (Array.isArray(repLogs)) {
+                repLogs.forEach(entry => {
+                  entry.agentIndex = agentIdx;
+                  allRuns.push(entry);
+                });
+              }
+            });
+          }
+        });
         // Render distributions from raw entries
         renderBatchAggregatedGraphs(allRuns);
+        // Also render the raw data table
+        renderRawTable(allRuns);
         // Enable Save/Export buttons
         document.getElementById('saveBtn').disabled = false;
         document.getElementById('exportCsvBtn').disabled = false;
@@ -1427,55 +1478,109 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
       a.click();
       a.remove();
     });
+    /**
+     * Render a stacked histogram where each agent’s contribution
+     * is shown in a consistent colour.
+     */
+    function renderStackedHistogram(canvasId, groupedData, title, xLabel, yLabel = 'Count') {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+
+      // Destroy any previous chart instance on this canvas
+      if (canvas.chart) {
+        canvas.chart.destroy();
+      }
+
+      const ctx = canvas.getContext('2d');
+
+      // Flatten values to compute global bin edges
+      const allVals = Object.values(groupedData).flat();
+      if (allVals.length === 0) return;
+
+      // Declare bins, binW, labels, and totals locally
+      const bins = 20;
+      const min = Math.min(...allVals);
+      const max = Math.max(...allVals);
+      const binW = (max - min) / bins;
+      const labels = Array.from({ length: bins },
+                        (_, i) => (min + i * binW).toFixed(2));
+
+      const datasets = [];
+      Object.entries(groupedData).forEach(([agent, values]) => {
+        const counts = Array(bins).fill(0);
+        values.forEach(v => {
+          const idx = Math.min(bins - 1, Math.floor((v - min) / binW));
+          counts[idx] += 1;
+        });
+        const agentIdx = parseInt(agent);
+        datasets.push({
+          label: `Agent ${agentIdx + 1}`,
+          data: counts,
+          backgroundColor: Array(bins).fill(agentColors[agentIdx % agentColors.length]),
+          borderColor: agentColors[agentIdx % agentColors.length],
+          borderWidth: 1,
+          stack: 'Stack 0'
+        });
+      });
+
+      try {
+        canvas.chart = new Chart(canvas.getContext("2d"), {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: datasets
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              title:  { display: true, text: title }
+            },
+            scales: {
+              x: { stacked: true, title: { display: true, text: xLabel } },
+              y: { stacked: true, title: { display: true, text: yLabel } }
+            }
+          }
+        });
+      } catch (err) {
+        console.error('Histogram render error:', err);
+      }
+    }
+
     // Batch‐level distribution plots (Chart.js version)
     function renderBatchAggregatedGraphs(allRuns) {
+      if (!allRuns || allRuns.length === 0) {
+        console.warn('renderBatchAggregatedGraphs: no data');
+        return;
+      }
       // Extract arrays
       const att = allRuns.map(r => r.attunement_score);
       const stress = allRuns.map(r => r.schema_stress);
       const st = allRuns.map(r => r.memory_stats.short_term_size);
       const lt = allRuns.map(r => r.memory_stats.long_term_size);
 
-      // Utility to create histogram data
-      function getHistogramData(arr, bins = 20) {
-        const min = Math.min(...arr);
-        const max = Math.max(...arr);
-        const binWidth = (max - min) / bins;
-        const counts = new Array(bins).fill(0);
-        arr.forEach(v => {
-          const idx = Math.min(bins - 1, Math.floor((v - min) / binWidth));
-          counts[idx]++;
-        });
-        const labels = counts.map((_, i) => (min + binWidth * i).toFixed(2));
-        return { labels, counts };
-      }
+      // Group values by agent for stacked histograms
+      const attByAgent   = {};
+      const stressByAgent= {};
+      const stByAgent    = {};
+      const ltByAgent    = {};
 
-      // Render a chart given canvas ID and data
-      function renderChart(canvasId, dataArr, title) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        const hist = getHistogramData(dataArr);
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: hist.labels,
-            datasets: [{
-              label: title,
-              data: hist.counts,
-              barPercentage: 1.0
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              x: { display: false },
-              y: { beginAtZero: true }
-            },
-            plugins: {
-              legend: { display: false },
-              title: { display: true, text: title }
-            }
-          }
-        });
-      }
+      allRuns.forEach(r => {
+        const idx = r.agentIndex ?? 0;
+        (attByAgent[idx]    ??= []).push(r.attunement_score);
+        (stressByAgent[idx] ??= []).push(r.schema_stress);
+        (stByAgent[idx]     ??= []).push(r.memory_stats.short_term_size);
+        (ltByAgent[idx]     ??= []).push(r.memory_stats.long_term_size);
+      });
+
+      // ─── Update feature‑card statistics ──────────────────────────────
+      const avg = arr => arr.reduce((s, v) => s + v, 0) / (arr.length || 1);
+      document.getElementById('statAttunement').textContent = avg(att).toFixed(2);
+      document.getElementById('statStress').textContent     = avg(stress).toFixed(2);
+
+      // Clock number = highest tick value across all runs
+      const maxClock = allRuns.reduce((m, r) => Math.max(m, r.clock ?? 0), 0);
+      document.getElementById('statClock').textContent = String(maxClock).padStart(3,'0');
 
       // Clear previous canvases
       ['attCanvas','stressCanvas','shortTermCanvas','longTermCanvas'].forEach(id => {
@@ -1486,11 +1591,97 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
         }
       });
 
-      // Render each histogram
-      renderChart('attCanvas', att, 'Mean Attunement Distribution');
-      renderChart('stressCanvas', stress, 'Mean Stress Distribution');
-      renderChart('shortTermCanvas', st, 'Final Short-Term Memory Size');
-      renderChart('longTermCanvas', lt, 'Final Long-Term Memory Size');
+      // Render stacked histograms per agent
+      renderStackedHistogram('attCanvas',      attByAgent,    'Mean Attunement Distribution', 'Mean Attunement');
+      renderStackedHistogram('stressCanvas',   stressByAgent, 'Mean Stress Distribution',     'Mean Stress');
+      renderStackedHistogram('shortTermCanvas',stByAgent,     'Final Short‑Term Memory Size', 'STM Size');
+      renderStackedHistogram('longTermCanvas', ltByAgent,     'Final Long‑Term Memory Size',  'LTM Size');
+
+      // ─── Cluster 2D Heatmap: Attunement vs Stress ─────────────
+      // If no data, clear cluster plot area and return
+      const oldCluster = document.getElementById('clusterCanvas');
+      if (oldCluster) {
+        const parent = oldCluster.parentElement;
+        // Remove any previous Plotly divs
+        let prevDiv = parent.querySelector('div#clusterCanvas');
+        if (prevDiv) parent.removeChild(prevDiv);
+        // Replace canvas with div for Plotly
+        oldCluster.remove();
+        const div = document.createElement('div');
+        div.id = 'clusterCanvas';
+        // Ensure height and width match graph-island style
+        div.style.width = '100%';
+        div.style.height = '340px';
+        parent.appendChild(div);
+      }
+      // Defensive: If no data, do not attempt to plot
+      if (!allRuns || allRuns.length === 0) {
+        const clusterDiv = document.getElementById('clusterCanvas');
+        if (clusterDiv) clusterDiv.innerHTML = '<div style="text-align:center;color:#999;padding:2em;">No data to plot.</div>';
+        return;
+      }
+      // Extract xs and ys
+      const xs = allRuns.map(r => r.attunement_score);
+      const ys = allRuns.map(r => r.schema_stress);
+      // Plotly loader
+      function renderPlotlyHeatmap() {
+        const clusterDiv = document.getElementById('clusterCanvas');
+        if (!clusterDiv) return;
+        // Bin sizing: 30 bins for each axis
+        const xMin = Math.min(...xs), xMax = Math.max(...xs);
+        const yMin = Math.min(...ys), yMax = Math.max(...ys);
+        const trace = {
+          x: xs,
+          y: ys,
+          type: 'histogram2d',
+          colorscale: 'YlOrRd',
+          colorbar: {
+            title: 'Count',
+            titleside: 'right'
+          },
+          xbins: {
+            start: xMin,
+            end: xMax,
+            size: (xMax - xMin) / 30 || 1
+          },
+          ybins: {
+            start: yMin,
+            end: yMax,
+            size: (yMax - yMin) / 30 || 1
+          },
+          zauto: true,
+          hovertemplate:
+            'Attunement: %{x:.2f}<br>Stress: %{y:.2f}<br>Count: %{z}<extra></extra>',
+        };
+        const layout = {
+          margin: { t: 40, l: 60, r: 20, b: 60 },
+          height: 340,
+          title: { text: 'Attunement vs. Stress Cluster', font: { size: 16, family: 'Inter,sans-serif', weight: 'bold' } },
+          xaxis: { title: { text: 'Mean Attunement', font: { size: 14, family: 'Inter,sans-serif' } } },
+          yaxis: { title: { text: 'Mean Stress', font: { size: 14, family: 'Inter,sans-serif' } } },
+          hovermode: 'closest'
+        };
+        window.Plotly.newPlot(clusterDiv, [trace], layout, {responsive: true});
+      }
+      // Plotly loader: If not present, load and retry
+      function ensurePlotlyAndRender() {
+        if (window.Plotly && typeof window.Plotly.newPlot === 'function') {
+          renderPlotlyHeatmap();
+        } else {
+          // Only add script if not already loading
+          if (!document.getElementById('plotly-cdn-script')) {
+            const script = document.createElement('script');
+            script.id = 'plotly-cdn-script';
+            script.src = 'https://cdn.plot.ly/plotly-2.24.2.min.js';
+            script.onload = renderPlotlyHeatmap;
+            document.body.appendChild(script);
+          } else {
+            // Wait and retry
+            setTimeout(ensurePlotlyAndRender, 300);
+          }
+        }
+      }
+      ensurePlotlyAndRender();
     }
 </script>
 </body>

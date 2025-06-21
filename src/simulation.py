@@ -4,6 +4,7 @@ import uuid # --- Added for job system ---
 import os
 import json
 from typing import Dict, Any  # --- Added for job system ---
+from filelock import FileLock
 JOBS_DIR = "jobs"  # --- Directory for persistent job files ---
 os.makedirs(JOBS_DIR, exist_ok=True)  # Ensure jobs dir exists
 # Directory for current jobs (active/running/paused jobs)
@@ -36,6 +37,14 @@ import json
 import random
 import time
 import numpy as np
+# GPU dispatch threshold: use GPU for large simulations
+GPU_TICK_THRESHOLD = 1_000_000
+
+try:
+    import cupy as cp
+    USE_CUPY = True
+except ImportError:
+    USE_CUPY = False
 # --- Step 4.1: Optional Numba JIT flag ---
 try:
     import numba as nb
@@ -69,6 +78,29 @@ if HAVE_NUMBA:
                 vis, hear, touch, smell, taste,
                 st_sz, lt_sz)
 
+# --- CuPy-based GPU base array generator ---
+def _generate_base_arrays_gpu(total_ticks: int):
+    """CuPy-based generator for per-tick arrays."""
+    xp = cp  # alias for CuPy
+    att    = xp.random.rand(total_ticks, dtype=xp.float32)
+    stress = xp.random.rand(total_ticks, dtype=xp.float32)
+    affect = (xp.random.rand(total_ticks, dtype=xp.float32) * 2 - 1)
+
+    vis   = xp.random.randint(0, 4, total_ticks, dtype=xp.int16)
+    hear  = xp.random.randint(0, 3, total_ticks, dtype=xp.int16)
+    touch = xp.random.randint(0, 2, total_ticks, dtype=xp.int16)
+    smell = xp.zeros(total_ticks, dtype=xp.int16)
+    taste = xp.zeros(total_ticks, dtype=xp.int16)
+
+    ticks = xp.arange(total_ticks, dtype=xp.int32)
+    st_sz = xp.maximum(0, 500 - (ticks % 500)).astype(xp.int32)
+    lt_sz = (ticks // 1000).astype(xp.int32)
+
+    # Transfer back to host memory
+    return (att.get(), stress.get(), affect.get(),
+            vis.get(), hear.get(), touch.get(), smell.get(), taste.get(),
+            st_sz.get(), lt_sz.get())
+
 # Warm up Numba at startup to avoid compile delay on first real run
 if HAVE_NUMBA:
     _ = _generate_base_arrays_numba(1)
@@ -101,8 +133,12 @@ def _generate_base_arrays(total_ticks: int):
     NOTE: In this first step we only create the function; run_simulation
     continues to use the existing logic until step 3.
     """
+    # Choose GPU path for large simulations if available
+    if USE_CUPY and total_ticks >= GPU_TICK_THRESHOLD:
+        return _generate_base_arrays_gpu(total_ticks)
+
     global HAVE_NUMBA
-    # Step 4.3: Dispatch to JIT version if available, with fallback on error
+    # Dispatch to JIT version if available, with fallback on error
     if HAVE_NUMBA:
         try:
             return _generate_base_arrays_numba(total_ticks)
@@ -466,22 +502,37 @@ import glob
 # --- Helper functions for job state persistence ---
 def save_job_state(job_id: str, state: dict):
     """Save the job state to disk (jobs/{job_id}.json),
-    and also mirror to current_batches if running/paused."""
+    and also mirror to current_batches if running/paused, using atomic writes."""
     path = os.path.join(JOBS_DIR, f"{job_id}.json")
-    with open(path, "w") as f:
-        json.dump(state, f, indent=2)
-    # Also persist to current jobs folder
-    current_path = os.path.join(CURRENT_JOBS_DIR, f"{job_id}.json")
-    with open(current_path, "w") as cf:
-        json.dump(state, cf, indent=2)
+    lock = FileLock(path + ".lock")
+
+    with lock:
+        temp_path = path + ".tmp"
+        with open(temp_path, "w") as f:
+            json.dump(state, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp_path, path)
+
+        # Mirror to CURRENT_JOBS_DIR atomically
+        current_path = os.path.join(CURRENT_JOBS_DIR, f"{job_id}.json")
+        temp_current = current_path + ".tmp"
+        with open(temp_current, "w") as cf:
+            json.dump(state, cf, indent=2)
+            cf.flush()
+            os.fsync(cf.fileno())
+        os.replace(temp_current, current_path)
 
 def load_job_state(job_id: str) -> dict:
-    """Load the job state from disk."""
+    """Load the job state from disk with a shared lock."""
     path = os.path.join(JOBS_DIR, f"{job_id}.json")
     if not os.path.exists(path):
         raise FileNotFoundError(f"Job {job_id} not found")
-    with open(path, "r") as f:
-        return json.load(f)
+
+    lock = FileLock(path + ".lock")
+    with lock:
+        with open(path, "r") as f:
+            return json.load(f)
 
 def list_jobs() -> list:
     """Return a list of all job IDs and their states."""
