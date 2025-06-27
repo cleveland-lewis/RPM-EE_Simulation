@@ -18,11 +18,31 @@ run_test_file () {
   local FILE="$1"
   if [[ -f "$FILE" ]]; then
     echo "▶ Running $(basename "$FILE")"
-    python3 "$FILE"
+    pytest "$FILE"
     return $?
   fi
   return 0  # treat missing file as skip (non‑fatal)
 }
+
+# ─────────────── GPU Support Check ─────────────────
+echo "Checking for CuPy (GPU support)..."
+GPU_STATUS=""
+if python3 - << 'PYTEST_CHECK'
+try:
+    import cupy
+except ImportError:
+    import sys; sys.exit(1)
+PYTEST_CHECK
+then
+    echo "CuPy is installed. GPU integration tests will run."
+    GPU_STATUS="installed"
+else
+    echo "CuPy not found. GPU integration tests will be skipped."
+    GPU_STATUS="skipped"
+fi
+echo "GPU support: $GPU_STATUS"
+echo
+# ───────────────────────────────────────────────────
 
 # ────────────────── 1. Unit tests (pytest) ────────────────────────
 echo "Running pytest unit tests..."
@@ -70,10 +90,10 @@ kill "$API_PID" 2>/dev/null || true
 
 # ────────────────── 7. Exit summary ───────────────────────────────
 if [[ $UNIT_STATUS -eq 0 && $BATCH_STATUS -eq 0 && $TRIAL_STATUS -eq 0 && ${GRAPH_STATUS:-0} -eq 0 ]]; then
-  echo "✅  All tests passed!"
+  echo "All tests passed!"
   exit 0
 else
-  echo "❌  Some tests failed."
+  echo "Some tests failed."
   echo "Unit: $UNIT_STATUS  Batch: $BATCH_STATUS  Trials: $TRIAL_STATUS  Graphs: ${GRAPH_STATUS:-N/A}"
   exit 1
 fi

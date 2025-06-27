@@ -6,12 +6,14 @@
 # based on internal states, facilitating exploration, soothing, and replay behaviors.
 
 import random
+import numpy as np
 from src.salience import SalienceTagger
 from . import memory
 
 class SensoryInputSystem:
     """
-    SensoryInputSystem simulates sensory input across multiple modalities (vision, hearing, touch, smell, taste).
+    SensoryInputSystem simulates sensory input5
+    across multiple modalities (vision, hearing, touch, smell, taste).
     It manages internal states (awake, fatigued, asleep) that influence sensory input patterns,
     and interacts with memory systems for tagging, storing, and consolidating sensory events.
     """
@@ -33,7 +35,11 @@ class SensoryInputSystem:
         low_salience_threshold=None,
         high_salience_threshold=None,
         highly_variable_rate=0.1,
-        event_rate: int = 3
+        low_salience_var_rate: float = 0.1,
+        event_rate: int = 3,
+        memory_buffer_size: int = 1000,
+        memory_decay: float = 0.01,
+        memory_prune_threshold: float = 0.2,
     ):
         """
         Initialize the sensory input system with parameters controlling sensory generation,
@@ -78,8 +84,15 @@ class SensoryInputSystem:
         if high_salience_threshold is None:
             high_salience_threshold = random.uniform(0.7, 0.95)
 
+        # New variability and memory parameters
+        self.low_salience_var_rate = low_salience_var_rate
+        self.memory_buffer_size    = memory_buffer_size
+        self.memory_decay          = memory_decay
+        self.memory_prune_th       = memory_prune_threshold
+
         # Initialize memory buffer with salience thresholds for filtering events
         self.memory_buffer = memory.MemoryBuffer(
+            max_short_term=memory_buffer_size,
             low_salience_threshold=low_salience_threshold,
             high_salience_threshold=high_salience_threshold
         )
@@ -97,6 +110,14 @@ class SensoryInputSystem:
 
         # Define mode weights to probabilistically select exploration, soothing, or replay modes during awake state
         self.mode_weights = {'explore': 0.5, 'soothe': 0.3, 'light_replay': 0.2}
+
+        # ---- Bernoulli retrieval model (Beta‑Bernoulli) counters ----
+        # Slightly wider prior (α=β=5) keeps early posterior near 0.5
+        # so attunement moves gradually instead of spiking.
+        self.alpha0 = 5.0            # prior α
+        self.beta0  = 5.0            # prior β
+        self.retrieval_attempts   = 0
+        self.retrieval_successes  = 0
 
     def update_clock(self):
         """
@@ -347,3 +368,62 @@ class SensoryInputSystem:
         This method can be used to simulate memory recall or deep replay processes.
         """
         return self.long_term_storage.replay()
+
+    # ------------------------------------------------------------------
+    # Lightweight tick used by run_simulation for per‑tick metrics
+    # ------------------------------------------------------------------
+    def tick(self) -> dict:
+        """
+        Advance the clock, generate a few events, decay/prune memory,
+        and return attunement_score, schema_stress, and avg_affect_feedback.
+        Attunement is modelled as the posterior mean probability that a retrieved
+        long‑term cue correctly predicts the next incoming social cue, estimated
+        via a Beta‑Bernoulli process with p = LT / (LT + ST).
+        """
+        # Simple event generation respecting event_rate
+        new_events = self._simulate_senses(
+            count=self.event_rate,
+            modality=random.choice(self.MODALITIES)
+        )
+        tagged = self.salience_tagger.tag_events(new_events)
+        self.memory_buffer.store_events(tagged)
+
+        # Decay and possible consolidation once per tick
+        self.memory_buffer.tick_decay()
+        self.memory_buffer.consolidate_to(self.long_term_storage)
+
+        # Update clock & possibly state
+        self.update_clock()
+
+        # --- Metrics (Bernoulli retrieval model) ---
+        st_sz = len(self.memory_buffer.short_term)
+        lt_sz = len(self.long_term_storage.long_term)
+        denom = max(self.memory_buffer_size, 1)
+
+        # Simulate one "social‑prediction" retrieval attempt.
+        #   Success probability ≈ proportion of familiar (LT) cues among all active cues.
+        #   When many fresh (ST) cues dominate, mismatch risk is higher ⇒ lower p.
+        success_prob = lt_sz / max(lt_sz + st_sz, 1)
+        self.retrieval_attempts += 1
+        if random.random() < success_prob:
+            self.retrieval_successes += 1
+
+        # Posterior mean of Beta(α, β) after observing successes / failures
+        posterior_alpha = self.alpha0 + self.retrieval_successes
+        posterior_beta  = self.beta0  + (self.retrieval_attempts - self.retrieval_successes)
+        attunement_score = posterior_alpha / (posterior_alpha + posterior_beta)
+
+        # Keep existing definition for schema_stress
+        schema_stress = float(np.clip(st_sz / denom, 0.0, 1.0))
+        # Affect feedback: mix attunement (+) and stress (−) plus small noise
+        epsilon = np.random.normal(0.0, 0.05)  # Gaussian noise
+        avg_affect_feedback = 1.4 * attunement_score - 0.8 * schema_stress + epsilon # Now a stronger weight
+        avg_affect_feedback = float(np.clip(avg_affect_feedback, -1.0, 1.0))  # keep in [-1,1]
+
+        return {
+            "attunement_score":    attunement_score,
+            "schema_stress":       schema_stress,
+            "avg_affect_feedback": avg_affect_feedback,
+            "short_term_size":     st_sz,
+            "long_term_size":      lt_sz,
+        }

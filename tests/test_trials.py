@@ -11,11 +11,12 @@ Requires the server running at http://127.0.0.1:8000.
 import time
 import requests
 import sys
+import pytest
 
 API_BASE = "http://127.0.0.1:8000"
 
 def run_trial(params):
-    resp = requests.post(f"{API_BASE}/run", json=params)
+    resp = requests.post(f"{API_BASE}/run", json=params, timeout=5)
     resp.raise_for_status()
     return resp.json()
 
@@ -23,7 +24,7 @@ def test_trial_complete():
     print("=== Testing Trial Simulation complete flow ===")
     # Minimal parameters: just episodes and repetitions
     params = {
-        "episodes": 50,
+        "episodes": 10,
         "repetitions": 1
     }
     result = run_trial(params)

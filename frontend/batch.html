@@ -586,7 +586,7 @@
   #jobs-section h2 {
     margin-bottom: 0.8rem;
   }
-  </style>
+</style>
 </head>
 <body>
   <div class="hamburger" id="hamburgerBtn" tabindex="0" aria-label="Open menu">
@@ -595,11 +595,12 @@
     <div class="hamburger-bar"></div>
   </div>
   <div class="menu-dropdown" id="menuDropdown">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="contact.html">Contact</a>
-    <a href="about.html">About</a>
-    <a href="trials.html">Trials</a>
-    <a href="batch.html">Batch</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="contact.html">Contact</a>
+        <a href="about.html">About</a>
+        <a href="trials.html">Trials</a>
+        <a href="saved_logs.html">Saved Logs</a>
+        <a href="batch.html">Batch</a>
     <button onclick="toggleDevMode()">Toggle Dev Mode</button>
   </div>
   <div class="main-container">
@@ -735,6 +736,9 @@
     let pollInterval = null;
     const API_BASE = 'http://127.0.0.1:8000';
     let currentJobId = null;
+
+    // Holds latest job results for save/export actions
+    let lastResults = null;
 
     function startJobPolling(jobId) {
       if (pollInterval) clearInterval(pollInterval);
@@ -1311,7 +1315,6 @@ let agents = [
     });
 
     // ==== Batch Job Status Polling & Results ====
-let lastResults = null;
 // Save averages when Save button is clicked
 document.getElementById('saveBtn').addEventListener('click', async () => {
   if (!lastResults) return;
@@ -1324,27 +1327,53 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   });
   // Compute averages
   const sum = allLogs.reduce((acc, e) => {
-    acc.att += e.attunement_score;
-    acc.stress += e.schema_stress;
-    acc.affect += e.avg_affect_feedback;
+    acc.att   += e.attunement_score;
+    acc.stress+= e.schema_stress;
     return acc;
-  }, { att: 0, stress: 0, affect: 0 });
+  }, { att: 0, stress: 0 });
   const count = allLogs.length || 1;
   const averages = {
-    avg_attunement: sum.att / count,
-    avg_stress: sum.stress / count,
-    avg_affect: sum.affect / count
+    avg_attunement: +(sum.att    / count).toFixed(4),
+    avg_stress:     +(sum.stress / count).toFixed(4),
+    total_entries:  count
   };
+
+  // Build save‑payload: agents config + summary + full raw results
+  const savePayload = {
+    timestamp: new Date().toISOString(),
+    agents: JSON.parse(JSON.stringify(agents)),   // deep copy
+    summary: averages,
+    results: lastResults   // include raw run data for saving
+  };
+
+  console.log('[DEBUG] Save payload →', savePayload);
+
   try {
     const resp = await fetch(API_BASE + '/save-logs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ logs: [averages] })
+      body: JSON.stringify(savePayload)
     });
-    if (!resp.ok) throw new Error('Failed to save averages');
-    alert('Averages saved to server.');
+    if (!resp.ok) throw new Error('Failed to save log');
+    alert('Saved run to server.');
+    // Also download JSON locally
+    const jsonBlob = new Blob([JSON.stringify(savePayload, null, 2)], { type: 'application/json' });
+    const downloadUrl = URL.createObjectURL(jsonBlob);
+    const downloadLink = document.createElement('a');
+    downloadLink.href = downloadUrl;
+    downloadLink.download = `${savePayload.timestamp}.json`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(downloadUrl);
+    // Disable Save/Export after saving to prevent duplicates
+    document.getElementById('saveBtn').disabled = true;
+    document.getElementById('exportCsvBtn').disabled = true;
+    console.log('[DEBUG] Save completed and buttons disabled.');
+    // Redirect to the Saved Logs page with success flag
+    window.location.href = 'saved_logs.html?status=success';
   } catch (e) {
-    alert('Error saving averages: ' + e.message);
+    alert('Error saving: ' + e.message);
   }
 });
 
@@ -1392,297 +1421,281 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
         });
         // Render distributions from raw entries
         renderBatchAggregatedGraphs(allRuns);
-        // Also render the raw data table
-        renderRawTable(allRuns);
+        // Render the raw data table from the original payload
+        renderRawData(payload.results);
         // Enable Save/Export buttons
         document.getElementById('saveBtn').disabled = false;
         document.getElementById('exportCsvBtn').disabled = false;
       }
     }
+    /* ────────────────────────────
+     * Chart‑helpers
+     * ──────────────────────────── */
 
-    function renderSpreadsheet(results) {
-      const container = document.getElementById('spreadsheet');
-      container.innerHTML = '';
-      const table = document.createElement('table');
-      table.style.borderCollapse = 'collapse';
-      table.style.width = '100%';
-      // determine columns
-      let cols = [];
-      for (const agent of results) {
-        for (const runLogs of agent.result) {
-          if (runLogs.length) {
-            cols = Object.keys(runLogs[0]);
-            break;
-          }
-        }
-        if (cols.length) break;
-      }
-      // header
-      const thead = document.createElement('thead');
-      const headerRow = document.createElement('tr');
-      cols.forEach(c => {
-        const th = document.createElement('th');
-        th.textContent = c;
-        th.style.border = '1px solid #ccc';
-        th.style.padding = '4px';
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      table.appendChild(thead);
-      // body
-      const tbody = document.createElement('tbody');
-      results.forEach(agent => {
-        agent.result.forEach(runLogs => {
-          runLogs.forEach(log => {
-            const tr = document.createElement('tr');
-            cols.forEach(c => {
-              const td = document.createElement('td');
-              td.textContent = log[c] == null ? '' : log[c];
-              td.style.border = '1px solid #ccc';
-              td.style.padding = '4px';
-              tr.appendChild(td);
-            });
-            tbody.appendChild(tr);
-          });
-        });
-      });
-      table.appendChild(tbody);
-      container.appendChild(table);
-    }
-
-    document.getElementById('saveBtn').addEventListener('click', async () => {
-      if (!lastResults) return alert('No results to save.');
-      const res = await fetch('/save-logs', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ results: lastResults })
-      });
-      const json = await res.json();
-      alert(`Logs saved to ${json.filename}`);
-    });
-
-    document.getElementById('exportCsvBtn').addEventListener('click', () => {
-      const rows = [];
-      const table = document.querySelector('#spreadsheet table');
-      if (!table) return alert('No data to export.');
-      table.querySelectorAll('tr').forEach(tr => {
-        const cols = Array.from(tr.children).map(td => td.textContent.replace(/"/g,'""'));
-        rows.push('"' + cols.join('","') + '"');
-      });
-      const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href     = url;
-      a.download = 'simulation_results.csv';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    });
     /**
-     * Render a stacked histogram where each agent’s contribution
-     * is shown in a consistent colour.
+     * Render a stacked histogram per agent using Chart.js.
+     * `groupedData` is an object whose keys are agent indices
+     * and values are arrays of numeric samples.
      */
-    function renderStackedHistogram(canvasId, groupedData, title, xLabel, yLabel = 'Count') {
+    function renderStackedHistogram(
+      canvasId,
+      groupedData,
+      title,
+      xLabel,
+      yLabel = 'Count'
+    ) {
       const canvas = document.getElementById(canvasId);
       if (!canvas) return;
 
-      // Destroy any previous chart instance on this canvas
+      // Destroy any existing chart instance stored on the canvas
       if (canvas.chart) {
         canvas.chart.destroy();
       }
-
       const ctx = canvas.getContext('2d');
 
-      // Flatten values to compute global bin edges
+      // Flatten values to derive global min/max
       const allVals = Object.values(groupedData).flat();
       if (allVals.length === 0) return;
 
-      // Declare bins, binW, labels, and totals locally
-      const bins = 20;
+      const BIN_COUNT = 20;
       const min = Math.min(...allVals);
       const max = Math.max(...allVals);
-      const binW = (max - min) / bins;
-      const labels = Array.from({ length: bins },
-                        (_, i) => (min + i * binW).toFixed(2));
+      const binW = (max - min) / BIN_COUNT || 1;
 
-      const datasets = [];
-      Object.entries(groupedData).forEach(([agent, values]) => {
-        const counts = Array(bins).fill(0);
+      // X‑axis labels are left edges of bins
+      const labels = Array.from({ length: BIN_COUNT }, (_, i) =>
+        (min + i * binW).toFixed(2)
+      );
+
+      const datasets = Object.entries(groupedData).map(([agent, values]) => {
+        const counts = Array(BIN_COUNT).fill(0);
         values.forEach(v => {
-          const idx = Math.min(bins - 1, Math.floor((v - min) / binW));
+          const idx = Math.min(
+            BIN_COUNT - 1,
+            Math.floor((v - min) / binW)
+          );
           counts[idx] += 1;
         });
-        const agentIdx = parseInt(agent);
-        datasets.push({
+        const agentIdx = parseInt(agent, 10);
+        return {
           label: `Agent ${agentIdx + 1}`,
           data: counts,
-          backgroundColor: Array(bins).fill(agentColors[agentIdx % agentColors.length]),
+          backgroundColor: agentColors[agentIdx % agentColors.length],
           borderColor: agentColors[agentIdx % agentColors.length],
           borderWidth: 1,
-          stack: 'Stack 0'
-        });
+          stack: 'Stack 0',
+        };
       });
 
-      try {
-        canvas.chart = new Chart(canvas.getContext("2d"), {
-          type: "bar",
-          data: {
-            labels: labels,
-            datasets: datasets
+      canvas.chart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: title },
           },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { position: 'top' },
-              title:  { display: true, text: title }
-            },
-            scales: {
-              x: { stacked: true, title: { display: true, text: xLabel } },
-              y: { stacked: true, title: { display: true, text: yLabel } }
-            }
-          }
-        });
-      } catch (err) {
-        console.error('Histogram render error:', err);
-      }
+          scales: {
+            x: { stacked: true, title: { display: true, text: xLabel } },
+            y: { stacked: true, title: { display: true, text: yLabel } },
+          },
+        },
+      });
     }
 
-    // Batch‐level distribution plots (Chart.js version)
+    /**
+     * Aggregates all run‑entries and renders:
+     *   – Stacked histograms (attunement, stress, STM, LTM)
+     *   – 2D histogram (attunement vs stress) via Plotly
+     */
     function renderBatchAggregatedGraphs(allRuns) {
       if (!allRuns || allRuns.length === 0) {
         console.warn('renderBatchAggregatedGraphs: no data');
         return;
       }
-      // Extract arrays
-      const att = allRuns.map(r => r.attunement_score);
+
+      // Separate arrays
+      const att    = allRuns.map(r => r.attunement_score);
       const stress = allRuns.map(r => r.schema_stress);
-      const st = allRuns.map(r => r.memory_stats.short_term_size);
-      const lt = allRuns.map(r => r.memory_stats.long_term_size);
+      const stSize = allRuns.map(r => r.memory_stats.short_term_size);
+      const ltSize = allRuns.map(r => r.memory_stats.long_term_size);
 
-      // Group values by agent for stacked histograms
-      const attByAgent   = {};
-      const stressByAgent= {};
-      const stByAgent    = {};
-      const ltByAgent    = {};
+      // Group per‑agent for stacked view
+      const byAgent = (key) =>
+        allRuns.reduce((acc, r) => {
+          const idx = r.agentIndex ?? 0;
+          (acc[idx] ??= []).push(r[key]);
+          return acc;
+        }, {});
 
+      const attByAgent    = byAgent('attunement_score');
+      const stressByAgent = byAgent('schema_stress');
+      // Group memory sizes by agent
+      const stByAgent = {};
+      const ltByAgent = {};
       allRuns.forEach(r => {
         const idx = r.agentIndex ?? 0;
-        (attByAgent[idx]    ??= []).push(r.attunement_score);
-        (stressByAgent[idx] ??= []).push(r.schema_stress);
-        (stByAgent[idx]     ??= []).push(r.memory_stats.short_term_size);
-        (ltByAgent[idx]     ??= []).push(r.memory_stats.long_term_size);
+        (stByAgent[idx] ??= []).push(r.memory_stats.short_term_size);
+        (ltByAgent[idx] ??= []).push(r.memory_stats.long_term_size);
       });
 
-      // ─── Update feature‑card statistics ──────────────────────────────
-      const avg = arr => arr.reduce((s, v) => s + v, 0) / (arr.length || 1);
+      // Update summary stat cards
+      const avg = arr => arr.reduce((s,v)=>s+v,0)/(arr.length||1);
       document.getElementById('statAttunement').textContent = avg(att).toFixed(2);
       document.getElementById('statStress').textContent     = avg(stress).toFixed(2);
+      const maxClock = allRuns.reduce((m,r)=>Math.max(m,r.clock||0),0);
+      document.getElementById('statClock').textContent      = String(maxClock).padStart(3,'0');
 
-      // Clock number = highest tick value across all runs
-      const maxClock = allRuns.reduce((m, r) => Math.max(m, r.clock ?? 0), 0);
-      document.getElementById('statClock').textContent = String(maxClock).padStart(3,'0');
-
-      // Clear previous canvases
-      ['attCanvas','stressCanvas','shortTermCanvas','longTermCanvas'].forEach(id => {
+      // Clear/replace canvases to avoid re‑render artefacts
+      ['attCanvas','stressCanvas','shortTermCanvas','longTermCanvas'].forEach(id=>{
         const old = document.getElementById(id);
         if (old) {
           const parent = old.parentElement;
-          parent.innerHTML = `<canvas id="${id}"></canvas>`;
+          old.remove();
+          const cv = document.createElement('canvas');
+          cv.id = id;
+          parent.appendChild(cv);
         }
       });
 
-      // Render stacked histograms per agent
-      renderStackedHistogram('attCanvas',      attByAgent,    'Mean Attunement Distribution', 'Mean Attunement');
-      renderStackedHistogram('stressCanvas',   stressByAgent, 'Mean Stress Distribution',     'Mean Stress');
-      renderStackedHistogram('shortTermCanvas',stByAgent,     'Final Short‑Term Memory Size', 'STM Size');
-      renderStackedHistogram('longTermCanvas', ltByAgent,     'Final Long‑Term Memory Size',  'LTM Size');
+      // Render histograms
+      renderStackedHistogram('attCanvas',attByAgent,'Mean Attunement','Mean Attunement');
+      renderStackedHistogram('stressCanvas',stressByAgent,'Mean Stress','Mean Stress');
+      renderStackedHistogram('shortTermCanvas',stByAgent,'Final STM Size','STM Size');
+      renderStackedHistogram('longTermCanvas',ltByAgent,'Final LTM Size','LTM Size');
 
-      // ─── Cluster 2D Heatmap: Attunement vs Stress ─────────────
-      // If no data, clear cluster plot area and return
-      const oldCluster = document.getElementById('clusterCanvas');
-      if (oldCluster) {
-        const parent = oldCluster.parentElement;
-        // Remove any previous Plotly divs
-        let prevDiv = parent.querySelector('div#clusterCanvas');
-        if (prevDiv) parent.removeChild(prevDiv);
-        // Replace canvas with div for Plotly
-        oldCluster.remove();
-        const div = document.createElement('div');
-        div.id = 'clusterCanvas';
-        // Ensure height and width match graph-island style
-        div.style.width = '100%';
-        div.style.height = '340px';
-        parent.appendChild(div);
-      }
-      // Defensive: If no data, do not attempt to plot
-      if (!allRuns || allRuns.length === 0) {
-        const clusterDiv = document.getElementById('clusterCanvas');
-        if (clusterDiv) clusterDiv.innerHTML = '<div style="text-align:center;color:#999;padding:2em;">No data to plot.</div>';
-        return;
-      }
-      // Extract xs and ys
-      const xs = allRuns.map(r => r.attunement_score);
-      const ys = allRuns.map(r => r.schema_stress);
-      // Plotly loader
-      function renderPlotlyHeatmap() {
-        const clusterDiv = document.getElementById('clusterCanvas');
-        if (!clusterDiv) return;
-        // Bin sizing: 30 bins for each axis
-        const xMin = Math.min(...xs), xMax = Math.max(...xs);
-        const yMin = Math.min(...ys), yMax = Math.max(...ys);
+      /* ---- 2D histogram via Plotly ----- */
+      const xs = att, ys = stress;
+      const divId = 'clusterCanvas';
+      const parent = document.querySelector(`#${divId}`).parentElement;
+
+      // Replace canvas with div for Plotly
+      const old = document.getElementById(divId);
+      if (old) { old.remove(); }
+      const div = document.createElement('div');
+      div.id = divId;
+      div.style.width = '100%'; div.style.height = '340px';
+      parent.appendChild(div);
+
+      function drawPlot() {
         const trace = {
-          x: xs,
-          y: ys,
-          type: 'histogram2d',
-          colorscale: 'YlOrRd',
-          colorbar: {
-            title: 'Count',
-            titleside: 'right'
-          },
-          xbins: {
-            start: xMin,
-            end: xMax,
-            size: (xMax - xMin) / 30 || 1
-          },
-          ybins: {
-            start: yMin,
-            end: yMax,
-            size: (yMax - yMin) / 30 || 1
-          },
-          zauto: true,
+          x: xs, y: ys, type:'histogram2d',
+          colorscale:'YlOrRd',
+          xbins:{size:(Math.max(...xs)-Math.min(...xs))/30||1},
+          ybins:{size:(Math.max(...ys)-Math.min(...ys))/30||1},
           hovertemplate:
-            'Attunement: %{x:.2f}<br>Stress: %{y:.2f}<br>Count: %{z}<extra></extra>',
+            'Attunement: %{x:.2f}<br>Stress: %{y:.2f}<br>Count: %{z}<extra></extra>'
         };
         const layout = {
-          margin: { t: 40, l: 60, r: 20, b: 60 },
-          height: 340,
-          title: { text: 'Attunement vs. Stress Cluster', font: { size: 16, family: 'Inter,sans-serif', weight: 'bold' } },
-          xaxis: { title: { text: 'Mean Attunement', font: { size: 14, family: 'Inter,sans-serif' } } },
-          yaxis: { title: { text: 'Mean Stress', font: { size: 14, family: 'Inter,sans-serif' } } },
-          hovermode: 'closest'
+          margin:{t:40,l:60,r:20,b:60},
+          height:340,
+          title:{text:'Attunement vs Stress Cluster',font:{size:16,family:'Inter'}},
+          xaxis:{title:'Mean Attunement'}, yaxis:{title:'Mean Stress'}
         };
-        window.Plotly.newPlot(clusterDiv, [trace], layout, {responsive: true});
+        window.Plotly.newPlot(div,[trace],layout,{responsive:true});
       }
-      // Plotly loader: If not present, load and retry
-      function ensurePlotlyAndRender() {
-        if (window.Plotly && typeof window.Plotly.newPlot === 'function') {
-          renderPlotlyHeatmap();
+
+      if (window.Plotly?.newPlot) {
+        drawPlot();
+      } else {
+        const plotlyScriptId = 'plotly-2d-hist';
+        if (!document.getElementById(plotlyScriptId)) {
+          const s = document.createElement('script');
+          s.id = plotlyScriptId;
+          s.src = 'https://cdn.plot.ly/plotly-2.24.2.min.js';
+          s.onload = drawPlot;
+          document.body.appendChild(s);
         } else {
-          // Only add script if not already loading
-          if (!document.getElementById('plotly-cdn-script')) {
-            const script = document.createElement('script');
-            script.id = 'plotly-cdn-script';
-            script.src = 'https://cdn.plot.ly/plotly-2.24.2.min.js';
-            script.onload = renderPlotlyHeatmap;
-            document.body.appendChild(script);
-          } else {
-            // Wait and retry
-            setTimeout(ensurePlotlyAndRender, 300);
-          }
+          setTimeout(drawPlot,300);
         }
       }
-      ensurePlotlyAndRender();
     }
+
+    /**
+   * Render a raw data table in the #spreadsheet container.
+   * @param {Array<Object>} rawData - Array of agent result arrays.
+   */
+  function renderRawData(rawData) {
+    const container = document.getElementById('spreadsheet');
+    container.innerHTML = '';
+    // Flatten agent/result logs into a single array of entries
+    const allEntries = [];
+    rawData.forEach(agent => {
+      (agent.result || []).forEach(runLogs => {
+        (runLogs || []).forEach(entry => allEntries.push(entry));
+      });
+    });
+    if (allEntries.length === 0) {
+      container.textContent = 'No raw data available.';
+      return;
+    }
+    // Build table
+    const table = document.createElement('table');
+    table.id = 'spreadsheet-table';
+    // Header row
+    const cols = Object.keys(allEntries[0]);
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    cols.forEach(c => {
+      const th = document.createElement('th');
+      th.textContent = c;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    // Body rows
+    const tbody = document.createElement('tbody');
+    allEntries.forEach(entry => {
+      const tr = document.createElement('tr');
+      cols.forEach(c => {
+        const td = document.createElement('td');
+        td.textContent = entry[c] != null ? entry[c] : '';
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    container.appendChild(table);
+  }
+</script>
+<script>
+// Export CSV button handler
+document.getElementById('exportCsvBtn').addEventListener('click', () => {
+  console.log('[DEBUG] Export CSV button clicked');
+  if (!lastResults || lastResults.length === 0) {
+    alert('No data to export.');
+    return;
+  }
+  // Flatten all run logs
+  const flat = [];
+  lastResults.forEach((agent, idx) => {
+    (agent.result || []).forEach(runLogs => {
+      (runLogs || []).forEach(entry => {
+        flat.push({ agentIndex: idx, ...entry });
+      });
+    });
+  });
+  if (flat.length === 0) {
+    alert('No entries to export.');
+    return;
+  }
+  // Build CSV
+  const headers = Object.keys(flat[0]);
+  const rows = [
+    headers.join(','),
+    ...flat.map(rec => headers.map(h => `"${String(rec[h]).replace(/"/g,'""')}"`).join(','))
+  ];
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'simulation_export.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
 </script>
 </body>
 </html>

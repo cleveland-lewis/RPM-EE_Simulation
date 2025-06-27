@@ -1,4 +1,6 @@
 from src.simulation import run_simulation
+import pytest
+from src import simulation
 
 def test_run_populates_logs_list_and_correct_length():
     episodes = 5
@@ -37,3 +39,27 @@ def test_replay_mode_present_as_string_if_in_logs():
 def test_run_zero_episodes_returns_empty_list():
     logs = run_simulation(total_ticks=0)
     assert logs == []
+
+
+# GPU integration test: ensure CuPy-based generator is used when appropriate
+@pytest.mark.skipif(not simulation.USE_CUPY, reason="CuPy not installed; skipping GPU integration test")
+def test_gpu_generator_used(monkeypatch):
+    """
+    Ensure that when total_ticks ≥ GPU_TICK_THRESHOLD and USE_CUPY=True,
+    the CuPy-based generator `_generate_base_arrays_gpu` is invoked.
+    """
+    called = {"gpu": False}
+    original_gpu = simulation._generate_base_arrays_gpu
+
+    def fake_gpu(total_ticks):
+        called["gpu"] = True
+        return original_gpu(total_ticks)
+
+    # Patch the GPU generator and force GPU path
+    monkeypatch.setattr(simulation, "_generate_base_arrays_gpu", fake_gpu)
+    monkeypatch.setattr(simulation, "USE_CUPY", True)
+
+    # Run with just above the threshold
+    simulation.run_simulation(total_ticks=simulation.GPU_TICK_THRESHOLD + 1)
+
+    assert called["gpu"], "Expected _generate_base_arrays_gpu to be called for large total_ticks"

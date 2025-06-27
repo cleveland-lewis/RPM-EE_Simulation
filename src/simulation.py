@@ -1,15 +1,66 @@
-import threading  # --- Added for job system ---
-import multiprocessing
-import uuid # --- Added for job system ---
+
+# -----------------------------------------------------------------------------
+# Standard library imports:
+#   - os, sys, time, uuid, random: file operations, system functions, timing, and unique IDs
+#   - threading, multiprocessing: concurrency support for parallel simulations
+#   - json, glob, datetime, typing: data serialization, file pattern matching, date/time handling, and type annotations
+# -----------------------------------------------------------------------------
 import os
+#
+import time
+import uuid
+import random
+#
+import multiprocessing
 import json
-from typing import Dict, Any  # --- Added for job system ---
+import glob
+from datetime import datetime
+from typing import Any
+
+# -----------------------------------------------------------------------------
+# Third-party library imports:
+#   - numpy: core array operations and numerical computing
+#   - jax / jax.numpy: accelerated computations on CPU/GPU/TPU with JIT support
+#   - numba: optional JIT compilation for CPU performance
+#   - fastapi, pydantic: building and validating web API endpoints
+#   - filelock, datashader, pandas, colorcet: file locking, data visualization, data handling, and color palettes
+# -----------------------------------------------------------------------------
+import numpy as np
+try:
+    import jax
+    import jax.numpy as jnp
+    from jax import random as jax_random
+    USE_JAX = True
+except ImportError:
+    USE_JAX = False
+try:
+    import numba as nb
+    HAVE_NUMBA = True
+except ModuleNotFoundError:
+    HAVE_NUMBA = False
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 from filelock import FileLock
+#
+
+# -----------------------------------------------------------------------------
+# Project-specific imports:
+#   - SensoryInputSystem: core simulation engine for generating sensory and memory events
+#   - config: load/save configuration utilities for simulation parameters
+# -----------------------------------------------------------------------------
+from src.sensory import SensoryInputSystem
+#
+
 JOBS_DIR = "jobs"  # --- Directory for persistent job files ---
 os.makedirs(JOBS_DIR, exist_ok=True)  # Ensure jobs dir exists
 # Directory for current jobs (active/running/paused jobs)
 CURRENT_JOBS_DIR = "current_jobs"
 os.makedirs(CURRENT_JOBS_DIR, exist_ok=True)
+
 def downsample_logs(logs, bin_size):
     """Downsample logs by averaging over bins of bin_size for selected keys."""
     if bin_size <= 1 or len(logs) <= 1:
@@ -32,27 +83,39 @@ def downsample_logs(logs, bin_size):
                 avg_entry[k] = bin_logs[-1].get(k)
         result.append(avg_entry)
     return result
-import os
-import json
-import random
-import time
-import numpy as np
-# GPU dispatch threshold: use GPU for large simulations
-GPU_TICK_THRESHOLD = 1_000_000
 
-try:
-    import cupy as cp
-    USE_CUPY = True
-except ImportError:
-    USE_CUPY = False
-# --- Step 4.1: Optional Numba JIT flag ---
-try:
-    import numba as nb
-    HAVE_NUMBA = True
-except ModuleNotFoundError:
-    HAVE_NUMBA = False
+ # -----------------------------------------------------------------------------
+# MAX_PLOT_POINTS:
+#   Limit the number of data points sent to the front end to avoid browser performance issues
+# -----------------------------------------------------------------------------
+MAX_PLOT_POINTS = 1500
 
-# --- Numba JIT-accelerated base array generator ---
+# -----------------------------------------------------------------------------
+# Math module import:
+#   Provides functions like ceil() used in log thinning calculations
+# -----------------------------------------------------------------------------
+import math  # needed for ceil
+
+ # -----------------------------------------------------------------------------
+# JAX backend self-test:
+#   Verify that JAX can allocate arrays and perform a simple reduction on the selected device
+# -----------------------------------------------------------------------------
+if USE_JAX:
+    try:
+        # Quick test: sum of arange(100)
+        arr = jnp.arange(100)
+        s = int(jnp.sum(arr).item())  # expected 4950
+        dev = jax.devices()[0]
+        print(f"[JAX TEST] JAX on device {dev} OK (sum={s})")
+    except Exception as e:
+        print(f"[JAX TEST] ERROR initializing JAX backend: {e}. Disabling JAX path.")
+        USE_JAX = False
+# ───────────────────────────────────────────────────
+
+# -----------------------------------------------------------------------------
+# Numba JIT warm-up:
+#   Compile the Numba-accelerated array generator once on import to eliminate first-run latency
+# -----------------------------------------------------------------------------
 if HAVE_NUMBA:
     @nb.njit
     def _generate_base_arrays_numba(total_ticks: int):
@@ -77,52 +140,54 @@ if HAVE_NUMBA:
         return (att, stress, affect,
                 vis, hear, touch, smell, taste,
                 st_sz, lt_sz)
-
-# --- CuPy-based GPU base array generator ---
-def _generate_base_arrays_gpu(total_ticks: int):
-    """CuPy-based generator for per-tick arrays."""
-    xp = cp  # alias for CuPy
-    att    = xp.random.rand(total_ticks, dtype=xp.float32)
-    stress = xp.random.rand(total_ticks, dtype=xp.float32)
-    affect = (xp.random.rand(total_ticks, dtype=xp.float32) * 2 - 1)
-
-    vis   = xp.random.randint(0, 4, total_ticks, dtype=xp.int16)
-    hear  = xp.random.randint(0, 3, total_ticks, dtype=xp.int16)
-    touch = xp.random.randint(0, 2, total_ticks, dtype=xp.int16)
-    smell = xp.zeros(total_ticks, dtype=xp.int16)
-    taste = xp.zeros(total_ticks, dtype=xp.int16)
-
-    ticks = xp.arange(total_ticks, dtype=xp.int32)
-    st_sz = xp.maximum(0, 500 - (ticks % 500)).astype(xp.int32)
-    lt_sz = (ticks // 1000).astype(xp.int32)
-
-    # Transfer back to host memory
-    return (att.get(), stress.get(), affect.get(),
-            vis.get(), hear.get(), touch.get(), smell.get(), taste.get(),
-            st_sz.get(), lt_sz.get())
-
-# Warm up Numba at startup to avoid compile delay on first real run
-if HAVE_NUMBA:
     _ = _generate_base_arrays_numba(1)
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-from src.sensory import SensoryInputSystem  # Core class for simulating sensory input and memory
-from .config import load_config, save_config
 
-import datashader as ds
-import datashader.transfer_functions as tf
-import pandas as pd
-import colorcet
+# -----------------------------------------------------------------------------
+# JAX_TICK_THRESHOLD:
+#   Minimum number of ticks before switching to JAX acceleration to offset JIT overhead
+# -----------------------------------------------------------------------------
+JAX_TICK_THRESHOLD = 1_000_000
 
-#
-# --------------------
-# VECTORISED FAST‑PATH (step 1/5)
-# This helper generates all per‑tick arrays in one NumPy shot.
-# Later steps will make run_simulation call this instead of looping.
-# -------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# JAX-accelerated base array generator:
+#   Uses jax.random to create parallel arrays of sensory and size data on the accelerator
+# -----------------------------------------------------------------------------
+def _generate_base_arrays_jax(total_ticks: int):
+    """
+    JAX-accelerated generator for per-tick arrays.
+    Returns same tuple as _generate_base_arrays.
+    """
+    key = jax_random.PRNGKey(0)
+    k1, k2, k3, k4, k5, k6, k7 = jax_random.split(key, 7)
+    att = jax_random.uniform(k1, (total_ticks,), dtype=jnp.float32)
+    stress = jax_random.uniform(k2, (total_ticks,), dtype=jnp.float32)
+    affect = (jax_random.uniform(k3, (total_ticks,), dtype=jnp.float32) * 2 - 1).astype(jnp.float32)
+    vis = jax_random.randint(k4, (total_ticks,), 0, 4, dtype=jnp.int16)
+    hear = jax_random.randint(k5, (total_ticks,), 0, 3, dtype=jnp.int16)
+    touch = jax_random.randint(k6, (total_ticks,), 0, 2, dtype=jnp.int16)
+    smell = jnp.zeros((total_ticks,), dtype=jnp.int16)
+    taste = jnp.zeros((total_ticks,), dtype=jnp.int16)
+    ticks = jnp.arange(total_ticks, dtype=jnp.int32)
+    st_sz = jnp.maximum(0, 500 - (ticks % 500)).astype(jnp.int32)
+    lt_sz = (ticks // 1000).astype(jnp.int32)
+    # Convert back to NumPy
+    return (np.array(att), np.array(stress), np.array(affect),
+            np.array(vis), np.array(hear), np.array(touch),
+            np.array(smell), np.array(taste),
+            np.array(st_sz), np.array(lt_sz))
+
+# -----------------------------------------------------------------------------
+# Apply JAX JIT compilation:
+#   Transform the JAX generator into an optimized, fused function for repeated calls
+# -----------------------------------------------------------------------------
+if 'USE_JAX' in globals() and USE_JAX:
+    _generate_base_arrays_jax = jax.jit(_generate_base_arrays_jax)
+
+ # -----------------------------------------------------------------------------
+# VECTORISED FAST-PATH (_generate_base_arrays):
+#   Single-shot NumPy implementation for generating random inputs when JAX/Numba
+#   are not used or for smaller simulations, enabling efficient CPU execution.
+# -----------------------------------------------------------------------------
 def _generate_base_arrays(total_ticks: int):
     """
     Return tuple of NumPy arrays:
@@ -133,13 +198,14 @@ def _generate_base_arrays(total_ticks: int):
     NOTE: In this first step we only create the function; run_simulation
     continues to use the existing logic until step 3.
     """
-    # Choose GPU path for large simulations if available
-    if USE_CUPY and total_ticks >= GPU_TICK_THRESHOLD:
-        return _generate_base_arrays_gpu(total_ticks)
+
+    # Use JAX path for large tick counts when acceleration is enabled
+    if 'USE_JAX' in globals() and USE_JAX and total_ticks >= JAX_TICK_THRESHOLD:
+        return _generate_base_arrays_jax(total_ticks)
 
     global HAVE_NUMBA
-    # Dispatch to JIT version if available, with fallback on error
-    if HAVE_NUMBA:
+    # Numba path disabled due to unreliable random output; using NumPy fallback directly
+    if False and HAVE_NUMBA:
         try:
             return _generate_base_arrays_numba(total_ticks)
         except Exception:
@@ -163,9 +229,30 @@ def _generate_base_arrays(total_ticks: int):
     return (att, stress, affect,
             vis, hear, touch, smell, taste,
             st_sz, lt_sz)
-# UTILITY: Flatten nested dicts for CSV
-# Used to prepare nested simulation output for CSV export.
-# --------------------
+
+# -----------------------------------------------------------------------------
+# Log thinning helper (_thin_logs):
+#   Uniformly sample log entries to limit output size for front-end visualization
+# -----------------------------------------------------------------------------
+def _thin_logs(logs, max_points: int = MAX_PLOT_POINTS):
+    """
+    Down‑sample a list of per‑tick dicts so the client never receives more
+    than `max_points` entries. Keeps every ⌈len(logs)/max_points⌉‑th sample
+    and always includes the final entry.
+    """
+    n = len(logs)
+    if n <= max_points or max_points <= 0:
+        return logs
+    step = math.ceil(n / max_points)
+    thinned = logs[::step]
+    if thinned[-1] is not logs[-1]:
+        thinned.append(logs[-1])  # ensure last point present
+    return thinned
+# -----------------------------------------------------------------------------
+# flatten_dict utility:
+#   Recursively flatten nested dictionaries into flat key-value pairs
+#   for CSV or tabular export formats
+# -----------------------------------------------------------------------------
 def flatten_dict(d, parent_key='', sep='.'):
     """Recursively flatten a nested dictionary (for CSV)."""
     items = []
@@ -177,19 +264,15 @@ def flatten_dict(d, parent_key='', sep='.'):
             items.append((new_key, v))
     return dict(items)
 
-#
-# --------------------
-# SIMULATION CORE
-# --------------------
-# The main simulation function.
-# Simulates a sequence of sensory events and memory state over time.
-# Parameters:
-#   total_ticks: Number of simulation time steps (episodes)
-#   salience_decay: Rate at which salience decays in memory
-#   highly_variable_rate: Controls frequency of highly variable sensory events
-#   event_rate: Controls frequency of events per tick
-# Returns a list of dicts, each representing the state/log at a time tick.
-#
+# -----------------------------------------------------------------------------
+# SIMULATION CORE (run_simulation):
+#   Orchestrates a full simulation run including:
+#     - Initialization of memory thresholds and sensory system
+#     - Generation of random inputs via JAX/NumPy/Numba
+#     - Per-tick processing for attunement, stress, and affect feedback
+#     - Batching and aggregation of results for front-end consumption
+#   Accepts parameters for decay rates, event frequencies, and memory settings.
+# -----------------------------------------------------------------------------
 def run_simulation(
     total_ticks: int = 2400,
     salience_decay: float = 0.01,
@@ -201,6 +284,18 @@ def run_simulation(
     low_salience_var_rate: float = 0.1,
     bin_size: int = 1,
 ) -> list:
+    """
+    The main simulation function.
+    Simulates a sequence of sensory events and memory state over time.
+    Parameters:
+      total_ticks: Number of simulation time steps (episodes)
+      salience_decay: Rate at which salience decays in memory
+      highly_variable_rate: Controls frequency of highly variable sensory events
+      event_rate: Controls frequency of events per tick
+    Returns a list of dicts, each representing the state/log at a time tick.
+        The returned log list is automatically thinned to ≤ MAX_PLOT_POINTS (1500)
+        to keep browser rendering fast.
+    """
     start = time.perf_counter()
     # Randomize initial thresholds for this simulation run
     base_low = random.uniform(0.3, 0.7)
@@ -217,11 +312,16 @@ def run_simulation(
         high_salience_threshold=base_high,
         salience_decay=salience_decay,
         highly_variable_rate=highly_variable_rate,
-        event_rate=event_rate,  # integrated from config
+        low_salience_var_rate=low_salience_var_rate,
+        event_rate=event_rate,
+        memory_buffer_size=memory_buffer_size,
+        memory_decay=memory_decay,
+        memory_prune_threshold=memory_prune_threshold
     )
-    attunement_scores = np.random.uniform(0, 1, total_ticks)
-    schema_stress = np.random.uniform(0, 1, total_ticks)
-    avg_affect_feedback = np.random.uniform(-1, 1, total_ticks)
+    # Use memory state to compute attunement, stress, affect feedback
+    attunement_scores = np.zeros(total_ticks, dtype=np.float32)
+    schema_stress = np.zeros(total_ticks, dtype=np.float32)
+    avg_affect_feedback = np.zeros(total_ticks, dtype=np.float32)
     # logs = []  # Removed: replaced by structured array buffer
     tick_time_sum = 0.0
     tick_time_count = 0
@@ -249,6 +349,24 @@ def run_simulation(
     # ---------- Step 3: Full vectorised generation & aggregation ----------
     # Generate base arrays in one shot
     att_arr, stress_arr, affect_arr, vis, hear, touch, smell, taste, st_sz, lt_sz = _generate_base_arrays(total_ticks)
+    # DEBUG: print range of generated stress array to verify non-zero values
+    print(f"[DEBUG] stress_arr range: min={stress_arr.min():.4f}, max={stress_arr.max():.4f}")
+
+    # --- Compute attunement_scores, schema_stress, avg_affect_feedback using SensoryInputSystem ---
+    for i in range(total_ticks):
+        tick_result = sim.tick()
+        if not isinstance(tick_result, dict):
+            raise ValueError(f"Expected dict from sim.tick(), got {type(tick_result)}")
+        try:
+            attunement_scores[i] = float(tick_result["attunement_score"])
+            # Option A: inflate short‑term stress by current random stress input
+            kappa = 1.0  # weight of external stress on perceived short‑term load....higher equals stronger coupling of random stress to short-term load
+            raw_st_sz = int(tick_result["short_term_size"])
+            effective_st_sz = raw_st_sz + kappa * stress_arr[i] * memory_buffer_size
+            schema_stress[i] = float(np.clip(effective_st_sz / memory_buffer_size, 0.0, 1.0))
+            avg_affect_feedback[i] = float(tick_result["avg_affect_feedback"])
+        except KeyError as e:
+            raise KeyError(f"Missing key in tick_result: {e}")
 
     # Pad arrays so total_ticks is divisible by bin_size
     pad = (-total_ticks) % bin_size
@@ -274,9 +392,9 @@ def run_simulation(
         return arr.reshape(n_bins, bin_size).mean(axis=1)
 
     # Aggregate numeric metrics
-    att_b    = bin_mean(att_arr)
-    stress_b = bin_mean(stress_arr)
-    affect_b = bin_mean(affect_arr)
+    att_b    = bin_mean(attunement_scores)
+    stress_b = bin_mean(schema_stress)
+    affect_b = bin_mean(avg_affect_feedback)
     vc_b     = bin_mean(vis).astype(int)
     hc_b     = bin_mean(hear).astype(int)
     tc_b     = bin_mean(touch).astype(int)
@@ -336,12 +454,19 @@ def run_simulation(
                 val = val.item()
             entry[name] = val
         logs.append(entry)
+    # Down‑sample for the frontend if needed
+    logs = _thin_logs(logs, MAX_PLOT_POINTS)
     return logs
 # -------------------------------------------------
 # --------------------
 # FASTAPI SETUP
 # --------------------
 # Set up FastAPI app to provide simulation API endpoints.
+
+# Ensure saved_logs folder exists for raw JSON dumps
+SAVED_LOGS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'saved_logs')
+os.makedirs(SAVED_LOGS_DIR, exist_ok=True)
+
 app = FastAPI()
 
 # Serve local Chart.js and other static assets
@@ -355,23 +480,44 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+
 # --------------------
 # Saving as .JSON file
 # Endpoint to save simulation logs as a JSON file on the server.
 # --------------------
-from datetime import datetime
-
 class LogSaveRequest(BaseModel):
     logs: list
 
 @app.post("/save-logs")
 async def save_logs(payload: LogSaveRequest):
-    os.makedirs("saved_logs", exist_ok=True)
+    # Save full payload JSON to a file
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"saved_logs/log_{timestamp}.json"
-    with open(filename, "w") as f:
-        json.dump(payload.logs, f, indent=2)
-    return {"status": "success", "filename": filename}
+    safe_ts = timestamp  # already safe format
+    filename = f"log_{safe_ts}.json"
+    filepath = os.path.join(SAVED_LOGS_DIR, filename)
+    with open(filepath, "w") as f:
+        json.dump(payload.dict(), f, indent=2)
+    return {"status": "success", "filename": filepath}
+
+
+# --------------------
+# List all saved logs endpoint
+# --------------------
+@app.get("/save-logs")
+async def list_saved_logs():
+    """
+    Return a JSON array of all saved log payloads.
+    """
+    logs = []
+    for fname in sorted(os.listdir(SAVED_LOGS_DIR)):
+        if fname.endswith(".json"):
+            path = os.path.join(SAVED_LOGS_DIR, fname)
+            try:
+                with open(path, "r") as f:
+                    logs.append(json.load(f))
+            except Exception:
+                continue
+    return logs
 
 
 # --------------------
@@ -497,7 +643,6 @@ import traceback
 # --------------------
 # Persistent File-based Job System for Batch Agent Simulations
 # --------------------
-import glob
 
 # --- Helper functions for job state persistence ---
 def save_job_state(job_id: str, state: dict):
@@ -590,11 +735,8 @@ def set_job_status(job_id: str, status: str):
 # --------------------
 # /batch-job endpoint for persistent background jobs
 # --------------------
-from fastapi import BackgroundTasks, Request
-from fastapi import HTTPException
 class JobActionRequest(BaseModel):
     action: str
-from datetime import datetime
 
 class BatchJobRequest(BaseModel):
     agents: list
@@ -810,3 +952,21 @@ async def list_current_jobs():
         except Exception:
             continue
     return jobs
+
+if __name__ == "__main__":
+    # Quick sanity check for run_simulation
+    try:
+        print("Running self-test: 5 ticks simulation")
+        test_logs = run_simulation(
+            total_ticks=5,
+            salience_decay=0.01,
+            highly_variable_rate=0.1,
+            event_rate=2,
+            memory_buffer_size=50,
+            memory_decay=0.01,
+            memory_prune_threshold=0.2,
+            low_salience_var_rate=0.1
+        )
+        print("Self-test passed. Sample output:", test_logs[:2])
+    except Exception as e:
+        print("Self-test FAILED:", e)
