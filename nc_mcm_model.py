@@ -13,6 +13,17 @@ from src.simulation import run_simulation
 import matplotlib.pyplot as plt
 import arviz as az
 
+# --- Helper for within-run z-scoring ---
+def runwise_z(arr, run_idx):
+    """
+    Z-score an array within each run.
+    """
+    res = np.empty_like(arr)
+    for r in np.unique(run_idx):
+        mask = run_idx == r
+        res[mask] = (arr[mask] - arr[mask].mean()) / arr[mask].std()
+    return res
+
 
 # 1. Add helper to run multiple simulations
 def run_multiple_simulations(n_runs: int = 5):
@@ -53,15 +64,16 @@ def extract_data(logs, run_idx=None):
     # periodic saw-tooth predictor: normalised phase of short-term cycle (0→1)
     P  = np.array([(i % 500) / 500 for i, _ in enumerate(logs)], dtype=np.float32)
 
-    # Standardize & log-transform where sensible
-    z = lambda x: (x - x.mean()) / x.std()
-    N_z  = z(N)
-    N2_z = z(N**2)
-    G_z  = z(G)
-    L_z  = z(np.log1p(L))          # log(1+L) stabilizes growth
-    C_z  = z(C)
-    A_z = z(A)
-    P_z = z(P)
+    # Within-run z-scoring
+    if run_idx is None:
+        run_idx = np.zeros(len(N), dtype=int)
+    N_z       = runwise_z(N, run_idx)
+    N2_z      = runwise_z(N**2, run_idx)
+    G_z       = runwise_z(G, run_idx)
+    L_z       = runwise_z(np.log1p(L), run_idx)
+    C_z       = runwise_z(C, run_idx)
+    A_z       = runwise_z(A, run_idx)
+    P_z       = runwise_z(P, run_idx)
 
     # Lagged G (prepend 0 so array lengths match)
     G_prev_z = np.concatenate([[0.0], G_z[:-1]])
@@ -72,41 +84,64 @@ def extract_data(logs, run_idx=None):
                 run_idx=run_idx if run_idx is not None else np.zeros(len(N_z), dtype=int))
 
 # 3. Adjust build_nc_mcm to accept run_idx
-def build_nc_mcm(data, n_runs, draws=1000, tune=1000):
+def build_nc_mcm(data, n_runs, draws=2000, tune=2000):
     with pm.Model() as m:
         # Hyper-priors
         sigma_G = pm.HalfNormal("sigma_G", 1)
-        sigma_C = pm.HalfNormal("sigma_C", 1)
+        sigma_C = pm.HalfNormal("sigma_C", 0.5)  # loosened residual scale prior
 
         # ---------------- Level 2 ----------------
-        # Hierarchical priors for α1, β1 varying by run
-        mu_alpha = pm.Normal("mu_alpha", 0, 1)
+        # Non-centered parameterization for per-run α1
+        mu_alpha    = pm.Normal("mu_alpha", 0, 1)
         sigma_alpha = pm.HalfNormal("sigma_alpha", 1)
-        alpha_run = pm.Normal("α1", mu=mu_alpha, sigma=sigma_alpha, shape=n_runs)
+        alpha_raw   = pm.Normal("alpha_raw", 0, 1, shape=n_runs)
+        α1          = pm.Deterministic("α1", mu_alpha + sigma_alpha * alpha_raw)
+
+        # Non-centered parameterization for per-run β1
+        mu_beta1    = pm.Normal("mu_beta1", 0, 1)
+        sigma_beta1 = pm.HalfNormal("sigma_beta1", 1)
+        beta1_raw   = pm.Normal("beta1_raw", 0, 1, shape=n_runs)
+        β1          = pm.Deterministic("β1", mu_beta1 + sigma_beta1 * beta1_raw)
 
         α2 = pm.Normal("α2", 0, 1)           # quadratic N²
         δ  = pm.Normal("δ",  0, 1)           # lag term
         γ  = pm.Normal("gamma", 0, 1)        # periodic predictor
 
-        G_hat = (alpha_run[data["run_idx"]] * data["N_z"] + α2*data["N2_z"] +
+        G_hat = (α1[data["run_idx"]] * data["N_z"] + α2*data["N2_z"] +
                  δ*data["G_prev_z"] + γ*data["P_z"])
         pm.Normal("G_obs", mu=G_hat, sigma=sigma_G, observed=data["G_z"])
 
         # ---------------- Level 3 ----------------
-        mu_beta1 = pm.Normal("mu_beta1", 0, 1)
-        sigma_beta1 = pm.HalfNormal("sigma_beta1", 1)
-        beta1_run = pm.Normal("β1", mu=mu_beta1, sigma=sigma_beta1, shape=n_runs)
-        # β1 = pm.Normal("β1", 0, 1)           # from short-term  # obsolete, now hierarchical
-        β2 = pm.Normal("β2", 0, 1)           # from long-term
-        β3 = pm.Normal("β3", 0, 1)           # affect feedback
-        β4 = pm.Normal("β4", 0, 1)           # raw stress
+        # Non-centered parameterization for β2 (long-term effect)
+        mu_beta2    = pm.Normal("mu_beta2", 0, 1)
+        sigma_beta2 = pm.HalfNormal("sigma_beta2", 1)
+        beta2_raw   = pm.Normal("beta2_raw", 0, 1)
+        β2          = pm.Deterministic("β2", mu_beta2 + sigma_beta2 * beta2_raw)
 
-        C_hat = (beta1_run[data["run_idx"]] * data["G_z"] + β2*data["L_z"] +
+        # Non-centered parameterization for β3 (affect feedback)
+        mu_beta3    = pm.Normal("mu_beta3", 0, 1)
+        sigma_beta3 = pm.HalfNormal("sigma_beta3", 1)
+        beta3_raw   = pm.Normal("beta3_raw", 0, 1)
+        β3          = pm.Deterministic("β3", mu_beta3 + sigma_beta3 * beta3_raw)
+
+        # Non-centered parameterization for β4 (stress effect)
+        mu_beta4    = pm.Normal("mu_beta4", 0, 1)
+        sigma_beta4 = pm.HalfNormal("sigma_beta4", 1)
+        beta4_raw   = pm.Normal("beta4_raw", 0, 1)
+        β4          = pm.Deterministic("β4", mu_beta4 + sigma_beta4 * beta4_raw)
+
+        C_hat = (β1[data["run_idx"]] * data["G_z"] + β2*data["L_z"] +
                  β3*data["A_z"] + β4*data["N_z"])
-        pm.Normal("C_obs", mu=C_hat, sigma=sigma_C, observed=data["C_z"])
+        # Robust likelihood: Student-T for C_obs with fixed degrees of freedom
+        pm.StudentT("C_obs", nu=4.0, mu=C_hat, sigma=sigma_C, observed=data["C_z"])
 
-        trace = pm.sample(draws=draws, tune=tune, target_accept=0.9,
-                          return_inferencedata=True)
+        trace = pm.sample(
+            draws=draws,
+            tune=tune,
+            target_accept=0.99,
+            max_treedepth=15,
+            return_inferencedata=True
+        )
 
         # Posterior-predictive
         ppc = pm.sample_posterior_predictive(trace, var_names=["G_obs","C_obs"])
@@ -120,9 +155,13 @@ def main():
     model, trace, ppc = build_nc_mcm(data, n_runs=n_runs)
 
     print("\nPosterior summary (key parameters):")
-    # 4. Update summary variable names later:
-    print(pm.summary(trace, var_names=["mu_alpha","sigma_alpha","mu_beta1","sigma_beta1",
-                                       "α2","δ","gamma","β2","β3","β4","sigma_G","sigma_C"]))
+    # 4. Update summary variable names: remove "nu_C" (it is now fixed, not a variable)
+    print(pm.summary(trace, var_names=[
+        "mu_alpha","sigma_alpha","mu_beta1","sigma_beta1",
+        "α2","δ","gamma",
+        "mu_beta2","sigma_beta2","mu_beta3","sigma_beta3","mu_beta4","sigma_beta4",
+        "β2","β3","β4","sigma_G","sigma_C"
+    ]))
 
     # Basic posterior-predictive RMSE for C_z
     pred_C = ppc.posterior_predictive["C_obs"].mean(("chain","draw")).values
