@@ -1,0 +1,10 @@
+{
+  "batch_id": 422084,
+  "preset": "default_theory",
+  "grid_keys": [],
+  "grid_spec": {},
+  "runs_per_combo": 1,
+  "workers": 9,
+  "base_seed": null,
+  "run_label": "default_theory_20250909_160541"
+}

@@ -1,0 +1,10 @@
+{
+  "preset": "default_theory",
+  "batch": 256037,
+  "run": 9,
+  "grid_params": {},
+  "run_kwargs": {
+    "total_ticks": 10000,
+    "seed": 400132
+  }
+}

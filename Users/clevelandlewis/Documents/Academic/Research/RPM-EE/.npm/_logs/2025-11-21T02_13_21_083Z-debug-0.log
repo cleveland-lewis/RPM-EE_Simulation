@@ -1,0 +1,158 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.9.3
+2 info using node@v22.19.0
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npmrc
+5 silly config load:file:/usr/local/etc/npmrc
+6 verbose title npm update
+7 verbose argv "update" "--global"
+8 verbose logfile logs-max:10 dir:/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npm/_logs/2025-11-21T02_13_21_083Z-
+9 verbose logfile /Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npm/_logs/2025-11-21T02_13_21_083Z-debug-0.log
+10 silly packumentCache heap:2197815296 maxSize:549453824 maxEntrySize:274726912
+11 silly logfile done cleaning log files
+12 silly idealTree buildDeps
+13 silly fetch manifest @anthropic-ai/claude-code@*
+14 silly packumentCache full:https://registry.npmjs.org/@anthropic-ai%2fclaude-code cache-miss
+15 http cache https://registry.npmjs.org/@anthropic-ai%2fclaude-code 6ms (cache hit)
+16 silly packumentCache full:https://registry.npmjs.org/@anthropic-ai%2fclaude-code set size:647732 disposed:false
+17 silly fetch manifest corepack@*
+18 silly packumentCache full:https://registry.npmjs.org/corepack cache-miss
+19 http cache https://registry.npmjs.org/corepack 1ms (cache hit)
+20 silly packumentCache full:https://registry.npmjs.org/corepack set size:211776 disposed:false
+21 silly fetch manifest npm@*
+22 silly packumentCache full:https://registry.npmjs.org/npm cache-miss
+23 http cache https://registry.npmjs.org/npm 19ms (cache hit)
+24 silly packumentCache full:https://registry.npmjs.org/npm set size:23493155 disposed:false
+25 silly placeDep ROOT @anthropic-ai/claude-code@2.0.49 OK for:  want: *
+26 silly placeDep ROOT corepack@0.34.4 OK for:  want: *
+27 silly placeDep ROOT npm@11.6.3 OK for:  want: *
+28 silly fetch manifest @img/sharp-linux-arm@^0.33.5
+29 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-arm cache-miss
+30 silly fetch manifest @img/sharp-linux-x64@^0.33.5
+31 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-x64 cache-miss
+32 silly fetch manifest @img/sharp-win32-x64@^0.33.5
+33 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-win32-x64 cache-miss
+34 silly fetch manifest @img/sharp-darwin-x64@^0.33.5
+35 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-darwin-x64 cache-miss
+36 silly fetch manifest @img/sharp-linux-arm64@^0.33.5
+37 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-arm64 cache-miss
+38 silly fetch manifest @img/sharp-darwin-arm64@^0.33.5
+39 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-darwin-arm64 cache-miss
+40 http cache https://registry.npmjs.org/@img%2fsharp-linux-arm 5ms (cache hit)
+41 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-arm set size:65285 disposed:false
+42 http cache https://registry.npmjs.org/@img%2fsharp-darwin-arm64 5ms (cache hit)
+43 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-darwin-arm64 set size:64782 disposed:false
+44 http cache https://registry.npmjs.org/@img%2fsharp-win32-x64 6ms (cache hit)
+45 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-win32-x64 set size:67340 disposed:false
+46 http cache https://registry.npmjs.org/@img%2fsharp-linux-x64 7ms (cache hit)
+47 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-x64 set size:64953 disposed:false
+48 http cache https://registry.npmjs.org/@img%2fsharp-darwin-x64 7ms (cache hit)
+49 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-darwin-x64 set size:63901 disposed:false
+50 http cache https://registry.npmjs.org/@img%2fsharp-linux-arm64 7ms (cache hit)
+51 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-arm64 set size:65833 disposed:false
+52 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-darwin-arm64@0.33.5 OK for: @anthropic-ai/claude-code@2.0.49 want: ^0.33.5
+53 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-darwin-x64@0.33.5 OK for: @anthropic-ai/claude-code@2.0.49 want: ^0.33.5
+54 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-linux-arm@0.33.5 OK for: @anthropic-ai/claude-code@2.0.49 want: ^0.33.5
+55 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-linux-arm64@0.33.5 OK for: @anthropic-ai/claude-code@2.0.49 want: ^0.33.5
+56 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-linux-x64@0.33.5 OK for: @anthropic-ai/claude-code@2.0.49 want: ^0.33.5
+57 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-win32-x64@0.33.5 OK for: @anthropic-ai/claude-code@2.0.49 want: ^0.33.5
+58 silly fetch manifest @img/sharp-libvips-darwin-arm64@1.0.4
+59 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-darwin-arm64 cache-miss
+60 silly fetch manifest @img/sharp-libvips-darwin-x64@1.0.4
+61 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-darwin-x64 cache-miss
+62 silly fetch manifest @img/sharp-libvips-linux-arm@1.0.5
+63 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm cache-miss
+64 silly fetch manifest @img/sharp-libvips-linux-arm64@1.0.4
+65 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm64 cache-miss
+66 silly fetch manifest @img/sharp-libvips-linux-x64@1.0.4
+67 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-x64 cache-miss
+68 http cache https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm 4ms (cache hit)
+69 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm set size:58790 disposed:false
+70 http cache https://registry.npmjs.org/@img%2fsharp-libvips-darwin-arm64 6ms (cache hit)
+71 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-darwin-arm64 set size:52735 disposed:false
+72 http cache https://registry.npmjs.org/@img%2fsharp-libvips-linux-x64 5ms (cache hit)
+73 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-x64 set size:56849 disposed:false
+74 http cache https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm64 5ms (cache hit)
+75 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm64 set size:55624 disposed:false
+76 http cache https://registry.npmjs.org/@img%2fsharp-libvips-darwin-x64 6ms (cache hit)
+77 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-darwin-x64 set size:52177 disposed:false
+78 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-libvips-darwin-arm64@1.0.4 OK for: @img/sharp-darwin-arm64@0.33.5 want: 1.0.4
+79 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-libvips-darwin-x64@1.0.4 OK for: @img/sharp-darwin-x64@0.33.5 want: 1.0.4
+80 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-libvips-linux-arm@1.0.5 OK for: @img/sharp-linux-arm@0.33.5 want: 1.0.5
+81 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-libvips-linux-arm64@1.0.4 OK for: @img/sharp-linux-arm64@0.33.5 want: 1.0.4
+82 silly placeDep node_modules/@anthropic-ai/claude-code @img/sharp-libvips-linux-x64@1.0.4 OK for: @img/sharp-linux-x64@0.33.5 want: 1.0.4
+83 silly reify mark retired [
+83 silly reify   '/usr/local/lib/node_modules/npm',
+83 silly reify   '/usr/local/bin/npm',
+83 silly reify   '/usr/local/bin/npx'
+83 silly reify ]
+84 silly reify mark retired [
+84 silly reify   '/usr/local/lib/node_modules/@anthropic-ai/claude-code',
+84 silly reify   '/usr/local/bin/claude'
+84 silly reify ]
+85 silly reify mark retired [
+85 silly reify   '/usr/local/lib/node_modules/corepack',
+85 silly reify   '/usr/local/bin/corepack',
+85 silly reify   '/usr/local/bin/pnpm',
+85 silly reify   '/usr/local/bin/pnpx',
+85 silly reify   '/usr/local/bin/yarn',
+85 silly reify   '/usr/local/bin/yarnpkg'
+85 silly reify ]
+86 silly reify moves {
+86 silly reify   '/usr/local/lib/node_modules/npm': '/usr/local/lib/node_modules/.npm-i9nnxROI',
+86 silly reify   '/usr/local/bin/npm': '/usr/local/bin/.npm-uJtxIR1m',
+86 silly reify   '/usr/local/bin/npx': '/usr/local/bin/.npx-xXo12k2C',
+86 silly reify   '/usr/local/lib/node_modules/@anthropic-ai/claude-code': '/usr/local/lib/node_modules/@anthropic-ai/.claude-code-1devilah',
+86 silly reify   '/usr/local/bin/claude': '/usr/local/bin/.claude-X3ObDFPy',
+86 silly reify   '/usr/local/lib/node_modules/corepack': '/usr/local/lib/node_modules/.corepack-xqcTrkeV',
+86 silly reify   '/usr/local/bin/corepack': '/usr/local/bin/.corepack-0KY6b4OJ',
+86 silly reify   '/usr/local/bin/pnpm': '/usr/local/bin/.pnpm-dB7q63VH',
+86 silly reify   '/usr/local/bin/pnpx': '/usr/local/bin/.pnpx-ODwt4u1T',
+86 silly reify   '/usr/local/bin/yarn': '/usr/local/bin/.yarn-PedZXo5L',
+86 silly reify   '/usr/local/bin/yarnpkg': '/usr/local/bin/.yarnpkg-cxSvgbtB'
+86 silly reify }
+87 verbose stack Error: EACCES: permission denied, rename '/usr/local/lib/node_modules/npm' -> '/usr/local/lib/node_modules/.npm-i9nnxROI'
+87 verbose stack     at async Object.rename (node:internal/fs/promises:786:10)
+87 verbose stack     at async moveFile (/usr/local/lib/node_modules/npm/node_modules/@npmcli/fs/lib/move-file.js:30:5)
+87 verbose stack     at async Promise.allSettled (index 0)
+87 verbose stack     at async [reifyPackages] (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:325:11)
+87 verbose stack     at async Arborist.reify (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:142:5)
+87 verbose stack     at async Update.exec (/usr/local/lib/node_modules/npm/lib/commands/update.js:63:5)
+87 verbose stack     at async Npm.exec (/usr/local/lib/node_modules/npm/lib/npm.js:207:9)
+87 verbose stack     at async module.exports (/usr/local/lib/node_modules/npm/lib/cli/entry.js:74:5)
+88 error code EACCES
+89 error syscall rename
+90 error path /usr/local/lib/node_modules/npm
+91 error dest /usr/local/lib/node_modules/.npm-i9nnxROI
+92 error errno -13
+93 error Error: EACCES: permission denied, rename '/usr/local/lib/node_modules/npm' -> '/usr/local/lib/node_modules/.npm-i9nnxROI'
+93 error     at async Object.rename (node:internal/fs/promises:786:10)
+93 error     at async moveFile (/usr/local/lib/node_modules/npm/node_modules/@npmcli/fs/lib/move-file.js:30:5)
+93 error     at async Promise.allSettled (index 0)
+93 error     at async [reifyPackages] (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:325:11)
+93 error     at async Arborist.reify (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/reify.js:142:5)
+93 error     at async Update.exec (/usr/local/lib/node_modules/npm/lib/commands/update.js:63:5)
+93 error     at async Npm.exec (/usr/local/lib/node_modules/npm/lib/npm.js:207:9)
+93 error     at async module.exports (/usr/local/lib/node_modules/npm/lib/cli/entry.js:74:5) {
+93 error   errno: -13,
+93 error   code: 'EACCES',
+93 error   syscall: 'rename',
+93 error   path: '/usr/local/lib/node_modules/npm',
+93 error   dest: '/usr/local/lib/node_modules/.npm-i9nnxROI'
+93 error }
+94 error
+94 error The operation was rejected by your operating system.
+94 error It is likely you do not have the permissions to access this file as the current user
+94 error
+94 error If you believe this might be a permissions issue, please double-check the
+94 error permissions of the file and its containing directories, or try running
+94 error the command again as root/Administrator.
+95 silly unfinished npm timer reify 1763691201343
+96 silly unfinished npm timer reify:retireShallow 1763691201527
+97 verbose cwd /Users/clevelandlewis/Documents/Academic/Research/RPM-EE
+98 verbose os Darwin 25.1.0
+99 verbose node v22.19.0
+100 verbose npm  v10.9.3
+101 verbose exit -13
+102 verbose code -13
+103 error A complete log of this run can be found in: /Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npm/_logs/2025-11-21T02_13_21_083Z-debug-0.log

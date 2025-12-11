@@ -1,0 +1,32 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.9.3
+2 info using node@v22.19.0
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npmrc
+5 silly config load:file:/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm audit
+8 verbose argv "audit"
+9 verbose logfile logs-max:10 dir:/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npm/_logs/2025-11-21T14_45_27_520Z-
+10 verbose logfile /Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npm/_logs/2025-11-21T14_45_27_520Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:2197815296 maxSize:549453824 maxEntrySize:274726912
+13 verbose stack Error: loadVirtual requires existing shrinkwrap file
+13 verbose stack     at Arborist.loadVirtual (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/load-virtual.js:51:18)
+13 verbose stack     at async Arborist.audit (/usr/local/lib/node_modules/npm/node_modules/@npmcli/arborist/lib/arborist/index.js:241:14)
+13 verbose stack     at async Audit.auditAdvisories (/usr/local/lib/node_modules/npm/lib/commands/audit.js:69:5)
+13 verbose stack     at async Audit.exec (/usr/local/lib/node_modules/npm/lib/commands/audit.js:49:7)
+13 verbose stack     at async Npm.exec (/usr/local/lib/node_modules/npm/lib/npm.js:207:9)
+13 verbose stack     at async module.exports (/usr/local/lib/node_modules/npm/lib/cli/entry.js:74:5)
+14 error code ENOLOCK
+15 error audit This command requires an existing lockfile.
+16 error audit Try creating one first with: npm i --package-lock-only
+17 error audit Original error: loadVirtual requires existing shrinkwrap file
+18 silly unfinished npm timer audit 1763736327790
+19 verbose cwd /Users/clevelandlewis/Documents/Academic/Research/RPM-EE
+20 verbose os Darwin 25.1.0
+21 verbose node v22.19.0
+22 verbose npm  v10.9.3
+23 verbose exit 1
+24 verbose code 1
+25 error A complete log of this run can be found in: /Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npm/_logs/2025-11-21T14_45_27_520Z-debug-0.log

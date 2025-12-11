@@ -1,0 +1,9 @@
+{
+  "preset": "default_theory",
+  "batch": 940847,
+  "run": 0,
+  "grid_params": {},
+  "run_kwargs": {
+    "total_ticks": 5000
+  }
+}

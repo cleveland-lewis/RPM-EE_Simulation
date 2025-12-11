@@ -1,0 +1,61 @@
+{
+  "rows": [
+    {
+      "batch": 964779,
+      "run": 0,
+      "preset": "default",
+      "count": 5000,
+      "mean_attunement": 0.00018299467046745121,
+      "std_attunement": 0.0016017010202631354,
+      "att_min": 2.118599469416946e-16,
+      "att_p95": 0.00030695645546074957,
+      "att_max": 0.025084856897592545,
+      "mean_stress": 0.7035691142082214,
+      "std_stress": 0.26241981983184814,
+      "stress_min": 0.01366814598441124,
+      "stress_p95": 0.9855121672153473,
+      "stress_max": 0.9999727606773376,
+      "mean_selection_confidence": 0.6218506682405083,
+      "mean_prediction_error": 0.1817429609854694,
+      "mean_ext_load": 0.4938960075378418,
+      "mean_mem_load": 0.9196794629096985,
+      "mean_affect_volatility": 0.054551586508750916,
+      "mean_salience": 0.46820282793438567,
+      "rate_action_executed": 0.0,
+      "rate_semantic_micro_update": 0.25499600319744203,
+      "rate_semanticization": 0.011191047162270184,
+      "rate_self_model_update": 0.36211031175059955,
+      "rate_suppression_applied": 0.0015987210231814548,
+      "rate_early_dismissal": 0.03597122302158273,
+      "theta0": 0.11,
+      "theta_s_mult": 0.6,
+      "gate_by_attunement": 1,
+      "gate_temperature": 1.2,
+      "replay_softmax": 0,
+      "softmax_temp": 1.0,
+      "explore_error_gain": 2.0,
+      "explore_floor": 0.0,
+      "total_ticks": 5000,
+      "use_population_mixture": 1,
+      "stratify_index": 0,
+      "stratify_total": 1
+    }
+  ],
+  "per_run": [
+    {
+      "batch": 964779,
+      "run": 0,
+      "mean_attunement": 0.00018299467046745121,
+      "std_attunement": 0.0016017010202631354,
+      "mean_stress": 0.7035691142082214,
+      "std_stress": 0.26241981983184814
+    }
+  ],
+  "totals": {
+    "mean_attunement": 0.00018299467046745121,
+    "std_attunement": 0.0016017010202631354,
+    "mean_stress": 0.7035691142082214,
+    "std_stress": 0.26241981983184814,
+    "count": 5000
+  }
+}

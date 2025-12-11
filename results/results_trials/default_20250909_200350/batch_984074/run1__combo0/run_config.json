@@ -1,0 +1,15 @@
+{
+  "preset": "default",
+  "batch": 984074,
+  "run": 1,
+  "grid_params": {},
+  "run_kwargs": {
+    "theta0": 0.07,
+    "theta_s_mult": 0.65,
+    "total_ticks": 5000,
+    "use_population_mixture": 1,
+    "stratify_index": 1,
+    "stratify_total": 5,
+    "seed": 200124
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "batch_id": 659924,
+  "preset": "default",
+  "grid_keys": [],
+  "grid_spec": {},
+  "runs_per_combo": 1,
+  "workers": 8,
+  "base_seed": 123,
+  "run_label": "default_20250909_193724"
+}

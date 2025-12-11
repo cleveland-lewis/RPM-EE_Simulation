@@ -1,0 +1,10 @@
+{
+  "batch_id": 994631,
+  "preset": "asd_typical",
+  "grid_keys": [],
+  "grid_spec": {},
+  "runs_per_combo": 2,
+  "workers": 8,
+  "base_seed": 123,
+  "run_label": "asd_typical_20250909_194320"
+}

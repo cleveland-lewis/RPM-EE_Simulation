@@ -1,0 +1,197 @@
+{
+  "main": {
+    "id": "82115ac7e735253d",
+    "type": "split",
+    "children": [
+      {
+        "id": "0b3aa87e3be584f2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "305761f96a886484",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "results/default_20251027_120126/batch_146171/run0__combo0/timeseries_att_stress.png"
+              },
+              "icon": "lucide-image",
+              "title": "timeseries_att_stress"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "746e2b394f5e98fa",
+    "type": "split",
+    "children": [
+      {
+        "id": "3dcd4308af78ba33",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9ecc42a5500fe9b6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "7d367aad42a4b370",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "71182d83e25b24ff",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "13ce8d2cc629f5fa",
+    "type": "split",
+    "children": [
+      {
+        "id": "184cea1a9b0a799d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2e8bf29f34cbd0a0",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "results/default_20251027_120126/batch_146171/run0__combo0/timeseries_att_stress.png",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for timeseries_att_stress"
+            }
+          },
+          {
+            "id": "2b5542ceb6927f6b",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "results/default_20251027_120126/batch_146171/run0__combo0/timeseries_att_stress.png",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from timeseries_att_stress"
+            }
+          },
+          {
+            "id": "c76cf6c599e08864",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "d90544759aad0389",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "6453437c8b84acc8",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "results/default_20251027_120126/batch_146171/run0__combo0/timeseries_att_stress.png",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of timeseries_att_stress"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "305761f96a886484",
+  "lastOpenFiles": [
+    "results/default_20251027_120126/batch_146171/run0__combo0/hist_stress.png",
+    "results/default_20251027_120126/batch_146171/run0__combo0/hist_attunement.png",
+    "validation_output/plots/scatter_plots.png",
+    "validation_output/memory_calibration_plots.png",
+    "validation_output/plots/roc_curve_h3a.png",
+    "validation_output/plots/correlation_matrix.png",
+    "validation_output/plots/calibration_plot.png",
+    "docs/Funnel_25-08-18 at 16-40-31.md",
+    "docs/CLAUDE.md",
+    "docs/DE2025-11-19.md"
+  ]
+}

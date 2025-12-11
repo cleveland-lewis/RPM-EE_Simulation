@@ -1,0 +1,44 @@
+{
+  "rows": [
+    {
+      "batch": 422084,
+      "run": 0,
+      "preset": "default_theory",
+      "count": 5000,
+      "mean_attunement": 0.0028514431323856115,
+      "std_attunement": 0.01273677684366703,
+      "mean_stress": 0.6197347640991211,
+      "std_stress": 0.12726394832134247,
+      "mean_selection_confidence": 0.6610560094614586,
+      "mean_prediction_error": 0.18205282355148206,
+      "mean_ext_load": 0.5078100562095642,
+      "mean_mem_load": 0.9503270387649536,
+      "mean_affect_volatility": 0.054298076778650284,
+      "mean_salience": 0.5034274056864282,
+      "rate_action_executed": 0.9784172661870504,
+      "rate_semantic_micro_update": 0.3037569944044764,
+      "rate_semanticization": 0.0007993605115907274,
+      "rate_self_model_update": 0.4284572342126299,
+      "rate_suppression_applied": 0.0015987210231814548,
+      "rate_early_dismissal": 0.02158273381294964,
+      "total_ticks": 5000
+    }
+  ],
+  "per_run": [
+    {
+      "batch": 422084,
+      "run": 0,
+      "mean_attunement": 0.0028514431323856115,
+      "std_attunement": 0.01273677684366703,
+      "mean_stress": 0.6197347640991211,
+      "std_stress": 0.12726394832134247
+    }
+  ],
+  "totals": {
+    "mean_attunement": 0.0028514431323856115,
+    "std_attunement": 0.01273677684366703,
+    "mean_stress": 0.6197347640991211,
+    "std_stress": 0.12726394832134247,
+    "count": 5000
+  }
+}

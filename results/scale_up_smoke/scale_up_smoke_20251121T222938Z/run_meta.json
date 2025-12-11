@@ -1,0 +1,11 @@
+{
+  "preset": "default",
+  "mode": "continuous",
+  "runs": 1,
+  "batches": 1,
+  "workers": 2,
+  "base_seed": 680243888,
+  "version": "1.1.0",
+  "date": "2025-11-21T22:29:38.962559",
+  "run_label": "scale_up_smoke_20251121T222938Z"
+}

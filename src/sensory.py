@@ -5,14 +5,75 @@
 # The system uses salience tagging to prioritize important events and modulates sensory input
 # based on internal states, facilitating exploration, soothing, and replay behaviors.
 
+import logging
+import math
 import random
+from typing import Any, Mapping, TypedDict, cast
+
 import numpy as np
-from src.salience import SalienceTagger
-from . import memory
+from scipy.stats import poisson, expon, norm
+try:
+    # Package-relative imports when running via `import src.sensory`
+    from .salience import SalienceTagger
+    from . import memory
+except ImportError:
+    # Fallback for running sensory.py directly
+    from salience import SalienceTagger
+    import memory
+
+logger = logging.getLogger(__name__)
+
+
+class SensoryTick(TypedDict):
+    """Schema for the payload emitted by `SensoryInputSystem.tick`."""
+
+    attunement_score: float
+    schema_stress: float
+    avg_affect_feedback: float
+    short_term_size: int
+    long_term_size: int
+
+
+def validate_tick_payload(payload: Mapping[str, Any]) -> SensoryTick:
+    """Validate and normalize the payload emitted by `SensoryInputSystem.tick`.
+
+    Ensures keys exist, numeric values are finite, and sizes are non-negative integers.
+    Returns a typed dict to lock the interface for downstream consumers.
+    """
+    required = {
+        "attunement_score": float,
+        "schema_stress": float,
+        "avg_affect_feedback": float,
+        "short_term_size": int,
+        "long_term_size": int,
+    }
+    missing = [k for k in required if k not in payload]
+    if missing:
+        raise ValueError(f"Sensory tick payload missing keys: {missing}")
+
+    validated: dict[str, Any] = {}
+    for key, expected_type in required.items():
+        value = payload[key]
+        if expected_type is float:
+            if not isinstance(value, (int, float, np.floating)):
+                raise ValueError(f"{key} must be numeric, got {type(value)}")
+            numeric = float(value)
+            if not math.isfinite(numeric):
+                raise ValueError(f"{key} must be finite, got {value}")
+            validated[key] = numeric
+        else:
+            if not isinstance(value, (int, np.integer)):
+                raise ValueError(f"{key} must be an integer, got {type(value)}")
+            integer = int(value)
+            if integer < 0:
+                raise ValueError(f"{key} must be non-negative, got {integer}")
+            validated[key] = integer
+
+    return cast(SensoryTick, validated)
 
 class SensoryInputSystem:
     """
-    SensoryInputSystem simulates sensory input5
+    SensoryInputSystem simulates sensory input
     across multiple modalities (vision, hearing, touch, smell, taste).
     It manages internal states (awake, fatigued, asleep) that influence sensory input patterns,
     and interacts with memory systems for tagging, storing, and consolidating sensory events.
@@ -40,6 +101,8 @@ class SensoryInputSystem:
         memory_buffer_size: int = 1000,
         memory_decay: float = 0.01,
         memory_prune_threshold: float = 0.2,
+        py_random: random.Random | None = None,
+        np_random: np.random.Generator | None = None,
     ):
         """
         Initialize the sensory input system with parameters controlling sensory generation,
@@ -62,6 +125,13 @@ class SensoryInputSystem:
         - event_rate: int, number of sensory events generated per tick
         """
 
+        self.py_rng = py_random or random.Random()
+        self.np_rng = np_random or np.random.default_rng()
+
+        # Inter-individual (agent) noise factors
+        self.attunement_bias = self.np_rng.uniform(-0.07, 0.07)
+        self.stress_bias = self.np_rng.uniform(-0.09, 0.09)
+
         # Initialize internal clock and state management
         self.clock = 0
         self.state = 'awake'
@@ -77,12 +147,14 @@ class SensoryInputSystem:
         self.highly_variable_rate = highly_variable_rate
         # Rate of sensory events per tick, configured via batch UI
         self.event_rate = event_rate
+        self.poisson_rate_mu = self.event_rate
+        self.poisson_rate_sigma = max(0.2, 0.25 * self.event_rate)
 
         # Randomize salience thresholds if not provided, to simulate individual variability
         if low_salience_threshold is None:
-            low_salience_threshold = random.uniform(0.3, 0.7)
+            low_salience_threshold = self.py_rng.uniform(0.3, 0.7)
         if high_salience_threshold is None:
-            high_salience_threshold = random.uniform(0.7, 0.95)
+            high_salience_threshold = self.py_rng.uniform(0.7, 0.95)
 
         # New variability and memory parameters
         self.low_salience_var_rate = low_salience_var_rate
@@ -90,12 +162,19 @@ class SensoryInputSystem:
         self.memory_decay          = memory_decay
         self.memory_prune_th       = memory_prune_threshold
 
-        # Initialize memory buffer with salience thresholds for filtering events
+        # Initialize memory buffer with hooks
         self.memory_buffer = memory.MemoryBuffer(
             max_short_term=memory_buffer_size,
             low_salience_threshold=low_salience_threshold,
-            high_salience_threshold=high_salience_threshold
+            high_salience_threshold=high_salience_threshold,
+            pre_store_hook=self._pre_store_hook,
+            post_store_hook=self._post_store_hook,
         )
+        # Lightweight per‑modality metrics updated after each store
+        self._stored_by_modality = {m: 0 for m in self.MODALITIES}
+        self._novelty_ema = {m: 0.0 for m in self.MODALITIES}
+        self._ema_alpha = 0.05
+
         # Initialize long term storage for consolidated memories
         self.long_term_storage = memory.LongTermStorage()
 
@@ -111,13 +190,66 @@ class SensoryInputSystem:
         # Define mode weights to probabilistically select exploration, soothing, or replay modes during awake state
         self.mode_weights = {'explore': 0.5, 'soothe': 0.3, 'light_replay': 0.2}
 
-        # ---- Bernoulli retrieval model (Beta‑Bernoulli) counters ----
+        # ---- Bernoulli retrieval model (Beta–Bernoulli) counters ----
         # Slightly wider prior (α=β=5) keeps early posterior near 0.5
         # so attunement moves gradually instead of spiking.
         self.alpha0 = 5.0            # prior α
         self.beta0  = 5.0            # prior β
         self.retrieval_attempts   = 0
         self.retrieval_successes  = 0
+    def _pre_store_hook(self, event: dict) -> dict:
+        """Normalize/augment an event before storing into WM.
+        - Ensure an `id`
+        - Set `initial_salience` if missing
+        - Provide `prioritization_score` and `timing`
+        - Slightly down-weight salience/novelty if highly similar to WM contents
+        """
+        e = dict(event)  # shallow copy to avoid mutating caller
+        # Ensure stable-ish id
+        if 'id' not in e or e.get('id') is None:
+            mod = e.get('modality', 'mm')
+            e['id'] = f"{mod}-{self.clock}-{self.py_rng.randrange(1_000_000)}"
+        # Ensure timing present (use raw clock; normalization can be added later)
+        if 'timing' not in e:
+            try:
+                e['timing'] = float(self.clock)
+            except (ValueError, TypeError):
+                e['timing'] = 0.0
+        # Initial salience defaults to current salience
+        if 'salience' in e and 'initial_salience' not in e:
+            try:
+                e['initial_salience'] = float(e['salience'])
+            except (ValueError, TypeError):
+                pass
+        # Prioritization mirrors salience if missing
+        if 'prioritization_score' not in e and 'salience' in e:
+            try:
+                e['prioritization_score'] = float(e['salience'])
+            except (ValueError, TypeError):
+                pass
+        # Ensure novelty key exists
+        if 'novelty' not in e:
+            e['novelty'] = 0.0
+        # If this looks very similar to existing WM content, softly down-weight
+        try:
+            _, _, scores = self.memory_buffer.match_patterns([e], return_scores=True)
+            sim = scores[0]
+            thr = getattr(self.memory_buffer, 'similarity_threshold', 0.8)
+            if sim > thr:
+                # Reduce novelty and slightly reduce salience to avoid WM clutter
+                try:
+                    e['novelty'] = max(0.0, float(e.get('novelty', 0.0)) * 0.5)
+                except (ValueError, TypeError):
+                    pass
+                if 'salience' in e:
+                    try:
+                        e['salience'] = max(0.0, float(e['salience']) * 0.85)
+                    except (ValueError, TypeError):
+                        pass
+        except Exception as sim_err:
+            # If similarity check fails, proceed without adjustment but make it visible
+            logger.warning("pre_store similarity adjustment failed: %s", sim_err, exc_info=sim_err)
+        return e
 
     def update_clock(self):
         """
@@ -208,7 +340,7 @@ class SensoryInputSystem:
         'light_replay' for replaying salient memories.
         Occasionally adds highly variable, rare sensory events to introduce novelty.
         """
-        mode = random.choices(list(self.mode_weights.keys()), weights=list(self.mode_weights.values()))[0]
+        mode = self.py_rng.choices(list(self.mode_weights.keys()), weights=list(self.mode_weights.values()))[0]
         events = []
         if mode == 'explore':
             events.extend(self._explore())
@@ -218,7 +350,7 @@ class SensoryInputSystem:
             events.extend(self._light_replay())
 
         # Add highly variable events rarely to simulate unexpected stimuli
-        if random.random() < self.highly_variable_rate:
+        if self.py_rng.random() < self.highly_variable_rate:
             events.extend(self._highly_variable_events())
 
         # Enforce configured event rate
@@ -233,18 +365,18 @@ class SensoryInputSystem:
         These events simulate rare, highly variable stimuli that can capture attention.
         Returns a list of such event dictionaries.
         """
-        count = random.randint(1, 3)
+        count = self.py_rng.randint(1, 3)
         events = []
         for _ in range(count):
             low_edge = self.intensity_range[0]
             high_edge = self.intensity_range[1]
             # Randomly choose low or high intensity near edges of range
-            if random.random() < 0.5:
-                intensity_val = random.uniform(low_edge, low_edge + 0.1)
+            if self.py_rng.random() < 0.5:
+                intensity_val = self.py_rng.uniform(low_edge, low_edge + 0.1)
             else:
-                intensity_val = random.uniform(high_edge - 0.1, high_edge)
-            duration_val = random.randint(self.duration_range[0], self.duration_range[1])
-            modality = random.choice(self.MODALITIES)
+                intensity_val = self.py_rng.uniform(high_edge - 0.1, high_edge)
+            duration_val = self.py_rng.randint(self.duration_range[0], self.duration_range[1])
+            modality = self.py_rng.choice(self.MODALITIES)
             events.append({
                 'modality': modality,
                 'intensity': intensity_val,
@@ -297,7 +429,7 @@ class SensoryInputSystem:
         if self.state == 'asleep':
             return []
 
-        cnt = count if count is not None else random.randint(*self.senses_count_range)
+        cnt = count if count is not None else self.py_rng.randint(*self.senses_count_range)
         ir = intensity_range if intensity_range else self.intensity_range
         dr = self.duration_range
 
@@ -306,8 +438,8 @@ class SensoryInputSystem:
             # Optionally customize intensity ranges per modality here
             # if modality == 'vision':
             #     ir = (0.2, 0.8)
-            intensity_val = random.uniform(ir[0], ir[1])
-            duration_val = random.randint(dr[0], dr[1])
+            intensity_val = self.py_rng.uniform(ir[0], ir[1])
+            duration_val = self.py_rng.randint(dr[0], dr[1])
             events.append({
                 'modality': modality,
                 'intensity': intensity_val,
@@ -372,7 +504,7 @@ class SensoryInputSystem:
     # ------------------------------------------------------------------
     # Lightweight tick used by run_simulation for per‑tick metrics
     # ------------------------------------------------------------------
-    def tick(self) -> dict:
+    def tick(self, memory_prune_threshold: float = None) -> dict:
         """
         Advance the clock, generate a few events, decay/prune memory,
         and return attunement_score, schema_stress, and avg_affect_feedback.
@@ -380,17 +512,26 @@ class SensoryInputSystem:
         long‑term cue correctly predicts the next incoming social cue, estimated
         via a Beta‑Bernoulli process with p = LT / (LT + ST).
         """
-        # Simple event generation respecting event_rate
+        # Simulate state-dependent, noisy event rate (inhomogeneous Poisson process)
+        base_rate = self.poisson_rate_mu
+        if self.state == 'fatigued':
+            base_rate *= 0.5
+        elif self.state == 'asleep':
+            base_rate *= 0.1
+
+        poisson_rate = max(0.1, self.np_rng.normal(base_rate, self.poisson_rate_sigma))
+        n_events = self.np_rng.poisson(poisson_rate)
+        n_events = max(1, int(n_events))
+
         new_events = self._simulate_senses(
-            count=self.event_rate,
-            modality=random.choice(self.MODALITIES)
+            count=n_events,
+            modality=self.py_rng.choice(self.MODALITIES)
         )
         tagged = self.salience_tagger.tag_events(new_events)
         self.memory_buffer.store_events(tagged)
 
-        # Decay and possible consolidation once per tick
-        self.memory_buffer.tick_decay()
-        self.memory_buffer.consolidate_to(self.long_term_storage)
+        # Decay memory each tick
+        self.memory_buffer.tick_decay(memory_prune_threshold=memory_prune_threshold)
 
         # Update clock & possibly state
         self.update_clock()
@@ -405,7 +546,7 @@ class SensoryInputSystem:
         #   When many fresh (ST) cues dominate, mismatch risk is higher ⇒ lower p.
         success_prob = lt_sz / max(lt_sz + st_sz, 1)
         self.retrieval_attempts += 1
-        if random.random() < success_prob:
+        if self.py_rng.random() < success_prob:
             self.retrieval_successes += 1
 
         # Posterior mean of Beta(α, β) after observing successes / failures
@@ -415,15 +556,39 @@ class SensoryInputSystem:
 
         # Keep existing definition for schema_stress
         schema_stress = float(np.clip(st_sz / denom, 0.0, 1.0))
+        # Apply inter-individual biases
+        attunement_score = float(np.clip(attunement_score + self.attunement_bias, 0.0, 1.0))
+        schema_stress = float(np.clip(schema_stress + self.stress_bias, 0.0, 1.0))
+
         # Affect feedback: mix attunement (+) and stress (−) plus small noise
-        epsilon = np.random.normal(0.0, 0.05)  # Gaussian noise
+        epsilon = self.np_rng.normal(0.0, 0.05)  # Gaussian noise
         avg_affect_feedback = 1.4 * attunement_score - 0.8 * schema_stress + epsilon # Now a stronger weight
         avg_affect_feedback = float(np.clip(avg_affect_feedback, -1.0, 1.0))  # keep in [-1,1]
 
-        return {
+        payload = {
             "attunement_score":    attunement_score,
             "schema_stress":       schema_stress,
             "avg_affect_feedback": avg_affect_feedback,
             "short_term_size":     st_sz,
             "long_term_size":      lt_sz,
         }
+        return validate_tick_payload(payload)
+    def _post_store_hook(self, event: dict) -> None:
+        """After storing to WM, update simple, side‑effect‑free metrics.
+        Maintains per‑modality counts and a small EWMA of novelty.
+        No control‑flow changes here (keeps behavior stable).
+        """
+        try:
+            mod = event.get('modality', 'unknown')
+            if mod in self._stored_by_modality:
+                self._stored_by_modality[mod] += 1
+            nov = float(event.get('novelty', 0.0))
+            if mod in self._novelty_ema:
+                a = self._ema_alpha
+                self._novelty_ema[mod] = (1 - a) * self._novelty_ema[mod] + a * nov
+        except Exception as hook_err:
+            # Metrics are best‑effort only, but surface failures for debugging
+            event_id = event.get('id', '<unknown>') if isinstance(event, Mapping) else '<unknown>'
+            logger.warning("post_store_hook metrics update failed for event %s: %s", event_id, hook_err, exc_info=hook_err)
+        # No return value required; hook is for side‑effects only
+        return None

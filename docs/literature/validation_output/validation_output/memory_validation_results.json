@@ -1,0 +1,69 @@
+{
+  "baseline_calibration": {
+    "test": "baseline_calibration",
+    "mem_load_mean": 0.46977468848228454,
+    "mem_load_std": 0.027150650353087075,
+    "mem_load_ci": [
+      0.46205855902727316,
+      0.4774908179372959
+    ],
+    "target_range": [
+      0.4,
+      0.6
+    ],
+    "in_range": true,
+    "success": true,
+    "n_trials": 50
+  },
+  "difficulty_sensitivity": {
+    "test": "difficulty_sensitivity",
+    "mem_load_by_level": {
+      "1back": 0.47143946488698324,
+      "2back": 0.4841077963511149,
+      "3back": 0.5954904516537984
+    },
+    "effect_sizes": {
+      "1to2": 0.4378131037983675,
+      "2to3": 3.879820839801532
+    },
+    "p_values": {
+      "1v2": 0.09531588369228956,
+      "2v3": 1.1706490839010637e-21
+    },
+    "is_monotonic": true,
+    "success": true,
+    "n_trials_per_level": 30
+  },
+  "load_performance_relationship": {
+    "test": "load_performance_relationship",
+    "rt_beta": -0.06611686301133586,
+    "rt_threshold": 0.3,
+    "rt_success": false,
+    "accuracy_r": -0.05000947808966588,
+    "accuracy_p": 0.6212237599241749,
+    "accuracy_threshold": -0.35,
+    "accuracy_success": false,
+    "success": false,
+    "n_trials": 100
+  },
+  "parameter_sensitivity": {
+    "test": "parameter_sensitivity",
+    "mem_load_std": 0.022724930697299566,
+    "mem_load_cv": 0.04831762340552518,
+    "split_half_diff": 0.012592279911041226,
+    "variability_ok": false,
+    "reliability_ok": true,
+    "success": false,
+    "n_trials": 30,
+    "hardcoded_params": {
+      "mem_capacity": 500,
+      "mem_gamma": 1.25
+    }
+  },
+  "summary": {
+    "n_tests": 4,
+    "n_successes": 2,
+    "success_rate": 0.5,
+    "preset": "default"
+  }
+}

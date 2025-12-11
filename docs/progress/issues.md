@@ -1,0 +1,228 @@
+- **[A6] Refactor "God Objects" to improve modularity**
+  - Tier: T1 | Phase: Maintenance | Status: {OPEN} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[A1] Dual simulation cores (simulation vs presets)**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[A2] Overlapping responsibilities and cross-package imports**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[A4] Inconsistent configuration flows**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[M1] Missing formal specification of model equations**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I14] Replace broad exception handling with specific exceptions**
+  - Tier: T1 | Phase: Maintenance | Status: {IN_PROGRESS} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: Replace all instances of `except Exception` with more specific exception types in memory.py, arbiter.py, sensory.py, path_utils.py, randomness.py, simulation.py, nc_mcm_model.py, config_schema.py, trial_wrapper.py, and validation_metrics.py
+  - Completion Notes: Completed core src files (memory.py, arbiter.py, sensory.py, path_utils.py, randomness.py, simulation.py partial). Updated nc_mcm_model.py and config_schema.py. Remaining: trial_wrapper.py, validation_metrics.py, and additional instances in simulation.py
+- **[I15] Eliminate "Magic Numbers" by defining named constants**
+  - Tier: T1 | Phase: Maintenance | Status: {IN_PROGRESS} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: Replace all hardcoded numerical constants with named constants defined in constants.py
+  - Completion Notes: Created src/constants.py with 60+ named constants; updated memory.py to use constants for decay schedules, thresholds, modulation factors. Remaining: other files (replay.py, arbiter.py, salience.py, selfmodel.py, attunement.py, replay_fsm.py, simulation.py, nc_mcm_model.py, trial_wrapper.py, test files)
+- **[I16] Add defensive checks to prevent potential KeyErrors**
+  - Tier: T1 | Phase: Maintenance | Status: {IN_PROGRESS} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: Add checks to ensure dictionary keys exist before accessing them using .get() with appropriate defaults
+  - Completion Notes: Updated rpm.py (all event dictionary accesses) and selfmodel.py (traits access) to use safe .get() access. Remaining: replay.py, arbiter.py, fatigue.py, sensory.py, path_utils.py, replay_fsm.py, test files where unsafe dict access may exist
+- **[I17] Remove unused code and imports**
+  - Tier: T1 | Phase: Maintenance | Status: {OPEN} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I18] Standardize code style**
+  - Tier: T1 | Phase: Maintenance | Status: {OPEN} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I13] Code Quality and Maintainability Issues in `src` Directory**
+  - Tier: T3 | Phase: Maintenance | Status: {IN PROGRESS} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I1] Fragmented randomness and reproducibility**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I5] Sensory interface contracts**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I7] Add convergence diagnostics for NC-MCM**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I8] Validate NC-MCM inputs**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I12] Canonical tests missing dependencies**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[D2] Metadata completeness**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[D4] Persist NC-MCM artifacts**
+  - Tier: T1 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[A3] Unclear public API surface**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[A5] Mixed educational + research code**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[M2] Population mixture mechanics**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[M4] Arbiter scoring edge cases**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[M5] Validation contract drift**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[M6] NC-MCM workflow robustness**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[M3] MemoryBuffer encoding and semanticization knobs**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[M7] Add uncertainty intervals to NC-MCM RMSE**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I2] JAX/Numba backend coverage**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I3] Logging vs print statements**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I4] Silent exception handling**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I6] Result paths & config I/O**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I11] Docstrings for `fit_nc_mcm` helpers**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: I9 | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I9] Refactor NC-MCM into testable helpers**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: I11 | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[I10] NC-MCM logging layer**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[T1] Fragmented test suites**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[T3] Validation metrics regression tests**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[T4] FastAPI config API tests**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[T5] NC-MCM utility tests**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: I9 | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[T6] Scale-up capability (compute)**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[T7] `test_clinical_presets.py` and `test_enhancements.py` import error**
+  - Tier: T1 | Phase: Maintenance | Status: {OPEN} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[T8] `test_configure.py` import error**
+  - Tier: T1 | Phase: Maintenance | Status: {OPEN} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[T9] `test_rpm.py` import file mismatch**
+  - Tier: T1 | Phase: Maintenance | Status: {OPEN} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[D1] Result directory sprawl**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[D3] Validation output traceability**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[D7] Pin requirements for reproducibility**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[D6] Export NC-MCM results to JSON**
+  - Tier: T2 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[M8] NC-MCM sensitivity analysis**
+  - Tier: T3 | Phase: Maintenance | Status: {TODO} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[T2] Slow tests and workarounds**
+  - Tier: T3 | Phase: Maintenance | Status: {TODO} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[U4] Plot/visualization tooling**
+  - Tier: T3 | Phase: Maintenance | Status: {TODO} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[U6] Direct timeline of all changes for GitHub**
+  - Tier: T3 | Phase: Maintenance | Status: {TODO} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[U1] No single Getting Started guide**
+  - Tier: T3 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[U2] Missing architecture overview**
+  - Tier: T3 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[U3] Incomplete CLI documentation**
+  - Tier: T3 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[U5] Versions of the model**
+  - Tier: T3 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[U7] CONTRIBUTING guide**
+  - Tier: T3 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[U8] Issues Addition**
+  - Tier: T3 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[U9] Issues Database**
+  - Tier: T4 | Phase: Maintenance | Status: {IN PROGRESS} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A
+- **[D5] Persist NC-MCM plots in PNG/PDF**
+  - Tier: T3 | Phase: Maintenance | Status: {COMPLETE} | Dependencies: — | Blocks: — | Target Date: —
+  - Acceptance Criteria: N/A
+  - Completion Notes: N/A

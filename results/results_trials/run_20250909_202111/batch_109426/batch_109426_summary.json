@@ -1,0 +1,49 @@
+{
+  "rows": [
+    {
+      "batch": 109426,
+      "run": 0,
+      "preset": null,
+      "count": 2400,
+      "mean_attunement": 0.005681869573891163,
+      "std_attunement": 0.02335248328745365,
+      "att_min": 5.405631942068112e-09,
+      "att_p95": 0.02887417934834957,
+      "att_max": 0.3245486319065094,
+      "mean_stress": 0.6192765235900879,
+      "std_stress": 0.1254551112651825,
+      "stress_min": 0.27825048565864563,
+      "stress_p95": 0.8215503096580505,
+      "stress_max": 0.9181927442550659,
+      "mean_selection_confidence": 0.6633934162488885,
+      "mean_prediction_error": 0.17955621948148034,
+      "mean_ext_load": 0.4972013235092163,
+      "mean_mem_load": 0.9088667631149292,
+      "mean_affect_volatility": 0.05509576573967934,
+      "mean_salience": 0.5048709108733063,
+      "rate_action_executed": 0.9700249791840133,
+      "rate_semantic_micro_update": 0.30308076602830974,
+      "rate_semanticization": 0.0008326394671107411,
+      "rate_self_model_update": 0.41298917568692756,
+      "rate_suppression_applied": 0.0008326394671107411,
+      "rate_early_dismissal": 0.02997502081598668
+    }
+  ],
+  "per_run": [
+    {
+      "batch": 109426,
+      "run": 0,
+      "mean_attunement": 0.005681869573891163,
+      "std_attunement": 0.02335248328745365,
+      "mean_stress": 0.6192765235900879,
+      "std_stress": 0.1254551112651825
+    }
+  ],
+  "totals": {
+    "mean_attunement": 0.005681869573891163,
+    "std_attunement": 0.02335248328745365,
+    "mean_stress": 0.6192765235900879,
+    "std_stress": 0.1254551112651825,
+    "count": 2400
+  }
+}

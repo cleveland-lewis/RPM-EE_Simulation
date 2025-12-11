@@ -1,0 +1,38 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.9.3
+2 info using node@v22.19.0
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npmrc
+5 silly config load:file:/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm install
+8 verbose argv "install" "--package-lock-only"
+9 verbose logfile logs-max:10 dir:/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npm/_logs/2025-11-21T14_45_35_891Z-
+10 verbose logfile /Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npm/_logs/2025-11-21T14_45_35_891Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:2197815296 maxSize:549453824 maxEntrySize:274726912
+13 silly idealTree buildDeps
+14 verbose stack Error: Could not read package.json: Error: ENOENT: no such file or directory, open '/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/package.json'
+14 verbose stack     at async open (node:internal/fs/promises:641:25)
+14 verbose stack     at async readFile (node:internal/fs/promises:1245:14)
+14 verbose stack     at async read (/usr/local/lib/node_modules/npm/node_modules/@npmcli/package-json/lib/read-package.js:9:18)
+14 verbose stack     at async PackageJson.load (/usr/local/lib/node_modules/npm/node_modules/@npmcli/package-json/lib/index.js:132:31)
+14 verbose stack     at async PackageJson.normalize (/usr/local/lib/node_modules/npm/node_modules/@npmcli/package-json/lib/index.js:118:5)
+14 verbose stack     at async runScript (/usr/local/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/run-script.js:11:28)
+14 verbose stack     at async Install.exec (/usr/local/lib/node_modules/npm/lib/commands/install.js:163:9)
+14 verbose stack     at async Npm.exec (/usr/local/lib/node_modules/npm/lib/npm.js:207:9)
+14 verbose stack     at async module.exports (/usr/local/lib/node_modules/npm/lib/cli/entry.js:74:5)
+15 error code ENOENT
+16 error syscall open
+17 error path /Users/clevelandlewis/Documents/Academic/Research/RPM-EE/package.json
+18 error errno -2
+19 error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/package.json'
+20 error enoent This is related to npm not being able to find a file.
+20 error enoent
+21 verbose cwd /Users/clevelandlewis/Documents/Academic/Research/RPM-EE
+22 verbose os Darwin 25.1.0
+23 verbose node v22.19.0
+24 verbose npm  v10.9.3
+25 verbose exit -2
+26 verbose code -2
+27 error A complete log of this run can be found in: /Users/clevelandlewis/Documents/Academic/Research/RPM-EE/Users/clevelandlewis/Documents/Academic/Research/RPM-EE/.npm/_logs/2025-11-21T14_45_35_891Z-debug-0.log

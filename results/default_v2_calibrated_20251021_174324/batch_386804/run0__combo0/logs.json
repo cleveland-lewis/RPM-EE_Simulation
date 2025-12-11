@@ -1,0 +1,15 @@
+[
+  {
+    "att_latent": -20.0,
+    "stress_latent": 0.3850421193772278,
+    "att_bounded": 5.74952226429356e-19,
+    "stress_bounded": 0.6835391159888312,
+    "logit_theta0": 1.2,
+    "logit_aff_term": 1.1817306280136108,
+    "logit_stress_term": -0.8202469391865974,
+    "logit_ext_term": -33.996124564271135,
+    "logit_mem_term": -0.0032299533674378365,
+    "logit_vol_term": -0.16816538396175718,
+    "logit_z": -20.0,
+    "clock": 0,
+    "attunement_score": 

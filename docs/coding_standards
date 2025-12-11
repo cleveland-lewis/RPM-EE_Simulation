@@ -1,0 +1,300 @@
+# RPM-EE Python Coding Standards
+
+## Overview
+These standards support the RPM-EE computational cognitive neuroscience framework, balancing scientific rigor with maintainable code for a solo-developer research project.
+
+---
+
+## Code Organization
+
+### File Structure
+- **`src/`** – Core simulation engine and modules
+- **`config/`** – YAML configuration files
+- **`docs/`** – Architecture, diagrams, research notes
+- **`results/`** – Auto-generated outputs (git-ignored)
+- **`logs/`** – Runtime logs (git-ignored)
+
+### Module Naming
+- Use lowercase with underscores: `simulation.py`, `batch_runner.py`, `memory_buffer.py`
+- Group related functionality: `sensory_processing.py`, `replay_arbiter.py`, `stress_dynamics.py`
+
+---
+
+## Naming Conventions
+
+### Variables and Functions
+- **Standard variables**: `snake_case` (e.g., `salience_decay`, `memory_buffer_size`)
+- **Scientific parameters**: Keep domain-standard names even if mixed case (e.g., `EFE` for Expected Free Energy)
+- **Internal/private**: Prefix with underscore (e.g., `_compute_precision_weight`)
+
+### Classes
+- `PascalCase` for classes (e.g., `ReplayArbiter`, `SalienceTracker`)
+- Use descriptive names that reflect cognitive/neural concepts
+
+### Constants
+- `UPPER_SNAKE_CASE` for true constants (e.g., `DEFAULT_TICK_LIMIT`, `MAX_MEMORY_SIZE`)
+- Collect presets in `PRESETS` dictionary as you're already doing
+
+---
+
+## Documentation
+
+### Module Docstrings
+Every module should start with:
+```python
+"""
+Brief one-line description.
+
+Longer explanation of the module's role in RPM-EE architecture,
+key algorithms, and references to theoretical foundations.
+"""
+```
+
+### Function Docstrings
+Use NumPy/SciPy style for scientific computing context:
+```python
+def compute_attunement(salience, affect_tone, volatility, prediction_error):
+    """
+    Compute attunement score via precision-weighted integration.
+    
+    Parameters
+    ----------
+    salience : float
+        Current salience level [0, 1]
+    affect_tone : float
+        Emotional valence [-1, 1]
+    volatility : float
+        Environmental uncertainty estimate
+    prediction_error : float
+        Magnitude of prediction mismatch
+    
+    Returns
+    -------
+    float
+        Attunement score in [0, 1] after sigmoid transform
+        
+    Notes
+    -----
+    Implements the core attunement equation from Friston et al. (2024).
+    Combines contributors with online normalization and logit→sigmoid.
+    """
+```
+
+### Inline Comments
+- Explain **why**, not **what** – code shows what
+- Reference papers for non-obvious algorithms: `# Precision weighting per Friston (2024)`
+- Mark TODOs clearly: `# TODO(v1.2): Add EFE switch for active inference mode`
+
+---
+
+## Code Style
+
+### General Formatting
+- **Line length**: 88 characters (Black formatter default)
+- **Indentation**: 4 spaces (never tabs)
+- **Imports**: Standard library → Third-party → Local, separated by blank lines
+
+```python
+import json
+from pathlib import Path
+
+import numpy as np
+import yaml
+
+from simulation import RPMEngine
+```
+
+### Type Hints
+Use for public APIs and complex functions:
+```python
+def run_batch(
+    runs: int,
+    total_ticks: int,
+    params: dict[str, Any],
+    save_logs: bool = False
+) -> dict[str, np.ndarray]:
+    """Run batch simulation."""
+```
+
+Optional for short helper functions and iterative research code.
+
+### String Formatting
+- Prefer f-strings: `f"run{idx}__event_rate={rate}"`
+- Use consistent quote style (single `'` for data, double `"` for human-readable strings)
+
+---
+
+## Scientific Computing Specifics
+
+### NumPy Best Practices
+- Vectorize operations when possible
+- Use descriptive array names: `precision_weights` not `pw`
+- Document array shapes in docstrings: `salience_history : np.ndarray, shape (n_ticks,)`
+
+### Random Seeds
+- Always set seeds for reproducibility in research code
+- Make seeds configurable: `np.random.seed(params.get('random_seed', 42))`
+
+### Performance
+- Profile before optimizing – readability first
+- Document backend choices: `# Using Numba JIT for inner loop performance`
+- Keep NumPy fallback for all JAX/Numba paths
+
+### Numerical Stability
+- Add small epsilon to denominators: `value / (variance + 1e-8)`
+- Clip values to valid ranges: `np.clip(attunement, 0, 1)`
+- Use `np.log1p` and `np.expm1` when appropriate
+
+---
+
+## Configuration and Parameters
+
+### Parameter Dictionaries
+- Use lowercase snake_case keys: `{"memory_buffer_size": 800}`
+- Provide defaults in a centralized `DEFAULTS` dict
+- Validate parameter ranges at initialization
+
+### YAML Configs
+- Use for logging setup, not simulation parameters (keep those in presets/CLI)
+- Include comments explaining non-obvious settings
+
+---
+
+## Testing and Validation
+
+### Assertions
+Use liberally for research code sanity checks:
+```python
+assert 0 <= salience <= 1, f"Salience {salience} out of bounds"
+assert len(memory_buffer) <= max_size, "Buffer overflow"
+```
+
+### Validation Functions
+Create dedicated validators for parameter sweeps:
+```python
+def validate_params(params: dict) -> None:
+    """Validate parameter ranges before simulation run."""
+    if params['salience_decay'] <= 0:
+        raise ValueError("salience_decay must be positive")
+```
+
+### Reproducibility
+- Log all parameters with results
+- Save RNG state in output JSON
+- Version tag outputs: Include git commit hash if available
+
+---
+
+## Output and Logging
+
+### File Naming
+Follow your current pattern:
+- `run{N}__{param1}={val1}_{param2}={val2}/`
+- `summary.csv`, `summary.json`, `logs.json`
+- Timestamp format: `YYYYMMDD_HHMMSS`
+
+### Logging Levels
+- **DEBUG**: Per-tick state dumps (only with `--save-per-tick`)
+- **INFO**: Run/batch progress, parameter configurations
+- **WARNING**: Numerical issues, parameter edge cases
+- **ERROR**: Simulation failures, invalid configs
+
+### Data Formats
+- **CSV**: For time series and tabular summaries (easy R/Python import)
+- **JSON**: For nested metadata and full parameter records
+- **NPY/NPZ**: For large arrays (optional, memory-mapped access)
+
+---
+
+## Version Control
+
+### Commit Messages
+Use conventional format:
+```
+feat(arbiter): add expected free energy switch for v1.2
+fix(stress): correct allostatic drive decay formula
+docs(readme): update roadmap with v1.3 milestones
+refactor(memory): extract pruning logic to separate function
+```
+
+### .gitignore
+Essential entries:
+```
+logs/
+results/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.npy
+*.npz
+```
+
+---
+
+## Research-Specific Guidelines
+
+### Mechanistic Interpretability
+- Name variables after their cognitive/neural function, not implementation
+- Good: `prediction_error`, `replay_utility`, `allostatic_drive`
+- Avoid: `pe`, `util`, `drive`
+
+### Parameter Tuning
+- Document parameter sensitivity in comments
+- Use descriptive sweep grid names: `stress_sensitivity_sweep`, not `sweep_1`
+- Save failed runs with error info for debugging
+
+### Theoretical Alignment
+- Reference papers in docstrings for novel algorithms
+- Note deviations from canonical implementations
+- Explain simplifying assumptions
+
+### Future Extensions
+Mark extension points clearly:
+```python
+# v1.2: Add EFE-based policy selection here
+# v1.3: Hook for EEG export (alpha/theta band mapping)
+```
+
+---
+
+## Tools and Automation
+
+### Recommended Tools
+- **Formatter**: Black (88 char line length)
+- **Linter**: Ruff (fast, modern, combines multiple tools)
+- **Type checker**: mypy (optional, for public APIs)
+- **Profiler**: cProfile or line_profiler for bottlenecks
+
+### Pre-commit Hooks (Optional)
+For stricter discipline as project matures:
+```bash
+pip install pre-commit black ruff
+# Add .pre-commit-config.yaml
+```
+
+---
+
+## Code Review Checklist
+
+Before committing research code:
+- [ ] Docstrings on all public functions
+- [ ] Parameter validation for sweeps
+- [ ] Reproducibility: seed set and logged
+- [ ] Numerical stability: epsilon guards, clipping
+- [ ] Meaningful variable names (cognitive/neural terminology)
+- [ ] References cited for novel algorithms
+- [ ] Output paths follow naming convention
+- [ ] git commit message follows conventional format
+
+---
+
+## References
+
+Align with computational neuroscience best practices:
+- Wilson et al. (2014). *Best Practices for Scientific Computing.* PLOS Biology.
+- Stodden et al. (2016). *Enhancing reproducibility for computational methods.* Science.
+- NumPy Documentation Style Guide
+
+---
+
+*These standards evolve with the RPM-EE project. Update as methodologies mature.*

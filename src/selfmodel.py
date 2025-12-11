@@ -28,7 +28,7 @@ class SelfModel:
 
             # Apply schema filtering penalty
             realism = sim.get("plausibility", 0.0)
-            realism_bias = self.traits["realism_bias"]
+            realism_bias = self.traits.get("realism_bias", 0.7)
             penalty = (1.0 - realism) * realism_bias
             sim["schema_filtered_score"] = max(0.0, sim.get("final_score", 0.0) - penalty)
 

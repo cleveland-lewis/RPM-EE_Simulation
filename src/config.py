@@ -1,7 +1,10 @@
-import json
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-# from config import load_config, save_config
+
+try:
+    from .config_schema import SimulationConfig, load_simulation_config, resolve_simulation_config, save_simulation_config
+except ImportError:  # pragma: no cover - fallback for running as a script
+    from config_schema import SimulationConfig, load_simulation_config, resolve_simulation_config, save_simulation_config
 
 app = FastAPI()
 
@@ -19,32 +22,15 @@ def get_config():
     """
     Returns the current simulation configuration as JSON.
     """
-    cfg = load_config()
-    return cfg
+    return load_simulation_config()
 
-@app.post("/config")
-def update_config(cfg: dict):
+@app.post("/config", response_model=SimulationConfig)
+def update_config(cfg: SimulationConfig):
     """
     Accepts and saves a new simulation configuration.
     """
-    if not isinstance(cfg, dict):
+    if not isinstance(cfg, SimulationConfig):
         raise HTTPException(status_code=400, detail="Config must be a JSON object")
-    save_config(cfg)
-    return {"status": "success"}
-
-def load_config(path="config.json"):
-    try:
-        with open(path, "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
-    except Exception as e:
-        print(f"Error loading config: {e}")
-        return {}
-
-def save_config(cfg, path="config.json"):
-    try:
-        with open(path, "w") as f:
-            json.dump(cfg, f, indent=2)
-    except Exception as e:
-        print(f"Error saving config: {e}")
+    normalized = resolve_simulation_config(cfg.to_kwargs(), preset=cfg.preset)
+    save_simulation_config(normalized)
+    return normalized

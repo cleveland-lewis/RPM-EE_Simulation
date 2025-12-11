@@ -1,0 +1,17 @@
+{
+  "preset": "default",
+  "batch": 240986,
+  "run": 0,
+  "grid_params": {},
+  "run_kwargs": {
+    "theta0": 9.0,
+    "theta_s_mult": 0.1,
+    "gate_by_attunement": 1,
+    "gate_temperature": 1.2,
+    "replay_softmax": 0,
+    "softmax_temp": 1.0,
+    "explore_error_gain": 2.0,
+    "explore_floor": 0.0,
+    "total_ticks": 5000
+  }
+}

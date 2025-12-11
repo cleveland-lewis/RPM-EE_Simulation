@@ -1,0 +1,10 @@
+{
+  "preset": "converge_biased",
+  "batch": 580796,
+  "run": 0,
+  "grid_params": {},
+  "run_kwargs": {
+    "total_ticks": 5000,
+    "seed": 321
+  }
+}

@@ -1,0 +1,60 @@
+================================================================================
+RPM-EE VALIDATION REPORT
+================================================================================
+
+Generated: 2025-11-13 15:26:54
+Schema Version: 1.0.0
+
+--------------------------------------------------------------------------------
+SAMPLE CHARACTERISTICS
+--------------------------------------------------------------------------------
+Total observations: 3000
+Participants: 20
+Trials per participant (mean): 150.0
+
+--------------------------------------------------------------------------------
+HYPOTHESIS TESTING RESULTS
+--------------------------------------------------------------------------------
+
+✓ H1a_stress_corr
+    Correlation: r = 0.441, p = 0.0000
+    Threshold: r ≥ 0.3
+    Within-subject SD: 0.080
+
+✗ H1b_hrv_corr
+    Correlation: r = -0.328, p = 1.0000
+    Threshold: r ≥ -0.25
+    Within-subject SD: 0.086
+
+✗ H3a_action_auc
+    AUC (mean): 0.652 ± 0.091
+    Threshold: AUC ≥ 0.7
+    Participants: 20
+
+✗ H3b_confidence_corr
+    Correlation: r = nan, p = nan
+    Threshold: r ≥ N/A
+
+✓ H4a_trait_independence
+    ΔR² (traits): 0.0006
+    Threshold: ΔR² < 0.02
+    F-test p-value: 0.8133
+
+✓ H4b_icc
+    ICC: 0.021
+    Threshold: ICC < 0.4
+
+✓ H5a_lapse_prediction
+    RMSE (CV): 0.101
+    Threshold: RMSE < 0.15
+
+✗ H5b_lagged_omission
+
+--------------------------------------------------------------------------------
+OVERALL SUMMARY
+--------------------------------------------------------------------------------
+Hypotheses tested: 8
+Hypotheses passed: 4
+Success rate: 50.0%
+
+================================================================================

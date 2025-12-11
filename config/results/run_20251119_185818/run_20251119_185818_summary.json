@@ -1,0 +1,30 @@
+[
+  {
+    "batch": 336795,
+    "run": 0,
+    "preset": null,
+    "count": 2400,
+    "mean_attunement": 0.00016542486264370382,
+    "std_attunement": 0.0017748466925695539,
+    "att_min": 3.0341887487929473e-16,
+    "att_p95": 0.00023326602240558714,
+    "att_max": 0.0466882660984993,
+    "mean_stress": 0.7023335099220276,
+    "std_stress": 0.26462897658348083,
+    "stress_min": 0.026730302721261978,
+    "stress_p95": 0.9858993291854858,
+    "stress_max": 0.9999621510505676,
+    "mean_selection_confidence": 0.6249226415335983,
+    "mean_prediction_error": 0.1895977430984394,
+    "mean_ext_load": 0.49176913499832153,
+    "mean_mem_load": 0.879719078540802,
+    "mean_affect_volatility": 0.05524025857448578,
+    "mean_salience": 0.5236217974190811,
+    "rate_action_executed": 0.9733555370524563,
+    "rate_semantic_micro_update": 0.27726894254787676,
+    "rate_semanticization": 0.02164862614487927,
+    "rate_self_model_update": 0.3896752706078268,
+    "rate_suppression_applied": 0.0033305578684429643,
+    "rate_early_dismissal": 0.02331390507910075
+  }
+]

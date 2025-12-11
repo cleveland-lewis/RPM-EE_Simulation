@@ -1,0 +1,241 @@
+{
+  "main": {
+    "id": "ac275a712783c38d",
+    "type": "split",
+    "children": [
+      {
+        "id": "d72f3deeb544f3a8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0085e07ff3e3d2dc",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "26d16849ac94c089",
+    "type": "split",
+    "children": [
+      {
+        "id": "18ba9bd8cca38f58",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "76adbd6613af0c9c",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "ab40e49e62a5eda8",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "5b9b12519e2315c3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "right": {
+    "id": "7ba22912136f0da1",
+    "type": "split",
+    "children": [
+      {
+        "id": "a921e74ac8f46710",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9c867e136dd221a9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "progress/updates_reports/UR_2025-20-11.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for UR_2025-20-11"
+            }
+          },
+          {
+            "id": "9abdea1bc6460540",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "progress/updates_reports/UR_2025-20-11.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from UR_2025-20-11"
+            }
+          },
+          {
+            "id": "2472f7b8e8d9a174",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "d98e94223aa4cc06",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "acc8d991a020d2db",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "progress/updates_reports/UR_2025-20-11.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of UR_2025-20-11"
+            }
+          },
+          {
+            "id": "931ed79dbc11b71e",
+            "type": "leaf",
+            "state": {
+              "type": "file-properties",
+              "state": {
+                "file": "progress/update_report/UR2025-11-20.md"
+              },
+              "icon": "lucide-info",
+              "title": "File properties for UR2025-11-20"
+            }
+          }
+        ],
+        "currentTab": 5
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "0085e07ff3e3d2dc",
+  "lastOpenFiles": [
+    "progress/issues.md",
+    "AGENT.md",
+    "progress/issues_db/issues.db",
+    "progress/issues_db/manage_issues.sh",
+    "progress/issues_db/query_issues.py",
+    "progress/issues_db/manage_db.py",
+    "progress/issues_db/README.md",
+    "progress/issues_db",
+    "progress/update_report/UR2025-11-20.md",
+    "progress/update_report/UR2025-11-21.md",
+    "a.i._instructions/AGENT.md.md",
+    "progress/update_report/UR_2025-20-11.md",
+    "progress/update_report/UR2025-02-12.md",
+    "progress/update_report/Update Report 10-21-25 Calibration Session.md",
+    "progress/update_report/Update Report 10-21-25 Implementation Status.md",
+    "public_api.md",
+    "progress/Untitled.base",
+    "teaching/learning_core.py",
+    "teaching",
+    "progress/roadmap.md",
+    "progress/questions.md",
+    "progress/update_report",
+    "literature/units/Simulation.md",
+    "progress/update_report/Update Report 10-21-25 Latent Architecture Plan.md",
+    "progress/update_report/Update Report 10-21-25 Calibration Attempt.md",
+    "progress/update_report/Update Report 10-15-25.md",
+    "progress/update_report/Update Report 10-15-25 Clinical Presets.md",
+    "progress/update_report/Update Report 10-15-25 Batch Runner Enhancement.md",
+    "progress/update_report/Update Report 08-13-25.md",
+    "progress/updates_reports",
+    "literature/validation_output/validation_output/plots/scatter_plots.png",
+    "literature/validation_output/validation_output/plots/roc_curve_h3a.png",
+    "literature/validation_output/validation_output/plots/icc_visualization.png",
+    "literature/validation_output/validation_output/plots/correlation_matrix.png",
+    "literature/validation_output/validation_output/plots/calibration_plot.png",
+    "literature/validation_output/validation_output/memory_calibration_plots.png",
+    "progress/updates/UR_2025-20-11.md",
+    "literature/theory.md",
+    "progress/Tasks.md",
+    "literature/getting_started.md",
+    "progress/updates/Update Report 08-13-25.md",
+    "literature/trial_wrapper_example.png"
+  ]
+}

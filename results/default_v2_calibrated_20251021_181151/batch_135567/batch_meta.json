@@ -1,0 +1,10 @@
+{
+  "batch_id": 135567,
+  "preset": "default_v2_calibrated",
+  "grid_keys": [],
+  "grid_spec": {},
+  "runs_per_combo": 5,
+  "workers": 8,
+  "base_seed": null,
+  "run_label": "default_v2_calibrated_20251021_181151"
+}

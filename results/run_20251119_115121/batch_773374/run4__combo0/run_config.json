@@ -1,0 +1,9 @@
+{
+  "preset": null,
+  "batch": 773374,
+  "run": 4,
+  "grid_params": {},
+  "run_kwargs": {
+    "total_ticks": 5000
+  }
+}

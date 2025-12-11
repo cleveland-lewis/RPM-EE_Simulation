@@ -1,0 +1,93 @@
+{
+  "rows": [
+    {
+      "batch": 273508,
+      "run": 1,
+      "preset": "default",
+      "count": 5000,
+      "mean_attunement": 0.004677613265812397,
+      "std_attunement": 0.015076728537678719,
+      "att_min": 1.3375002494431243e-11,
+      "att_p95": 0.023138968273997307,
+      "att_max": 0.23086406290531158,
+      "mean_stress": 0.6227810382843018,
+      "std_stress": 0.12752945721149445,
+      "stress_min": 0.2734066843986511,
+      "stress_p95": 0.8305982947349548,
+      "stress_max": 0.9252681732177734,
+      "mean_selection_confidence": 0.6606928083917601,
+      "mean_prediction_error": 0.18821069525980422,
+      "mean_ext_load": 0.5093848705291748,
+      "mean_mem_load": 0.9566245675086975,
+      "mean_affect_volatility": 0.05385645106434822,
+      "mean_salience": 0.513425686490833,
+      "rate_action_executed": 0.9808153477218226,
+      "rate_semantic_micro_update": 0.2941646682653877,
+      "rate_semanticization": 0.002398081534772182,
+      "rate_self_model_update": 0.42525979216626697,
+      "rate_suppression_applied": 0.0015987210231814548,
+      "rate_early_dismissal": 0.019184652278177457,
+      "theta0": 0.07,
+      "theta_s_mult": 0.65,
+      "total_ticks": 5000,
+      "seed": 100124
+    },
+    {
+      "batch": 273508,
+      "run": 0,
+      "preset": "default",
+      "count": 5000,
+      "mean_attunement": 0.007777303922921419,
+      "std_attunement": 0.02700430527329445,
+      "att_min": 3.099750074397889e-07,
+      "att_p95": 0.0437262449413538,
+      "att_max": 0.4261648654937744,
+      "mean_stress": 0.6212086081504822,
+      "std_stress": 0.12834540009498596,
+      "stress_min": 0.319680780172348,
+      "stress_p95": 0.8235585391521454,
+      "stress_max": 0.9527756571769714,
+      "mean_selection_confidence": 0.6627699708481201,
+      "mean_prediction_error": 0.182639836968041,
+      "mean_ext_load": 0.48807668685913086,
+      "mean_mem_load": 0.947380781173706,
+      "mean_affect_volatility": 0.05394105240702629,
+      "mean_salience": 0.44414999268704847,
+      "rate_action_executed": 0.9568345323741008,
+      "rate_semantic_micro_update": 0.2973621103117506,
+      "rate_semanticization": 0.0015987210231814548,
+      "rate_self_model_update": 0.4212629896083134,
+      "rate_suppression_applied": 0.002398081534772182,
+      "rate_early_dismissal": 0.04316546762589928,
+      "theta0": 0.07,
+      "theta_s_mult": 0.65,
+      "total_ticks": 5000,
+      "seed": 100123
+    }
+  ],
+  "per_run": [
+    {
+      "batch": 273508,
+      "run": 0,
+      "mean_attunement": 0.007777303922921419,
+      "std_attunement": 0.02700430527329445,
+      "mean_stress": 0.6212086081504822,
+      "std_stress": 0.12834540009498596
+    },
+    {
+      "batch": 273508,
+      "run": 1,
+      "mean_attunement": 0.004677613265812397,
+      "std_attunement": 0.01507672853767872,
+      "mean_stress": 0.6227810382843018,
+      "std_stress": 0.12752945721149445
+    }
+  ],
+  "totals": {
+    "mean_attunement": 0.006227458594366908,
+    "std_attunement": 0.021923151058163882,
+    "mean_stress": 0.621994823217392,
+    "std_stress": 0.1279340975195598,
+    "count": 10000
+  }
+}

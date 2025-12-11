@@ -20,9 +20,9 @@ class RecursivePredictiveModeler:
         # Slot-filling with biased selections based on the input
         simulation = {
             "id": str(uuid.uuid4()),
-            "source_event_id": event["id"],
+            "source_event_id": event.get("id", "unknown"),
             "agent": "self",  # default assumption
-            "emotion": event["emotion"],
+            "emotion": event.get("emotion", {"valence": 0.0, "arousal": 0.0}),
             "action": self._predict_action(event),
             "result": self._predict_result(event),
             "plausibility": self._compute_physical_plausibility(event),
@@ -35,35 +35,47 @@ class RecursivePredictiveModeler:
     @staticmethod
     def _predict_action(event):
         # Placeholder logic — replace with real mapping from emotion or modality
-        if event["modality"] == "vision":
-            return "approach" if event["emotion"]["valence"] > 0 else "withdraw"
-        elif event["modality"] == "touch":
-            return "recoil" if event["emotion"]["valence"] < 0 else "explore"
+        modality = event.get("modality", "unknown")
+        emotion = event.get("emotion", {})
+        valence = emotion.get("valence", 0.0)
+
+        if modality == "vision":
+            return "approach" if valence > 0 else "withdraw"
+        elif modality == "touch":
+            return "recoil" if valence < 0 else "explore"
         return "observe"
 
     @staticmethod
     def _predict_result(event):
         # Result is simplified as binary — success/failure or positive/negative
-        if event["emotion"]["valence"] > 0.5:
+        emotion = event.get("emotion", {})
+        valence = emotion.get("valence", 0.0)
+
+        if valence > 0.5:
             return "positive outcome"
-        elif event["emotion"]["valence"] < -0.5:
+        elif valence < -0.5:
             return "negative outcome"
         return "neutral outcome"
 
     @staticmethod
     def _compute_physical_plausibility(event):
         # Modality and intensity influence realism
-        realism = 1.0 - abs(event["intensity"] - 0.5)
+        intensity = event.get("intensity", 0.5)
+        realism = 1.0 - abs(intensity - 0.5)
         return round(realism, 3)
 
     @staticmethod
     def _estimate_emotional_outcome(event):
         # Use emotion valence as expected emotion prediction
-        return round(event["emotion"]["valence"], 3)
+        emotion = event.get("emotion", {})
+        valence = emotion.get("valence", 0.0)
+        return round(valence, 3)
 
     def _distortion_bias(self, event):
         # Higher valence + low plausibility → more likely distorted
-        distortion = max(0.0, event["emotion"]["valence"] - self._compute_physical_plausibility(event))
+        emotion = event.get("emotion", {})
+        valence = emotion.get("valence", 0.0)
+        distortion = max(0.0, valence - self._compute_physical_plausibility(event))
         return round(distortion, 3)
 
     def get_simulations(self):

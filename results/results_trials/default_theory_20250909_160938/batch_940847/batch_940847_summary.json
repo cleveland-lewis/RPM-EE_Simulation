@@ -1,0 +1,75 @@
+{
+  "rows": [
+    {
+      "batch": 940847,
+      "run": 1,
+      "preset": "default_theory",
+      "count": 5000,
+      "mean_attunement": 0.0034924086648970842,
+      "std_attunement": 0.013107570819556713,
+      "mean_stress": 0.6210665106773376,
+      "std_stress": 0.1258089393377304,
+      "mean_selection_confidence": 0.6615245023743808,
+      "mean_prediction_error": 0.18901795281287037,
+      "mean_ext_load": 0.5050057768821716,
+      "mean_mem_load": 0.9538618922233582,
+      "mean_affect_volatility": 0.05432652682065964,
+      "mean_salience": 0.45367457241647774,
+      "rate_action_executed": 0.9568345323741008,
+      "rate_semantic_micro_update": 0.2885691446842526,
+      "rate_semanticization": 0.0007993605115907274,
+      "rate_self_model_update": 0.407673860911271,
+      "rate_suppression_applied": 0.0015987210231814548,
+      "rate_early_dismissal": 0.04316546762589928,
+      "total_ticks": 5000
+    },
+    {
+      "batch": 940847,
+      "run": 0,
+      "preset": "default_theory",
+      "count": 5000,
+      "mean_attunement": 0.003347570076584816,
+      "std_attunement": 0.016177602112293243,
+      "mean_stress": 0.6214646697044373,
+      "std_stress": 0.1260032057762146,
+      "mean_selection_confidence": 0.6627895687457374,
+      "mean_prediction_error": 0.17996680297755266,
+      "mean_ext_load": 0.5023182034492493,
+      "mean_mem_load": 0.9649932384490967,
+      "mean_affect_volatility": 0.05408361181616783,
+      "mean_salience": 0.4802039654297884,
+      "rate_action_executed": 0.9696243005595524,
+      "rate_semantic_micro_update": 0.2917665867306155,
+      "rate_semanticization": 0.0007993605115907274,
+      "rate_self_model_update": 0.4060751398880895,
+      "rate_suppression_applied": 0.002398081534772182,
+      "rate_early_dismissal": 0.030375699440447643,
+      "total_ticks": 5000
+    }
+  ],
+  "per_run": [
+    {
+      "batch": 940847,
+      "run": 0,
+      "mean_attunement": 0.003347570076584816,
+      "std_attunement": 0.016177602112293243,
+      "mean_stress": 0.6214646697044373,
+      "std_stress": 0.1260032057762146
+    },
+    {
+      "batch": 940847,
+      "run": 1,
+      "mean_attunement": 0.0034924086648970842,
+      "std_attunement": 0.013107570819556713,
+      "mean_stress": 0.6210665106773376,
+      "std_stress": 0.1258089393377304
+    }
+  ],
+  "totals": {
+    "mean_attunement": 0.00341998937074095,
+    "std_attunement": 0.0147222681063884,
+    "mean_stress": 0.6212655901908875,
+    "std_stress": 0.125899971345536,
+    "count": 10000
+  }
+}

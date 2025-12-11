@@ -1,0 +1,21 @@
+{
+  "preset": "default",
+  "batch": 379587,
+  "run": 10,
+  "grid_params": {},
+  "run_kwargs": {
+    "theta0": 0.11,
+    "theta_s_mult": 0.6,
+    "gate_by_attunement": 1,
+    "gate_temperature": 1.2,
+    "replay_softmax": 0,
+    "softmax_temp": 1.0,
+    "explore_error_gain": 2.0,
+    "explore_floor": 0.0,
+    "total_ticks": 10000,
+    "use_population_mixture": 1,
+    "stratify_index": 10,
+    "stratify_total": 30,
+    "seed": 133
+  }
+}
