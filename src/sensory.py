@@ -1,6 +1,5 @@
-# Create the SensoryInputSystem module inside the simulation package
+# RPM-EE Sensory Input System (v1.1.0)
 
-sensory_input_code = """\
 import random
 
 class SensoryInputSystem:
@@ -59,5 +58,3 @@ class SensoryInputSystem:
 
     def _simulate_taste(self):
         return [{"modality": "taste", "intensity": random.uniform(0.1, 0.7), "duration": 2}] if random.random() < 0.1 else []
-
-"""

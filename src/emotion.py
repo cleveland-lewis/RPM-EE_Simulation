@@ -1,6 +1,5 @@
-# Create the Emotional Encoding system module
+# RPM-EE Emotional Encoder (v1.1.0)
 
-emotional_encoding_code = """\
 import random
 
 class EmotionalEncoder:
@@ -15,7 +14,7 @@ class EmotionalEncoder:
             self.simulation_replay_count[sim_id] += 1
 
             # Emotion feedback loop
-            sim["emotion_intensity"] = abs(sim["emotional_prediction"])
+            sim["emotion_intensity"] = abs(sim.get("emotional_prediction", 0))
             sim["affect_feedback"] = self._calculate_affect_feedback(sim)
             sim["replay_weight"] += sim["affect_feedback"]
 
@@ -30,13 +29,14 @@ class EmotionalEncoder:
 
     def _calculate_affect_feedback(self, sim):
         # Reinforce high-emotion, low-plausibility simulations as distorted favorites
-        if sim["reward_distortion"] > 0.4 and sim["emotion_intensity"] > 0.6:
+        reward_distortion = sim.get("reward_distortion", 0)
+        emotion_intensity = sim.get("emotion_intensity", 0)
+        
+        if reward_distortion > 0.4 and emotion_intensity > 0.6:
             return 0.6  # biasing replay upwards
-        elif sim["emotion_intensity"] > 0.5:
+        elif emotion_intensity > 0.5:
             return 0.3
-        elif sim["emotion_intensity"] > 0.2:
+        elif emotion_intensity > 0.2:
             return 0.1
         else:
             return -0.1  # suppress weak/no emotion
-"""
-

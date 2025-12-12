@@ -1,6 +1,3 @@
-# Update simulation.py with all subsystem imports
-
-simulation_code = """\
 # RPM-EE Simulation Class (v1.1.0)
 
 from sensory import SensoryInputSystem
@@ -57,4 +54,3 @@ class RPMEESimulation:
                 print(f"Episode {episode} complete")
 
         print("Simulation complete.")
-"""
