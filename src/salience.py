@@ -14,6 +14,9 @@ class SalienceTagger:
     - Timing information
     """
     
+    # Constants
+    INTENSITY_NOVELTY_SCALE = 2.0  # Scaling factor for intensity differences to novelty
+    
     def __init__(self):
         self.emotion_categories = ["awe", "joy", "fear", "disgust", "anger", "sadness", "surprise", "neutral"]
         self.event_history = []
@@ -126,7 +129,7 @@ class SalienceTagger:
         avg_intensity = sum(e.get("intensity", 0) for e in recent_same_modality) / len(recent_same_modality)
         intensity_diff = abs(intensity - avg_intensity)
         
-        novelty = min(1.0, intensity_diff * 2)  # Scale difference to 0-1
+        novelty = min(1.0, intensity_diff * self.INTENSITY_NOVELTY_SCALE)
         return novelty
     
     def _calculate_timing(self, clock, state):

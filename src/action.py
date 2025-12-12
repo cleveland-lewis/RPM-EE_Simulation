@@ -8,6 +8,10 @@ class ActionSystem:
     Provides feedback to the sensory system.
     """
     
+    # Constants for action execution
+    MIN_SUCCESS_PROB = 0.1  # Minimum success probability
+    CONFIDENCE_MULTIPLIER = 0.8  # How much confidence affects success probability
+    
     def __init__(self):
         self.action_history = []
         self.available_actions = [
@@ -61,7 +65,7 @@ class ActionSystem:
         confidence = action.get("confidence", 0.5)
         
         # Simulate success probability based on confidence
-        success_prob = confidence * 0.8 + 0.1  # 10% to 90%
+        success_prob = confidence * self.CONFIDENCE_MULTIPLIER + self.MIN_SUCCESS_PROB
         success = random.random() < success_prob
         
         # Generate outcome feedback

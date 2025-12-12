@@ -14,6 +14,11 @@ from replay import ReplayModeArbitrator
 from action import ActionSystem
 
 class RPMEESimulation:
+    # System state decay constants
+    STRESS_DECAY_RATE = 0.98  # Per-step decay rate for stress
+    PREDICTION_ERROR_DECAY_RATE = 0.95  # Per-step decay rate for prediction error
+    EMOTION_VOLATILITY_DECAY_RATE = 0.90  # Per-step decay rate for emotion volatility
+    
     def __init__(self, enable_logging=False):
         self.clock = 0
         self.logs = []
@@ -145,9 +150,9 @@ class RPMEESimulation:
         self.system_state["emotion_volatility"] = max(0, min(1.0, self.system_state["emotion_volatility"]))
         
         # Natural decay towards baseline
-        self.system_state["stress"] *= 0.98
-        self.system_state["prediction_error"] *= 0.95
-        self.system_state["emotion_volatility"] *= 0.90
+        self.system_state["stress"] *= self.STRESS_DECAY_RATE
+        self.system_state["prediction_error"] *= self.PREDICTION_ERROR_DECAY_RATE
+        self.system_state["emotion_volatility"] *= self.EMOTION_VOLATILITY_DECAY_RATE
 
     def run(self, episodes=100):
         if self.logger:
