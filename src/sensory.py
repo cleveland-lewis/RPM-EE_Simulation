@@ -9,12 +9,6 @@ class SensoryInputSystem:
         self.state_durations = {"awake": 300, "fatigued": 100, "asleep": 100}
         self.state_timer = self.state_durations[self.state]
 
-    def update_clock(self):
-        self.clock += 1
-        self.state_timer -= 1
-        if self.state_timer <= 0:
-            self.transition_state()
-
     def transition_state(self):
         if self.state == "awake":
             self.state = "fatigued"
