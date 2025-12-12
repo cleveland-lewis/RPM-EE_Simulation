@@ -1,6 +1,5 @@
-# Create the SensoryInputSystem module inside the simulation package
+# RPM-EE Sensory Input System (v1.1.0)
 
-sensory_input_code = """\
 import random
 
 class SensoryInputSystem:
@@ -9,12 +8,6 @@ class SensoryInputSystem:
         self.state = "awake"  # can be: awake, fatigued, asleep
         self.state_durations = {"awake": 300, "fatigued": 100, "asleep": 100}
         self.state_timer = self.state_durations[self.state]
-
-    def update_clock(self):
-        self.clock += 1
-        self.state_timer -= 1
-        if self.state_timer <= 0:
-            self.transition_state()
 
     def transition_state(self):
         if self.state == "awake":
@@ -59,5 +52,3 @@ class SensoryInputSystem:
 
     def _simulate_taste(self):
         return [{"modality": "taste", "intensity": random.uniform(0.1, 0.7), "duration": 2}] if random.random() < 0.1 else []
-
-"""

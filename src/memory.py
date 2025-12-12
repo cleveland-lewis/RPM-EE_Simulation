@@ -1,6 +1,5 @@
-# Create the Pattern Recognition and Memory Pruning module
+# RPM-EE Memory Store (v1.1.0)
 
-pattern_memory_code = """\
 import uuid
 from collections import deque
 import math
@@ -21,7 +20,7 @@ class MemoryStore:
             similarity_score = self._compare_to_memory(event)
             if similarity_score > 0.8:
                 matched.append(event)
-                event["recurrence"] = 1  # simple bump, could be a running average
+                event["recurrence"] = event.get("recurrence", 0) + 1  # simple bump, could be a running average
             else:
                 unmatched.append(event)
         return matched, unmatched
@@ -47,15 +46,18 @@ class MemoryStore:
         }
 
         sim = 0
-        sim += weights["modality"] * (1.0 if e1["modality"] == e2["modality"] else 0.0)
-        sim += weights["duration"] * (1.0 - abs(e1["duration"] - e2["duration"]) / 10.0)
-        sim += weights["intensity"] * (1.0 - abs(e1["intensity"] - e2["intensity"]))
-        sim += weights["emotion_valence"] * (1.0 - abs(e1["emotion"]["valence"] - e2["emotion"]["valence"]))
-        sim += weights["timing"] * (1.0 - abs(e1["timing"] - e2["timing"]))
-        sim += weights["prioritization_score"] * (1.0 - abs(e1["prioritization_score"] - e2["prioritization_score"]) / 10.0)
+        sim += weights["modality"] * (1.0 if e1.get("modality") == e2.get("modality") else 0.0)
+        sim += weights["duration"] * (1.0 - min(abs(e1.get("duration", 0) - e2.get("duration", 0)) / 10.0, 1.0))
+        sim += weights["intensity"] * (1.0 - min(abs(e1.get("intensity", 0) - e2.get("intensity", 0)), 1.0))
+        
+        # Safe access to nested emotion dict
+        e1_valence = e1.get("emotion", {}).get("valence", 0)
+        e2_valence = e2.get("emotion", {}).get("valence", 0)
+        sim += weights["emotion_valence"] * (1.0 - min(abs(e1_valence - e2_valence), 1.0))
+        
+        sim += weights["timing"] * (1.0 - min(abs(e1.get("timing", 0) - e2.get("timing", 0)), 1.0))
+        sim += weights["prioritization_score"] * (1.0 - min(abs(e1.get("prioritization_score", 0) - e2.get("prioritization_score", 0)) / 10.0, 1.0))
         return max(0.0, min(1.0, sim))  # clamp between 0 and 1
 
     def prune_old_memory(self):
-        self.short_term = deque([e for e in self.short_term if e["prioritization_score"] > 0.3], maxlen=self.short_term.maxlen)
-"""
-
+        self.short_term = deque([e for e in self.short_term if e.get("prioritization_score", 0) > 0.3], maxlen=self.short_term.maxlen)

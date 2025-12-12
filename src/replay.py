@@ -1,6 +1,5 @@
-# Create the Replay Mode Arbitration module with optional damping
+# RPM-EE Replay Mode Arbitrator (v1.1.0)
 
-replay_mode_code = """\
 import random
 
 class ReplayModeArbitrator:
@@ -10,10 +9,10 @@ class ReplayModeArbitrator:
         self.damping_cycles = damping_cycles
 
     def select_mode(self, system_state):
-        clock = system_state["clock"]
-        stress = system_state["stress"]
-        prediction_error = system_state["prediction_error"]
-        emotion_volatility = system_state["emotion_volatility"]
+        clock = system_state.get("clock", 0)
+        stress = system_state.get("stress", 0)
+        prediction_error = system_state.get("prediction_error", 0)
+        emotion_volatility = system_state.get("emotion_volatility", 0)
 
         if (clock - self.last_switch_clock) < self.damping_cycles:
             return self.current_mode  # Enforce mode duration
@@ -33,4 +32,3 @@ class ReplayModeArbitrator:
         if new_mode != self.current_mode:
             self.current_mode = new_mode
             self.last_switch_clock = clock
-"""
