@@ -1,5 +1,10 @@
 # RPM-EE Simulation Class (v1.1.0)
 
+import logging
+import yaml
+import os
+from datetime import datetime
+
 from sensory import SensoryInputSystem
 from salience import SalienceTagger
 from memory import MemoryStore
@@ -9,7 +14,7 @@ from replay import ReplayModeArbitrator
 from action import ActionSystem
 
 class RPMEESimulation:
-    def __init__(self):
+    def __init__(self, enable_logging=False):
         self.clock = 0
         self.logs = []
 
@@ -30,6 +35,33 @@ class RPMEESimulation:
             "prediction_error": 0.2,
             "emotion_volatility": 0.1
         }
+        
+        # Setup logging if enabled
+        if enable_logging:
+            self._setup_logging()
+        else:
+            self.logger = None
+
+    def _setup_logging(self):
+        """Setup logging based on config file."""
+        try:
+            # Create logs directory if it doesn't exist
+            os.makedirs("logs", exist_ok=True)
+            
+            # Load logging config
+            config_path = "config/logging.yaml"
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    config = yaml.safe_load(f)
+                    logging.config.dictConfig(config)
+            
+            self.logger = logging.getLogger(__name__)
+            self.logger.info("=" * 60)
+            self.logger.info(f"RPM-EE Simulation Started at {datetime.now().isoformat()}")
+            self.logger.info("=" * 60)
+        except Exception as e:
+            print(f"Warning: Could not setup logging: {e}")
+            self.logger = None
 
     def step(self):
         # 1. Generate new input (sensory clock matches simulation clock)
@@ -37,10 +69,16 @@ class RPMEESimulation:
 
         # 2. Tag sensory input with salience/emotion
         tagged_events = self.tagger.tag_input(input_packet)
+        
+        if self.logger:
+            self.logger.debug(f"Clock {self.clock}: Generated {len(tagged_events)} events in state {input_packet['state']}")
 
         # 3. Store in memory and split matched vs unmatched
         self.memory.store_events(tagged_events)
         matched, unmatched = self.memory.match_patterns(tagged_events)
+        
+        if self.logger and unmatched:
+            self.logger.info(f"Clock {self.clock}: {len(unmatched)} novel events detected")
 
         # 4. Generate slot-based simulations
         simulations = self.rpm.generate_simulations(matched)
@@ -51,7 +89,11 @@ class RPMEESimulation:
         # 6. Select replay mode based on system state
         self.system_state["clock"] = self.clock
         self.system_state["state"] = input_packet["state"]
+        prev_mode = self.arbitrator.current_mode
         replay_mode = self.arbitrator.select_mode(self.system_state)
+        
+        if self.logger and replay_mode != prev_mode:
+            self.logger.info(f"Clock {self.clock}: Mode changed to {replay_mode} (stress={self.system_state['stress']:.2f}, pred_err={self.system_state['prediction_error']:.2f})")
 
         # 7. Select and execute action
         action = self.action_system.select_action(
@@ -60,6 +102,9 @@ class RPMEESimulation:
             self.system_state
         )
         action_outcome = self.action_system.execute_action(action, self.system_state)
+        
+        if self.logger:
+            self.logger.debug(f"Clock {self.clock}: Action {action['type']} - {'SUCCESS' if action_outcome['success'] else 'FAILURE'}")
         
         # 8. Update system state based on action outcome
         self._update_system_state(action_outcome, tagged_events)
@@ -105,6 +150,9 @@ class RPMEESimulation:
         self.system_state["emotion_volatility"] *= 0.90
 
     def run(self, episodes=100):
+        if self.logger:
+            self.logger.info(f"Starting simulation run for {episodes} episodes")
+            
         for episode in range(episodes):
             self.clock += 1
             # Sync sensory clock with simulation clock
@@ -113,9 +161,19 @@ class RPMEESimulation:
             self.sensory.state_timer -= 1
             if self.sensory.state_timer <= 0:
                 self.sensory.transition_state()
+                if self.logger:
+                    self.logger.info(f"Clock {self.clock}: State transition to {self.sensory.state}")
             
             self.step()
             if episode % 10 == 0:
                 print(f"Episode {episode} complete")
 
         print("Simulation complete.")
+        
+        if self.logger:
+            self.logger.info("=" * 60)
+            self.logger.info(f"Simulation Completed - {episodes} episodes processed")
+            self.logger.info(f"Final system state: stress={self.system_state['stress']:.3f}, "
+                           f"pred_err={self.system_state['prediction_error']:.3f}, "
+                           f"emotion_vol={self.system_state['emotion_volatility']:.3f}")
+            self.logger.info("=" * 60)
