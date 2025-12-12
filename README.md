@@ -464,8 +464,10 @@ Each simulation step (`sim.step()`) executes the following sequence:
 
 ### Scalability
 
-- **Tested Range**: 1-10,000 episodes
-- **Recommended Max**: 50,000 episodes (for memory constraints)
+**Note**: The following values are estimates based on the system architecture. Actual performance may vary depending on hardware and configuration.
+
+- **Typical Usage**: 100-10,000 episodes
+- **Theoretical Max**: ~50,000 episodes (limited by memory accumulation)
 - **Parallel Processing**: Not currently implemented
 
 ---
