@@ -7,6 +7,11 @@ import uuid
 import logging
 
 try:
+    from .subsystem import Subsystem
+except ImportError:
+    from subsystem import Subsystem
+
+try:
     from .constants import (
         HALF_LIFE_LOW_SALIENCE_MIN, HALF_LIFE_LOW_SALIENCE_MAX,
         HALF_LIFE_MID_SALIENCE_MIN, HALF_LIFE_MID_SALIENCE_MAX,
@@ -534,3 +539,30 @@ class LongTermStorage(MemoryStore):
 
     def clear(self) -> None:
         self.long_term.clear()
+
+
+class MemorySubsystem(Subsystem):
+    """Subsystem wrapper around short/long-term memory stores."""
+
+    def __init__(
+        self,
+        *,
+        memory_buffer: Optional[MemoryBuffer] = None,
+        long_term_storage: Optional[LongTermStorage] = None,
+    ) -> None:
+        self.memory_buffer = memory_buffer or MemoryBuffer()
+        self.long_term_storage = long_term_storage or LongTermStorage()
+
+    def reset(self) -> None:
+        self.memory_buffer.short_term.clear()
+        self.long_term_storage.clear()
+
+    def step(self, tick: int) -> None:
+        _ = tick
+        self.memory_buffer.tick_decay()
+
+    def snapshot(self) -> dict:
+        return {
+            "short_term": [dict(e) for e in self.memory_buffer.short_term],
+            "long_term": self.long_term_storage.snapshot(),
+        }

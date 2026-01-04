@@ -32,6 +32,7 @@ from src.config_schema import SimulationConfig, resolve_simulation_kwargs
 from src.simulation import run_simulation
 from src.stats_utils import write_batch_summary
 from src.path_utils import resolve_output_root, stamp_run_metadata, ensure_dir
+from src.provenance import collect_provenance
 
 # Try importing trial wrapper (gracefully degrade if unavailable)
 try:
@@ -89,6 +90,7 @@ def _build_batch_metadata(*, preset, grid_keys, grid_spec, runs_per_combo, worke
         'seed': base_seed,
         'version': RPMEE_VERSION,
         'date': metadata_date,
+        'provenance': collect_provenance(),
         'config_hash': _stable_config_hash({
             'preset': preset,
             'mode': mode,
@@ -117,6 +119,7 @@ def _build_run_metadata(*, preset_name, batch_id, run_idx, grid_params, run_kwar
         'seed': effective_seed,
         'version': RPMEE_VERSION,
         'date': metadata_date,
+        'provenance': collect_provenance(),
         'config_hash': _stable_config_hash({
             'preset': preset_name,
             'grid_params': grid_params,

@@ -20,6 +20,7 @@ results/
 
 - `run_label` defaults to a UTC timestamped name; override with `--output`/`--label` or `RPMEE_OUTPUT_ROOT`.
 - `batch_meta.json` and `run_config.json` always include: `preset`, `seed`, `version`, `date`, and `config_hash`.
+- Both also include optional `provenance` (git commit, python/platform, and package versions) for reproducibility.
 - `run_meta.json` is used by non-batch entry points to capture the same fields.
 
 ## Indexing outputs

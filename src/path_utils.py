@@ -13,6 +13,11 @@ from typing import Any, Mapping, Tuple, List, Dict, Optional
 import json
 import hashlib
 
+try:
+    from .provenance import collect_provenance
+except ImportError:
+    from provenance import collect_provenance
+
 DEFAULT_OUTPUT_ROOT = "results"
 RUN_META_FILE = "run_meta.json"
 _REQUIRED_INDEX_FIELDS = ("preset", "seed", "version", "date", "config_hash")
@@ -60,6 +65,7 @@ def stamp_run_metadata(run_root: Path, *, preset: str | None, mode: str, runs: i
         "version": version,
         "date": datetime.utcnow().isoformat(),
         "run_label": run_label,
+        "provenance": collect_provenance(run_root),
     }
     return write_metadata(run_root / RUN_META_FILE, payload)
 

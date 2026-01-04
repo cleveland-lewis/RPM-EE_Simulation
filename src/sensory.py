@@ -16,10 +16,12 @@ try:
     # Package-relative imports when running via `import src.sensory`
     from .salience import SalienceTagger
     from . import memory
+    from .subsystem import Subsystem
 except ImportError:
     # Fallback for running sensory.py directly
     from salience import SalienceTagger
     import memory
+    from subsystem import Subsystem
 
 logger = logging.getLogger(__name__)
 
@@ -573,6 +575,7 @@ class SensoryInputSystem:
             "long_term_size":      lt_sz,
         }
         return validate_tick_payload(payload)
+
     def _post_store_hook(self, event: dict) -> None:
         """After storing to WM, update simple, side‑effect‑free metrics.
         Maintains per‑modality counts and a small EWMA of novelty.
@@ -592,3 +595,27 @@ class SensoryInputSystem:
             logger.warning("post_store_hook metrics update failed for event %s: %s", event_id, hook_err, exc_info=hook_err)
         # No return value required; hook is for side‑effects only
         return None
+
+
+class SensorySubsystem(Subsystem):
+    """Subsystem wrapper around the sensory input system."""
+
+    def __init__(self, **kwargs) -> None:
+        self._init_kwargs = dict(kwargs)
+        self.system = SensoryInputSystem(**kwargs)
+        self._last_tick: dict | None = None
+
+    def reset(self) -> None:
+        self.system = SensoryInputSystem(**self._init_kwargs)
+        self._last_tick = None
+
+    def step(self, tick: int) -> None:
+        _ = tick
+        self._last_tick = self.system.tick()
+
+    def snapshot(self) -> dict:
+        return {
+            "last_tick": dict(self._last_tick) if self._last_tick is not None else None,
+            "short_term_size": len(self.system.memory_buffer.short_term),
+            "long_term_size": len(self.system.long_term_storage.long_term),
+        }
