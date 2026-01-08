@@ -37,7 +37,8 @@ def test_simulation_runs_with_defaults():
     and returns a list of dictionaries with the expected keys.
     """
     print("Running sanity check with default parameters...")
-    logs = run_simulation(total_ticks=10)
+    result = run_simulation(total_ticks=10)
+    logs = result["logs"] if isinstance(result, dict) else result
     assert isinstance(logs, list), "Simulation should return a list."
     assert len(logs) > 0, "Simulation with positive ticks should not be empty."
 
@@ -75,11 +76,13 @@ def test_behavioral_pruning_model():
     print("Running behavioral test on dynamic pruning response...")
 
     # Run 1: Low prune threshold
-    low_prune_logs = run_simulation(total_ticks=1000, memory_prune_threshold=0.1)
+    low_prune_result = run_simulation(total_ticks=1000, memory_prune_threshold=0.1)
+    low_prune_logs = low_prune_result["logs"] if isinstance(low_prune_result, dict) else low_prune_result
     avg_prune_low = np.mean([log['dynamic_prune'] for log in low_prune_logs])
 
     # Run 2: High prune threshold
-    high_prune_logs = run_simulation(total_ticks=1000, memory_prune_threshold=0.8)
+    high_prune_result = run_simulation(total_ticks=1000, memory_prune_threshold=0.8)
+    high_prune_logs = high_prune_result["logs"] if isinstance(high_prune_result, dict) else high_prune_result
     avg_prune_high = np.mean([log['dynamic_prune'] for log in high_prune_logs])
 
     print(f"Avg dynamic prune with low base threshold (0.1): {avg_prune_low:.4f}")

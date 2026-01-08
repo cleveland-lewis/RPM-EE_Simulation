@@ -480,11 +480,9 @@ Success rate: 50.0% (4/8)
 ### Phase 1: Core Validation Capability (Priority: HIGH)
 **Estimated Time:** 1 week
 
-1. **Observation-conditioned mode** (Task #2)
-   - Modify `simulation.py` to accept `data_adapter`
-   - Replace input generation with adapter calls
-   - Use learnable PE observer
-   - Test with example adapter
+1. ✅ **Observation-conditioned mode** (Task #2)
+   - `simulation.py` accepts `data_adapter` and uses adapter observations per tick
+   - Inputs are adapter-driven when provided (no synthetic fallback)
    - **Deliverable:** `run_simulation(data_adapter=adapter, observed_mode=1)` works
 
 2. **Gating policy alignment** (Task #7)

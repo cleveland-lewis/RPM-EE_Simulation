@@ -15,7 +15,9 @@ At each tick `t` the model tracks:
 - `mem_load_t` : working-memory load (capacity-limited, nonlinear)
 - `aff_t` : affect level (mean affect feedback, approximately in [−1, 1])
 - `aff_vol_t` : affect volatility (short-term standard deviation of affect)
-- `stress_latent_t` : latent schema stress (unbounded, then linked to [0, 1])
+- `stress_slow_t` : slow schema stress component (drive-based)
+- `stress_fast_t` : fast schema stress component (surprisal-based)
+- `stress_latent_t` : combined latent schema stress (unbounded, then linked to [0, 1])
 - `att_latent_t` : latent attunement (unbounded, then linked to [0, 1])
 - `stress_bounded_t` : bounded schema stress (after link function)
 - `att_bounded_t` : bounded attunement (after link function)
@@ -44,10 +46,10 @@ For each discrete sensory modality `m` in {vision, hearing, touch}:
   v_{m,t} = (1 - \lambda_\text{mod}) v_{m,t-1} + \lambda_\text{mod} (x_{m,t} - \mu_{m,t-1})^2
   ```
 
-- Precision (inverse variance with small epsilon guard):
+- Precision (inverse variance with small epsilon guard, bounded):
 
   ```math
-  \pi_{m,t} = \frac{1}{v_{m,t} + \varepsilon}
+  \pi_{m,t} = \text{clip}\left(\frac{1}{v_{m,t} + \varepsilon}, \pi_{\min}, \pi_{\max}\right)
   ```
 
 The precision-weighted external load fuses modalities:
@@ -120,16 +122,16 @@ Two variants exist in the code:
    ```
 
    ```math
-   s^{\text{drive}}_{\text{latent}, t}
-   = \left(1 - \frac{1}{\tau}\right) s^{\text{drive}}_{\text{latent}, t-1}
+   s^{\text{slow}}_{t}
+   = \left(1 - \frac{1}{\tau}\right) s^{\text{slow}}_{t-1}
      + \frac{1}{\tau} s^{\text{drive}}_t.
    ```
 
 2. **Latent-only path (`stress_inner_sigmoid = 0`, recommended):**
 
    ```math
-   s^{\text{drive}}_{\text{latent}, t}
-   = \left(1 - \frac{1}{\tau}\right) s^{\text{drive}}_{\text{latent}, t-1}
+   s^{\text{slow}}_{t}
+   = \left(1 - \frac{1}{\tau}\right) s^{\text{slow}}_{t-1}
      + \frac{1}{\tau} \text{drive}_t.
    ```
 
@@ -162,18 +164,24 @@ The external-load EMA is updated as:
 e^{\text{ema}}_t = (1 - \rho_e) e^{\text{ema}}_{t-1} + \rho_e \cdot \text{ext\_load}_t.
 ```
 
-The fast latent stress contribution is either passed through a sigmoid (legacy path) or used directly:
+The fast latent stress contribution is either passed through a sigmoid (legacy path) or used directly, then filtered by a fast time constant `τ_fast`:
 
 - Legacy:
 
   ```math
-  s^{\text{fast}}_{\text{latent}, t} = \sigma(u_t).
+  s^{\text{fast}}_{\text{raw}, t} = \sigma(u_t).
   ```
 
 - Latent path:
 
   ```math
-  s^{\text{fast}}_{\text{latent}, t} = u_t.
+  s^{\text{fast}}_{\text{raw}, t} = u_t.
+  ```
+
+  ```math
+  s^{\text{fast}}_t
+  = \left(1 - \frac{1}{\tau_{\text{fast}}}\right) s^{\text{fast}}_{t-1}
+    + \frac{1}{\tau_{\text{fast}}} s^{\text{fast}}_{\text{raw}, t}.
   ```
 
 ### 5.3 Blending, decay, and bounding
@@ -182,7 +190,7 @@ The final latent stress before bounding blends slow and fast components with `ka
 
 ```math
 \text{stress\_latent}_t
-= (1 - \kappa) s^{\text{drive}}_{\text{latent}, t} + \kappa s^{\text{fast}}_{\text{latent}, t}.
+= (1 - \kappa) s^{\text{slow}}_{t} + \kappa s^{\text{fast}}_{t}.
 ```
 
 Optional decay in latent space applies a per-tick factor `1 - stress_decay`:
@@ -245,7 +253,7 @@ Here `(μ_s, v_s)`, `(μ_e, v_e)`, `(μ_m, v_m)`, `(μ_v, v_v)` are running mean
 
 ### 6.2 Latent attunement
 
-Let `θ_a, θ_s, θ_e, θ_m, θ_v` be base weights and `θ_s_mult`, `θ_e_mult`, `θ_m_mult`, `θ_v_mult` be multipliers that re-scale penalties for stress, external load, memory load, and volatility. Let `π_aff, π_str, π_mem, π_vol` be precision-like weights (currently default to 1.0). Then the latent attunement `z_t = att_latent_t` is:
+Let `θ_a, θ_s, θ_e, θ_m, θ_v` be base weights and `θ_s_mult`, `θ_e_mult`, `θ_m_mult`, `θ_v_mult` be multipliers that re-scale penalties for stress, external load, memory load, and volatility. Let `π_aff, π_str, π_mem, π_vol` be precision-like weights tracked online from running variances. Then the latent attunement `z_t = att_latent_t` is:
 
 ```math
 z_t = \theta_0
@@ -269,9 +277,7 @@ A_t = \sigma\big( g_a (z_t - o_a) \big),
 ```
 
 ```math
-\text{att\_bounded}_t = A_t,
-\quad
-\text{att\_scaled}_t = s_a \cdot A_t,
+\text{att\_bounded}_t = \text{clip}(s_a \cdot A_t, 0, 1),
 ```
 
 where `g_a = att_gain`, `o_a = att_offset`, `s_a = att_scale`. By default `att_scale = 1.0` so `att_bounded_t ∈ (0, 1)` is used directly in logs and diagnostics.

@@ -8,7 +8,7 @@
 import logging
 import math
 import random
-from typing import Any, Mapping, TypedDict, cast
+from typing import Any, Callable, Mapping, TypedDict, cast
 
 import numpy as np
 from scipy.stats import poisson, expon, norm
@@ -26,7 +26,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-class SensoryTick(TypedDict):
+class SensoryTick(TypedDict, total=False):
     """Schema for the payload emitted by `SensoryInputSystem.tick`."""
 
     attunement_score: float
@@ -34,6 +34,7 @@ class SensoryTick(TypedDict):
     avg_affect_feedback: float
     short_term_size: int
     long_term_size: int
+    modality_loads: dict[str, float]
 
 
 def validate_tick_payload(payload: Mapping[str, Any]) -> SensoryTick:
@@ -70,6 +71,9 @@ def validate_tick_payload(payload: Mapping[str, Any]) -> SensoryTick:
             if integer < 0:
                 raise ValueError(f"{key} must be non-negative, got {integer}")
             validated[key] = integer
+
+    if "modality_loads" in payload and isinstance(payload["modality_loads"], dict):
+        validated["modality_loads"] = dict(payload["modality_loads"])
 
     return cast(SensoryTick, validated)
 
@@ -506,7 +510,7 @@ class SensoryInputSystem:
     # ------------------------------------------------------------------
     # Lightweight tick used by run_simulation for per‑tick metrics
     # ------------------------------------------------------------------
-    def tick(self, memory_prune_threshold: float = None) -> dict:
+    def tick(self, observation: Mapping[str, Any] | None = None, memory_prune_threshold: float = None) -> dict:
         """
         Advance the clock, generate a few events, decay/prune memory,
         and return attunement_score, schema_stress, and avg_affect_feedback.
@@ -514,23 +518,37 @@ class SensoryInputSystem:
         long‑term cue correctly predicts the next incoming social cue, estimated
         via a Beta‑Bernoulli process with p = LT / (LT + ST).
         """
-        # Simulate state-dependent, noisy event rate (inhomogeneous Poisson process)
-        base_rate = self.poisson_rate_mu
-        if self.state == 'fatigued':
-            base_rate *= 0.5
-        elif self.state == 'asleep':
-            base_rate *= 0.1
+        modality_loads = {m: 0.0 for m in self.MODALITIES}
+        if observation is None:
+            # Simulate state-dependent, noisy event rate (inhomogeneous Poisson process)
+            base_rate = self.poisson_rate_mu
+            if self.state == 'fatigued':
+                base_rate *= 0.5
+            elif self.state == 'asleep':
+                base_rate *= 0.1
 
-        poisson_rate = max(0.1, self.np_rng.normal(base_rate, self.poisson_rate_sigma))
-        n_events = self.np_rng.poisson(poisson_rate)
-        n_events = max(1, int(n_events))
+            poisson_rate = max(0.1, self.np_rng.normal(base_rate, self.poisson_rate_sigma))
+            n_events = self.np_rng.poisson(poisson_rate)
+            n_events = max(1, int(n_events))
 
-        new_events = self._simulate_senses(
-            count=n_events,
-            modality=self.py_rng.choice(self.MODALITIES)
-        )
-        tagged = self.salience_tagger.tag_events(new_events)
-        self.memory_buffer.store_events(tagged)
+            new_events = self._simulate_senses(
+                count=n_events,
+                modality=self.py_rng.choice(self.MODALITIES)
+            )
+            tagged = self.salience_tagger.tag_events(new_events)
+            self.memory_buffer.store_events(tagged)
+            intensity_range = self.intensity_range
+            denom = max(intensity_range[1] - intensity_range[0], 1e-6)
+            for mod in self.MODALITIES:
+                mod_events = [e for e in tagged if e.get('modality') == mod]
+                if mod_events:
+                    mean_intensity = sum(float(e.get('intensity', 0.0)) for e in mod_events) / len(mod_events)
+                    modality_loads[mod] = float((mean_intensity - intensity_range[0]) / denom)
+        else:
+            obs_loads = observation.get("modality_loads", {})
+            if isinstance(obs_loads, dict):
+                for mod in self.MODALITIES:
+                    modality_loads[mod] = float(obs_loads.get(mod, 0.0))
 
         # Decay memory each tick
         self.memory_buffer.tick_decay(memory_prune_threshold=memory_prune_threshold)
@@ -541,6 +559,11 @@ class SensoryInputSystem:
         # --- Metrics (Bernoulli retrieval model) ---
         st_sz = len(self.memory_buffer.short_term)
         lt_sz = len(self.long_term_storage.long_term)
+        if observation is not None:
+            if "short_term_size" in observation:
+                st_sz = max(0, int(observation["short_term_size"]))
+            if "long_term_size" in observation:
+                lt_sz = max(0, int(observation["long_term_size"]))
         denom = max(self.memory_buffer_size, 1)
 
         # Simulate one "social‑prediction" retrieval attempt.
@@ -562,10 +585,13 @@ class SensoryInputSystem:
         attunement_score = float(np.clip(attunement_score + self.attunement_bias, 0.0, 1.0))
         schema_stress = float(np.clip(schema_stress + self.stress_bias, 0.0, 1.0))
 
-        # Affect feedback: mix attunement (+) and stress (−) plus small noise
-        epsilon = self.np_rng.normal(0.0, 0.05)  # Gaussian noise
-        avg_affect_feedback = 1.4 * attunement_score - 0.8 * schema_stress + epsilon # Now a stronger weight
-        avg_affect_feedback = float(np.clip(avg_affect_feedback, -1.0, 1.0))  # keep in [-1,1]
+        if observation is not None and "avg_affect_feedback" in observation:
+            avg_affect_feedback = float(np.clip(float(observation["avg_affect_feedback"]), -1.0, 1.0))
+        else:
+            # Affect feedback: mix attunement (+) and stress (−) plus small noise
+            epsilon = self.np_rng.normal(0.0, 0.05)  # Gaussian noise
+            avg_affect_feedback = 1.4 * attunement_score - 0.8 * schema_stress + epsilon
+            avg_affect_feedback = float(np.clip(avg_affect_feedback, -1.0, 1.0))  # keep in [-1,1]
 
         payload = {
             "attunement_score":    attunement_score,
@@ -573,6 +599,7 @@ class SensoryInputSystem:
             "avg_affect_feedback": avg_affect_feedback,
             "short_term_size":     st_sz,
             "long_term_size":      lt_sz,
+            "modality_loads":      modality_loads,
         }
         return validate_tick_payload(payload)
 
@@ -619,3 +646,23 @@ class SensorySubsystem(Subsystem):
             "short_term_size": len(self.system.memory_buffer.short_term),
             "long_term_size": len(self.system.long_term_storage.long_term),
         }
+
+
+class SensoryEnvironment:
+    """Minimal environment wrapper around SensoryInputSystem."""
+
+    def __init__(self, system: SensoryInputSystem, system_factory: Callable[[int | None], SensoryInputSystem] | None = None) -> None:
+        self.system = system
+        self._system_factory = system_factory
+
+    def reset(self, seed: int | None = None) -> dict:
+        if self._system_factory is not None:
+            self.system = self._system_factory(seed)
+        return {"t": 0}
+
+    def step(self, env_state: dict, agent_state: dict, action: bool | None, t: int):
+        _ = action
+        _ = t
+        dynamic_prune = agent_state.get("dynamic_prune")
+        observation = self.system.tick(memory_prune_threshold=dynamic_prune)
+        return env_state, observation, 0.0, False, {}

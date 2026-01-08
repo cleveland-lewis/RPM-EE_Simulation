@@ -20,7 +20,7 @@ References:
 
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Optional, Callable, Protocol
+from typing import Any, Dict, List, Optional, Callable, Protocol
 from pathlib import Path
 import warnings
 
@@ -109,6 +109,10 @@ class DataAdapter(Protocol):
         Returns True if action executed, False if omission, None if N/A.
         This is used for validation (not to constrain the model).
         """
+        ...
+
+    def get_observation(self, tick: int) -> Dict[str, Any]:
+        """Return a unified observation dict for the simulation loop."""
         ...
 
 
@@ -320,6 +324,15 @@ class EmpiricalDataAdapter:
             if pd.notna(val):
                 return bool(val)
         return None
+
+    def get_observation(self, tick: int) -> Dict[str, Any]:
+        return {
+            "avg_affect_feedback": self.get_affect_feedback(tick),
+            "modality_loads": self.get_external_load(tick),
+            "memory_load": self.get_memory_load(tick),
+            "action_executed": self.get_action_executed(tick),
+            "stress_rating": self.get_stress_rating(tick),
+        }
 
 
 # =============================================================================

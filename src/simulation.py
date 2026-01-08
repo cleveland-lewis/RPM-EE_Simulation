@@ -11,7 +11,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 import math
 
 # -----------------------------------------------------------------------------
@@ -49,12 +49,12 @@ if not logger.handlers:
 # -----------------------------------------------------------------------------
 try:
     # When imported as part of the src package
-    from .sensory import SensoryInputSystem
+    from .sensory import SensoryInputSystem, SensoryEnvironment
     from .randomness import RNGStreams, seed_everything
     from .path_utils import ensure_dir
 except ImportError:
     # Fallback when running as a loose script (no package context)
-    from sensory import SensoryInputSystem
+    from sensory import SensoryInputSystem, SensoryEnvironment
     from randomness import RNGStreams, seed_everything
     from path_utils import ensure_dir
 
@@ -63,6 +63,11 @@ try:
     from .arbiter import SimulationClusterArbiter
 except ImportError:
     from arbiter import SimulationClusterArbiter
+
+try:
+    from .adapters import DataAdapter
+except ImportError:
+    from adapters import DataAdapter
 
 # --- Optional preset import ---
 try:
@@ -248,18 +253,25 @@ def flatten_dict(d: Dict, parent_key: str = '', sep: str = '.') -> Dict:
 
 @dataclass
 class SimulationState:
-    stress_prev: float = 0.0
+    stress_slow: float = 0.0
+    stress_fast: float = 0.0
+    stress_total: float = 0.0
     e_ema: float = 0.0
     ema_aff: float = 0.0
     var_aff: float = 1e-6
+    pi_aff: float = 1.0
     ema_ext: float = 0.0
     var_ext: float = 1e-6
+    pi_ext: float = 1.0
     ema_mem: float = 0.0
     var_mem: float = 1e-6
+    pi_mem: float = 1.0
     ema_vol: float = 0.0
     var_vol: float = 1e-6
+    pi_vol: float = 1.0
     ema_stress: float = 0.0
     var_stress: float = 1e-6
+    pi_stress: float = 1.0
     high_pe_streak: int = 0
     similar_win_streak: int = 0
     selection_confidence: float = 0.0
@@ -272,16 +284,23 @@ class TickOutputs:
     mem_load: float
     ext_load: float
     pi_ext: float
+    pi_aff: float
+    pi_mem: float
+    pi_vol: float
+    pi_stress: float
     aff_vol: float
     salience: float
     replay_mode: str
     stress_latent: float
+    stress_fast: float
+    stress_slow: float
     stress_bounded: float
     att_latent: float
     att_bounded: float
     att_terms: tuple[float, float, float, float]
     selection_confidence: float
     action_executed: bool
+    action_prob: float
     prediction_error: float
     episodic_write: bool
     semantic_micro_update: bool
@@ -290,12 +309,37 @@ class TickOutputs:
     self_model_update: bool
     suppression_applied: bool
     early_dismissal: bool
+    observed_action: Optional[bool]
+    action_residual: Optional[float]
+    action_nll: Optional[float]
+    ext_residual: Optional[float]
+    ext_nll: Optional[float]
+    mem_residual: Optional[float]
+    mem_nll: Optional[float]
+    stress_residual: Optional[float]
+    stress_nll: Optional[float]
+
+
+class Environment(Protocol):
+    def reset(self, seed: Optional[int] = None) -> Any:
+        ...
+
+    def step(
+        self,
+        env_state: Any,
+        agent_state: Dict[str, Any],
+        action: Optional[bool],
+        t: int,
+    ) -> Tuple[Any, Dict[str, Any], float, bool, Dict[str, Any]]:
+        ...
 
 
 @dataclass
 class PerTickSeries:
     attunement_scores: np.ndarray
     schema_stress: np.ndarray
+    stress_fast_series: np.ndarray
+    stress_slow_series: np.ndarray
     avg_affect_feedback: np.ndarray
     dynamic_prunes: np.ndarray
     ext_load_series: np.ndarray
@@ -312,6 +356,7 @@ class PerTickSeries:
     self_model_update_series: np.ndarray
     suppression_applied_series: np.ndarray
     early_dismissal_series: np.ndarray
+    action_nll_series: np.ndarray
 
 
 def _update_running_stats(value: float, ema: float, var: float, step: float = 0.05) -> tuple[float, float]:
@@ -321,24 +366,38 @@ def _update_running_stats(value: float, ema: float, var: float, step: float = 0.
     return ema, var
 
 
-def _init_modalities(vis_arr: np.ndarray, hear_arr: np.ndarray, touch_arr: np.ndarray) -> dict:
+def _precision_from_var(var: float, pi_min: float, pi_max: float, eps: float) -> float:
+    pi = 1.0 / (max(var, 0.0) + eps)
+    return float(np.clip(pi, pi_min, pi_max))
+
+
+def _init_modalities(
+    vis_arr: Optional[np.ndarray] = None,
+    hear_arr: Optional[np.ndarray] = None,
+    touch_arr: Optional[np.ndarray] = None,
+) -> dict:
+    def _safe_arr(arr: Optional[np.ndarray]) -> np.ndarray:
+        if arr is None:
+            return np.zeros(1, dtype=np.float32)
+        return arr.astype(np.float32)
+
     return {
         'vision': {
-            'arr': vis_arr.astype(np.float32),
-            'max': 3.0,
+            'arr': _safe_arr(vis_arr),
+            'max': 1.0,
             'ema': 0.0,
             'var': 1e-6,
             'pi': 1.0,
         },
         'hearing': {
-            'arr': hear_arr.astype(np.float32),
-            'max': 2.0,
+            'arr': _safe_arr(hear_arr),
+            'max': 1.0,
             'ema': 0.0,
             'var': 1e-6,
             'pi': 1.0,
         },
         'touch': {
-            'arr': touch_arr.astype(np.float32),
+            'arr': _safe_arr(touch_arr),
             'max': 1.0,
             'ema': 0.0,
             'var': 1e-6,
@@ -347,40 +406,76 @@ def _init_modalities(vis_arr: np.ndarray, hear_arr: np.ndarray, touch_arr: np.nd
     }
 
 
-def _compute_dynamic_prune(base_prune_threshold: float, stress_prev: float) -> float:
-    return base_prune_threshold + 0.25 * (1.0 / (1.0 + np.exp(-stress_prev)) - 0.5)
+def _compute_dynamic_prune(base_prune_threshold: float, stress_total: float) -> float:
+    return base_prune_threshold + 0.25 * (1.0 / (1.0 + np.exp(-stress_total)) - 0.5)
 
 
-def _compute_memory_load(short_term_size: float, mem_capacity: float, mem_gamma: float, state: SimulationState) -> float:
+def _compute_memory_load(
+    short_term_size: float,
+    mem_capacity: float,
+    mem_gamma: float,
+    state: SimulationState,
+    *,
+    pi_min: float,
+    pi_max: float,
+    pi_eps: float,
+) -> float:
     mem_load = min(1.0, max(0.0, short_term_size / mem_capacity)) ** mem_gamma
     state.ema_mem, state.var_mem = _update_running_stats(mem_load, state.ema_mem, state.var_mem)
+    state.pi_mem = _precision_from_var(state.var_mem, pi_min, pi_max, pi_eps)
     return mem_load
 
 
-def _compute_external_load(modalities: dict, idx: int, rho_mod: float, lam_mod: float, state: SimulationState) -> tuple[float, float]:
+def _compute_external_load(
+    modalities: dict,
+    idx: int,
+    rho_mod: float,
+    lam_mod: float,
+    state: SimulationState,
+    *,
+    raw_overrides: Optional[Dict[str, float]] = None,
+    pi_min: float,
+    pi_max: float,
+    pi_eps: float,
+) -> tuple[float, float]:
     weighted_sum = 0.0
     pi_sum = 0.0
-    for md in modalities.values():
-        raw = float(md['arr'][idx]) / md['max'] if md['max'] > 0 else 0.0
+    for name, md in modalities.items():
+        if raw_overrides is not None and name in raw_overrides:
+            raw = float(raw_overrides[name])
+        else:
+            raw = float(md['arr'][idx]) / md['max'] if md['max'] > 0 else 0.0
         resid = raw - md['ema']
         md['ema'] += rho_mod * resid
         md['var'] = (1.0 - lam_mod) * md['var'] + lam_mod * (resid * resid)
-        md['pi'] = 1.0 / (md['var'] + 1e-6)
+        md['pi'] = _precision_from_var(md['var'], pi_min, pi_max, pi_eps)
         weighted_sum += md['pi'] * raw
         pi_sum += md['pi']
 
     ext_load = weighted_sum / (pi_sum + 1e-9)
     state.ema_ext, state.var_ext = _update_running_stats(ext_load, state.ema_ext, state.var_ext)
+    state.pi_ext = _precision_from_var(state.var_ext, pi_min, pi_max, pi_eps)
     pi_ext = pi_sum / max(len(modalities), 1)
     return ext_load, pi_ext
 
 
-def _compute_affect_volatility(aff: float, rho_aff: float, lam_aff: float, state: SimulationState) -> float:
+def _compute_affect_volatility(
+    aff: float,
+    rho_aff: float,
+    lam_aff: float,
+    state: SimulationState,
+    *,
+    pi_min: float,
+    pi_max: float,
+    pi_eps: float,
+) -> float:
     d_aff = aff - state.ema_aff
     state.ema_aff += rho_aff * d_aff
     state.var_aff = (1.0 - lam_aff) * state.var_aff + lam_aff * (d_aff * d_aff)
     aff_vol = float(np.sqrt(max(state.var_aff, 1e-12)))
     state.ema_vol, state.var_vol = _update_running_stats(aff_vol, state.ema_vol, state.var_vol)
+    state.pi_aff = _precision_from_var(state.var_aff, pi_min, pi_max, pi_eps)
+    state.pi_vol = _precision_from_var(state.var_vol, pi_min, pi_max, pi_eps)
     return aff_vol
 
 
@@ -457,16 +552,20 @@ def _update_stress(
     beta_u: float,
     rho_e: float,
     kappa: float,
+    tau_fast: float,
     stress_decay: float,
     stress_gain: float,
     stress_offset: float,
+    pi_min: float,
+    pi_max: float,
+    pi_eps: float,
 ) -> tuple[float, float]:
     if int(stress_inner_sigmoid):
         new_s = 1.0 / (1.0 + np.exp(-(alpha * int_load + beta * ext_load + gamma)))
-        s_drive_latent = (1.0 - 1.0 / tau) * state.stress_prev + (1.0 / tau) * new_s
+        s_drive_latent = (1.0 - 1.0 / tau) * state.stress_slow + (1.0 / tau) * new_s
     else:
         drive = alpha * int_load + beta * ext_load + gamma
-        s_drive_latent = (1.0 - 1.0 / tau) * state.stress_prev + (1.0 / tau) * drive
+        s_drive_latent = (1.0 - 1.0 / tau) * state.stress_slow + (1.0 / tau) * drive
 
     u = 0.0
     for _ in range(K_micro):
@@ -479,14 +578,18 @@ def _update_stress(
     else:
         s_fast_latent = u
 
-    stress_latent = (1.0 - kappa) * s_drive_latent + kappa * s_fast_latent
+    state.stress_slow = s_drive_latent
+    state.stress_fast = (1.0 - 1.0 / max(tau_fast, 1e-6)) * state.stress_fast + (1.0 / max(tau_fast, 1e-6)) * s_fast_latent
+
+    stress_latent = (1.0 - kappa) * state.stress_slow + kappa * state.stress_fast
     if stress_decay > 0.0:
         stress_latent *= (1.0 - stress_decay)
     stress_latent = float(np.clip(stress_latent, -20.0, 20.0))
     stress_bounded = 1.0 / (1.0 + np.exp(-stress_gain * (stress_latent - stress_offset)))
 
-    state.stress_prev = stress_latent
+    state.stress_total = stress_latent
     state.ema_stress, state.var_stress = _update_running_stats(stress_bounded, state.ema_stress, state.var_stress)
+    state.pi_stress = _precision_from_var(state.var_stress, pi_min, pi_max, pi_eps)
     return stress_latent, float(stress_bounded)
 
 
@@ -518,16 +621,16 @@ def _compute_attunement_latent(
 
     att_latent = (
         params['theta0']
-        + params['theta_a'] * aff
-        - (params['theta_s'] * params['theta_s_mult']) * s_term
-        - (params['theta_e'] * params['theta_e_mult']) * ext_term
-        - (params['theta_m'] * params['theta_m_mult']) * mem_term
-        - (params['theta_v'] * params['theta_v_mult']) * vol_term
+        + params['theta_a'] * (state.pi_aff * aff)
+        - (params['theta_s'] * params['theta_s_mult']) * (state.pi_stress * s_term)
+        - (params['theta_e'] * params['theta_e_mult']) * (state.pi_ext * ext_term)
+        - (params['theta_m'] * params['theta_m_mult']) * (state.pi_mem * mem_term)
+        - (params['theta_v'] * params['theta_v_mult']) * (state.pi_vol * vol_term)
     )
     return float(np.clip(att_latent, -20.0, 20.0)), (s_term, ext_term, mem_term, vol_term)
 
 
-def _decide_action_executed(
+def _compute_action_probability(
     *,
     gate_by_attunement: int,
     att_latent: float,
@@ -535,14 +638,15 @@ def _decide_action_executed(
     att_gate_latent: float,
     selection_confidence: float,
     early_dismissal: bool,
-    rng: np.random.Generator,
-) -> bool:
+) -> float:
+    if early_dismissal:
+        return 0.0
     if gate_by_attunement:
         if att_latent > att_gate_latent:
-            p_act = 1.0 / (1.0 + np.exp(-(att_latent / max(1e-6, float(gate_temperature)))))
-            return (not early_dismissal) and (rng.random() < p_act)
-        return False
-    return (not early_dismissal) and (selection_confidence > 0.4)
+            temp = max(1e-6, float(gate_temperature))
+            return float(1.0 / (1.0 + np.exp(-(att_latent / temp))))
+        return 0.0
+    return 1.0 if selection_confidence > 0.4 else 0.0
 
 
 def _update_high_pe_streak(prediction_error: float, state: SimulationState) -> int:
@@ -575,7 +679,7 @@ def _apply_preset_overrides(
         if cfg:
             for key in ('theta_a', 'theta_s', 'theta_e', 'theta_m', 'theta_v'):
                 params[key] = cfg.get(key, params[key])
-            for key in ('rho_mod', 'lam_mod', 'rho_aff', 'lam_aff', 'rho_e', 'K_micro', 'alpha_u', 'beta_u', 'kappa', 'mem_gamma', 'tau', 'alpha', 'beta', 'gamma', 'stress_decay', 'stress_inner_sigmoid'):
+            for key in ('rho_mod', 'lam_mod', 'rho_aff', 'lam_aff', 'rho_e', 'K_micro', 'alpha_u', 'beta_u', 'kappa', 'mem_gamma', 'tau', 'tau_fast', 'alpha', 'beta', 'gamma', 'stress_decay', 'stress_inner_sigmoid'):
                 knobs[key] = cfg.get(key, knobs[key])
             for key in ('SALIENCE_DROP', 'VOL_HIGH', 'STRESS_HIGH', 'LOAD_HIGH'):
                 knobs[key] = cfg.get(key, knobs[key])
@@ -600,6 +704,26 @@ def _init_rngs(seed: Optional[int]):
     sensory_py_rng = random.Random(sensory_py_seed)
     sensory_np_rng = np.random.default_rng(sensory_np_seed)
     return rng_streams, rng, sensory_py_rng, sensory_np_rng, sensory_py_seed, sensory_np_seed
+
+
+def _build_adapter_observation(adapter: DataAdapter, tick: int) -> Dict[str, Any]:
+    if hasattr(adapter, "get_observation"):
+        obs = adapter.get_observation(tick)
+    else:
+        obs = {
+            "avg_affect_feedback": adapter.get_affect_feedback(tick),
+            "modality_loads": adapter.get_external_load(tick),
+            "memory_load": adapter.get_memory_load(tick),
+            "action_executed": adapter.get_action_executed(tick),
+            "stress_rating": adapter.get_stress_rating(tick),
+        }
+    if "modality_loads" not in obs or not isinstance(obs["modality_loads"], dict):
+        obs["modality_loads"] = {
+            "vision": 0.0,
+            "hearing": 0.0,
+            "touch": 0.0,
+        }
+    return obs
 
 
 def _draw_from_mixture(weights: dict[str, float], rng: np.random.Generator) -> str:
@@ -690,6 +814,8 @@ def _build_tick_log(
     tick: int,
     att_latent: float,
     stress_latent: float,
+    stress_fast: float,
+    stress_slow: float,
     att_bounded: float,
     stress_bounded: float,
     theta_params: dict,
@@ -699,6 +825,7 @@ def _build_tick_log(
     pi_mem: float,
     pi_vol: float,
     aff: float,
+    modality_loads: Optional[Dict[str, float]],
     s_term: float,
     ext_term: float,
     mem_term: float,
@@ -710,6 +837,7 @@ def _build_tick_log(
     replay_mode: str,
     selection_confidence: float,
     action_executed: bool,
+    action_prob: float,
     prediction_error: float,
     episodic_write: bool,
     semantic_micro_update: bool,
@@ -721,6 +849,15 @@ def _build_tick_log(
     dynamic_prune: float,
     attunement_score: float,
     schema_stress_value: float,
+    observed_action: Optional[bool],
+    action_residual: Optional[float],
+    action_nll: Optional[float],
+    ext_residual: Optional[float],
+    ext_nll: Optional[float],
+    mem_residual: Optional[float],
+    mem_nll: Optional[float],
+    stress_residual: Optional[float],
+    stress_nll: Optional[float],
 ) -> Dict:
     theta0 = float(theta_params.get('theta0', 0.0))
     theta_a = float(theta_params.get('theta_a', 0.0))
@@ -733,11 +870,18 @@ def _build_tick_log(
     theta_m_mult = float(theta_params.get('theta_m_mult', 1.0))
     theta_v_mult = float(theta_params.get('theta_v_mult', 1.0))
 
-    return {
+    log = {
         'att_latent': float(att_latent),
         'stress_latent': float(stress_latent),
+        'stress_fast': float(stress_fast),
+        'stress_slow': float(stress_slow),
         'att_bounded': float(att_bounded),
         'stress_bounded': float(stress_bounded),
+        'pi_affect': float(pi_aff),
+        'pi_stress': float(pi_str),
+        'pi_ext': float(pi_ext),
+        'pi_mem': float(pi_mem),
+        'pi_vol': float(pi_vol),
         'logit_theta0': theta0,
         'logit_aff_term': float(theta_a * (pi_aff * aff)),
         'logit_stress_term': float(-(theta_s * theta_s_mult) * (pi_str * s_term)),
@@ -758,6 +902,7 @@ def _build_tick_log(
         'replay_mode': replay_mode,
         'selection_confidence': float(selection_confidence),
         'action_executed': bool(action_executed),
+        'action_prob': float(action_prob),
         'prediction_error': float(prediction_error),
         'episodic_write': bool(episodic_write),
         'semantic_micro_update': bool(semantic_micro_update),
@@ -767,7 +912,23 @@ def _build_tick_log(
         'suppression_applied': bool(suppression_applied),
         'early_dismissal': bool(early_dismissal),
         'arbiter_top_mode': replay_mode,
+        'action_observed': observed_action if observed_action is None else bool(observed_action),
+        'action_residual': None if action_residual is None else float(action_residual),
+        'action_nll': None if action_nll is None else float(action_nll),
+        'ext_residual': None if ext_residual is None else float(ext_residual),
+        'ext_nll': None if ext_nll is None else float(ext_nll),
+        'mem_residual': None if mem_residual is None else float(mem_residual),
+        'mem_nll': None if mem_nll is None else float(mem_nll),
+        'stress_residual': None if stress_residual is None else float(stress_residual),
+        'stress_nll': None if stress_nll is None else float(stress_nll),
     }
+
+    if modality_loads:
+        log['obs_vision_load'] = float(modality_loads.get('vision', 0.0))
+        log['obs_hearing_load'] = float(modality_loads.get('hearing', 0.0))
+        log['obs_touch_load'] = float(modality_loads.get('touch', 0.0))
+
+    return log
 
 
 def _rate_bool(arr) -> float:
@@ -926,7 +1087,7 @@ def _build_diagnostics(
 def _run_single_tick(
     idx: int,
     *,
-    sim: SensoryInputSystem,
+    observation: Dict[str, Any],
     modalities: dict,
     state: SimulationState,
     base_prune_threshold: float,
@@ -947,14 +1108,11 @@ def _run_single_tick(
     beta: float,
     gamma: float,
     tau: float,
+    tau_fast: float,
     stress_inner_sigmoid: int,
     stress_decay: float,
     stress_gain: float,
     stress_offset: float,
-    pi_aff: float,
-    pi_str: float,
-    pi_mem: float,
-    pi_vol: float,
     theta_params: dict,
     gate_by_attunement: int,
     gate_temperature: float,
@@ -969,15 +1127,58 @@ def _run_single_tick(
     explore_floor: float,
     rng: np.random.Generator,
     schema_stress_prev: float,
+    pi_min: float,
+    pi_max: float,
+    pi_eps: float,
+    pi_aff_min: float,
+    pi_aff_max: float,
+    pi_mem_min: float,
+    pi_mem_max: float,
+    pi_vol_min: float,
+    pi_vol_max: float,
+    pi_stress_min: float,
+    pi_stress_max: float,
+    pi_ext_min: float,
+    pi_ext_max: float,
+    likelihood_sigma: float,
 ) -> TickOutputs:
-    dynamic_prune = _compute_dynamic_prune(base_prune_threshold, state.stress_prev)
-    tick_result = sim.tick(memory_prune_threshold=dynamic_prune)
-    aff = float(tick_result["avg_affect_feedback"])
-    short_term_size = float(tick_result["short_term_size"])
+    dynamic_prune = _compute_dynamic_prune(base_prune_threshold, state.stress_total)
+    aff = float(observation.get("avg_affect_feedback", 0.0))
+    short_term_size = float(observation.get("short_term_size", 0.0))
+    modality_loads = observation.get("modality_loads")
+    if not isinstance(modality_loads, dict):
+        modality_loads = None
 
-    mem_load = _compute_memory_load(short_term_size, mem_capacity, mem_gamma, state)
-    ext_load, pi_ext = _compute_external_load(modalities, idx, rho_mod, lam_mod, state)
-    aff_vol = _compute_affect_volatility(aff, rho_aff, lam_aff, state)
+    mem_load = _compute_memory_load(
+        short_term_size,
+        mem_capacity,
+        mem_gamma,
+        state,
+        pi_min=pi_mem_min,
+        pi_max=pi_mem_max,
+        pi_eps=pi_eps,
+    )
+    ext_load, pi_ext_mod = _compute_external_load(
+        modalities,
+        idx,
+        rho_mod,
+        lam_mod,
+        state,
+        raw_overrides=modality_loads,
+        pi_min=pi_ext_min,
+        pi_max=pi_ext_max,
+        pi_eps=pi_eps,
+    )
+    aff_vol = _compute_affect_volatility(
+        aff,
+        rho_aff,
+        lam_aff,
+        state,
+        pi_min=pi_aff_min,
+        pi_max=pi_aff_max,
+        pi_eps=pi_eps,
+    )
+    state.pi_vol = _precision_from_var(state.var_vol, pi_vol_min, pi_vol_max, pi_eps)
 
     salience = float(np.clip(0.6 * ext_load + 0.4 * abs(aff), 0.0, 1.0))
     early_dismissal = salience < salience_drop
@@ -1001,7 +1202,7 @@ def _run_single_tick(
     stress_latent, stress_bounded = _update_stress(
         ext_load=ext_load,
         int_load=int_load,
-        pi_ext=pi_ext,
+        pi_ext=pi_ext_mod,
         state=state,
         alpha=alpha,
         beta=beta,
@@ -1013,9 +1214,13 @@ def _run_single_tick(
         beta_u=beta_u,
         rho_e=rho_e,
         kappa=kappa,
+        tau_fast=tau_fast,
         stress_decay=stress_decay,
         stress_gain=stress_gain,
         stress_offset=stress_offset,
+        pi_min=pi_stress_min,
+        pi_max=pi_stress_max,
+        pi_eps=pi_eps,
     )
 
     att_latent, att_terms = _compute_attunement_latent(
@@ -1035,18 +1240,18 @@ def _run_single_tick(
     att_offset = float(theta_params['att_offset'])
     att_scale = float(theta_params['att_scale'])
     att_bounded = 1.0 / (1.0 + np.exp(-att_gain * (att_latent - att_offset)))
-    _ = att_scale * att_bounded  # retained for clarity; currently unused
+    att_bounded = float(np.clip(att_scale * att_bounded, 0.0, 1.0))
 
     selection_confidence = _compute_selection_confidence(stress_bounded, aff_vol)
-    action_executed = _decide_action_executed(
+    action_prob = _compute_action_probability(
         gate_by_attunement=gate_by_attunement,
         att_latent=att_latent,
         gate_temperature=gate_temperature,
         att_gate_latent=att_gate_latent,
         selection_confidence=selection_confidence,
         early_dismissal=early_dismissal,
-        rng=rng,
     )
+    action_executed = rng.random() < action_prob
 
     prediction_error = float(np.clip(abs(ext_load - state.e_ema), 0.0, 1.0))
     high_pe_streak = _update_high_pe_streak(prediction_error, state)
@@ -1061,22 +1266,65 @@ def _run_single_tick(
     suppression_applied = bool(high_pe_streak >= 4)
     self_model_update = bool(prediction_error > 0.3 or semantic_micro_update)
 
+    observed_action = observation.get("action_executed")
+    if isinstance(observed_action, (bool, np.bool_)):
+        obs_val = float(bool(observed_action))
+        resid = obs_val - action_prob
+        sigma2 = max(likelihood_sigma, 1e-6) ** 2
+        action_nll = 0.5 * ((resid * resid) / sigma2 + math.log(sigma2))
+    else:
+        observed_action = None
+        resid = None
+        action_nll = None
+
+    ext_resid = None
+    ext_nll = None
+    obs_ext = None
+    if isinstance(modality_loads, dict) and modality_loads:
+        obs_ext = float(np.mean([float(modality_loads.get(m, 0.0)) for m in ("vision", "hearing", "touch")]))
+        ext_resid = obs_ext - ext_load
+        sigma2 = max(likelihood_sigma, 1e-6) ** 2
+        ext_nll = 0.5 * ((ext_resid * ext_resid) / sigma2 + math.log(sigma2))
+
+    mem_resid = None
+    mem_nll = None
+    if "memory_load" in observation and observation["memory_load"] is not None:
+        obs_mem = float(observation["memory_load"])
+        mem_resid = obs_mem - mem_load
+        sigma2 = max(likelihood_sigma, 1e-6) ** 2
+        mem_nll = 0.5 * ((mem_resid * mem_resid) / sigma2 + math.log(sigma2))
+
+    stress_resid = None
+    stress_nll = None
+    if "stress_rating" in observation and observation["stress_rating"] is not None:
+        obs_stress = float(observation["stress_rating"])
+        stress_resid = obs_stress - stress_bounded
+        sigma2 = max(likelihood_sigma, 1e-6) ** 2
+        stress_nll = 0.5 * ((stress_resid * stress_resid) / sigma2 + math.log(sigma2))
+
     return TickOutputs(
         dynamic_prune=dynamic_prune,
         avg_affect_feedback=aff,
         mem_load=mem_load,
         ext_load=ext_load,
-        pi_ext=pi_ext,
+        pi_ext=state.pi_ext,
+        pi_aff=state.pi_aff,
+        pi_mem=state.pi_mem,
+        pi_vol=state.pi_vol,
+        pi_stress=state.pi_stress,
         aff_vol=aff_vol,
         salience=salience,
         replay_mode=replay_mode,
         stress_latent=stress_latent,
+        stress_fast=state.stress_fast,
+        stress_slow=state.stress_slow,
         stress_bounded=float(stress_bounded),
         att_latent=att_latent,
         att_bounded=float(att_bounded),
         att_terms=att_terms,
         selection_confidence=selection_confidence,
         action_executed=action_executed,
+        action_prob=float(action_prob),
         prediction_error=prediction_error,
         episodic_write=episodic_write,
         semantic_micro_update=semantic_micro_update,
@@ -1085,6 +1333,15 @@ def _run_single_tick(
         self_model_update=self_model_update,
         suppression_applied=suppression_applied,
         early_dismissal=early_dismissal,
+        observed_action=observed_action,
+        action_residual=resid,
+        action_nll=action_nll,
+        ext_residual=ext_resid,
+        ext_nll=ext_nll,
+        mem_residual=mem_resid,
+        mem_nll=mem_nll,
+        stress_residual=stress_resid,
+        stress_nll=stress_nll,
     )
 
 
@@ -1098,6 +1355,8 @@ def _record_tick_series(
     ext_load_series: np.ndarray,
     affect_vol_series: np.ndarray,
     schema_stress: np.ndarray,
+    stress_fast_series: np.ndarray,
+    stress_slow_series: np.ndarray,
     attunement_scores: np.ndarray,
     replay_mode_series: List[str],
     selection_conf_series: np.ndarray,
@@ -1110,6 +1369,7 @@ def _record_tick_series(
     self_model_update_series: np.ndarray,
     suppression_applied_series: np.ndarray,
     early_dismissal_series: np.ndarray,
+    action_nll_series: np.ndarray,
 ):
     dynamic_prunes[idx] = tick_out.dynamic_prune
     avg_affect_feedback[idx] = tick_out.avg_affect_feedback
@@ -1117,6 +1377,8 @@ def _record_tick_series(
     ext_load_series[idx] = tick_out.ext_load
     affect_vol_series[idx] = tick_out.aff_vol
     schema_stress[idx] = tick_out.stress_bounded
+    stress_fast_series[idx] = tick_out.stress_fast
+    stress_slow_series[idx] = tick_out.stress_slow
     attunement_scores[idx] = tick_out.att_bounded
 
     replay_mode_series[idx] = tick_out.replay_mode
@@ -1130,12 +1392,16 @@ def _record_tick_series(
     self_model_update_series[idx] = tick_out.self_model_update
     suppression_applied_series[idx] = tick_out.suppression_applied
     early_dismissal_series[idx] = tick_out.early_dismissal
+    if tick_out.action_nll is not None:
+        action_nll_series[idx] = tick_out.action_nll
 
 
 def _init_per_tick_series(total_ticks: int) -> PerTickSeries:
     return PerTickSeries(
         attunement_scores=np.zeros(total_ticks, dtype=np.float32),
         schema_stress=np.zeros(total_ticks, dtype=np.float32),
+        stress_fast_series=np.zeros(total_ticks, dtype=np.float32),
+        stress_slow_series=np.zeros(total_ticks, dtype=np.float32),
         avg_affect_feedback=np.zeros(total_ticks, dtype=np.float32),
         dynamic_prunes=np.zeros(total_ticks, dtype=np.float32),
         ext_load_series=np.zeros(total_ticks, dtype=np.float32),
@@ -1152,21 +1418,33 @@ def _init_per_tick_series(total_ticks: int) -> PerTickSeries:
         self_model_update_series=np.zeros(total_ticks, dtype=np.bool_),
         suppression_applied_series=np.zeros(total_ticks, dtype=np.bool_),
         early_dismissal_series=np.zeros(total_ticks, dtype=np.bool_),
+        action_nll_series=np.full(total_ticks, np.nan, dtype=np.float32),
     )
 
 
-def _compute_full_stats(attunement_scores: np.ndarray, schema_stress: np.ndarray) -> Dict[str, float]:
+def _compute_full_stats(
+    attunement_scores: np.ndarray,
+    schema_stress: np.ndarray,
+    action_nll_series: Optional[np.ndarray] = None,
+) -> Dict[str, float]:
     full_count = int(attunement_scores.size)
     full_mean_att = float(np.mean(attunement_scores)) if full_count > 0 else float('nan')
     full_std_att = float(np.std(attunement_scores)) if full_count > 0 else float('nan')
     full_mean_str = float(np.mean(schema_stress)) if full_count > 0 else float('nan')
     full_std_str = float(np.std(schema_stress)) if full_count > 0 else float('nan')
+    mean_action_nll = float('nan')
+    if action_nll_series is not None:
+        nll = np.asarray(action_nll_series, dtype=np.float32)
+        if np.isfinite(nll).any():
+            mean_action_nll = float(np.nanmean(nll))
+
     return {
         'count': full_count,
         'mean_attunement': full_mean_att,
         'std_attunement': full_std_att,
         'mean_stress': full_mean_str,
         'std_stress': full_std_str,
+        'mean_action_nll': mean_action_nll,
     }
 
 
@@ -1215,6 +1493,7 @@ def run_simulation(
         kappa: float = 0.3,
         tau: float = 5.0,
         stress_decay: float = 0.0,          # per-tick stress decay rate (0.0 = no decay)
+        tau_fast: float = 2.0,              # fast stress time constant
         # --- Link function parameters (latent → bounded mapping) ---
         att_gain: float = 2.0,              # attunement sigmoid slope
         att_offset: float = 1.0,            # attunement sigmoid center
@@ -1223,6 +1502,26 @@ def run_simulation(
         stress_offset: float = 0.0,         # stress sigmoid center
         att_gate_latent: float = 1.0,      # latent threshold for action gating
         stress_inner_sigmoid: int = 0,     # 1=use legacy inner sigmoids (double-sigmoid); 0=latent-only then link
+        # --- Precision bounds (inverse variance) ---
+        pi_min: float = 0.1,
+        pi_max: float = 10.0,
+        pi_eps: float = 1e-6,
+        pi_aff_min: float | None = None,
+        pi_aff_max: float | None = None,
+        pi_mem_min: float | None = None,
+        pi_mem_max: float | None = None,
+        pi_vol_min: float | None = None,
+        pi_vol_max: float | None = None,
+        pi_stress_min: float | None = None,
+        pi_stress_max: float | None = None,
+        pi_ext_min: float | None = None,
+        pi_ext_max: float | None = None,
+        # --- Observation-conditioned mode ---
+        data_adapter: Optional[DataAdapter] = None,
+        env: Optional[Environment] = None,
+        observed_mode: int = 0,
+        # --- Likelihood logging ---
+        likelihood_sigma: float = 0.2,
     ) -> dict | List[Dict]:
     # Default tuning note: baseline parameters are set to approximate a "typical neurotypical"
     # profile with mean attunement around ~1% across ordinary environments.
@@ -1286,11 +1585,6 @@ def run_simulation(
 
     start_time = time.perf_counter()
 
-    pi_aff = 1.0
-    pi_str = 1.0
-    pi_mem = 1.0
-    pi_vol = 1.0
-
     params = {
         'theta0': theta0,
         'theta_a': 2.0,
@@ -1325,10 +1619,26 @@ def run_simulation(
         'STRESS_HIGH': 0.65,
         'LOAD_HIGH': 0.80,
         'tau': tau,
+        'tau_fast': tau_fast,
         'alpha': alpha,
         'beta': beta,
         'gamma': gamma,
         'stress_decay': stress_decay,
+        'pi_min': pi_min,
+        'pi_max': pi_max,
+        'pi_eps': pi_eps,
+        'pi_aff_min': pi_aff_min,
+        'pi_aff_max': pi_aff_max,
+        'pi_mem_min': pi_mem_min,
+        'pi_mem_max': pi_mem_max,
+        'pi_vol_min': pi_vol_min,
+        'pi_vol_max': pi_vol_max,
+        'pi_stress_min': pi_stress_min,
+        'pi_stress_max': pi_stress_max,
+        'pi_ext_min': pi_ext_min,
+        'pi_ext_max': pi_ext_max,
+        'observed_mode': observed_mode,
+        'likelihood_sigma': likelihood_sigma,
         'gate_by_attunement': gate_by_attunement,
         'gate_temperature': gate_temperature,
         'replay_softmax': replay_softmax,
@@ -1384,10 +1694,25 @@ def run_simulation(
     STRESS_HIGH = knobs['STRESS_HIGH']
     LOAD_HIGH = knobs['LOAD_HIGH']
     tau = knobs['tau']
+    tau_fast = knobs['tau_fast']
     alpha = knobs['alpha']
     beta = knobs['beta']
     gamma = knobs['gamma']
     stress_decay = knobs['stress_decay']
+    pi_min = knobs['pi_min']
+    pi_max = knobs['pi_max']
+    pi_eps = knobs['pi_eps']
+    pi_aff_min = knobs['pi_aff_min'] if knobs['pi_aff_min'] is not None else pi_min
+    pi_aff_max = knobs['pi_aff_max'] if knobs['pi_aff_max'] is not None else pi_max
+    pi_mem_min = knobs['pi_mem_min'] if knobs['pi_mem_min'] is not None else pi_min
+    pi_mem_max = knobs['pi_mem_max'] if knobs['pi_mem_max'] is not None else pi_max
+    pi_vol_min = knobs['pi_vol_min'] if knobs['pi_vol_min'] is not None else pi_min
+    pi_vol_max = knobs['pi_vol_max'] if knobs['pi_vol_max'] is not None else pi_max
+    pi_stress_min = knobs['pi_stress_min'] if knobs['pi_stress_min'] is not None else pi_min
+    pi_stress_max = knobs['pi_stress_max'] if knobs['pi_stress_max'] is not None else pi_max
+    pi_ext_min = knobs['pi_ext_min'] if knobs['pi_ext_min'] is not None else pi_min
+    pi_ext_max = knobs['pi_ext_max'] if knobs['pi_ext_max'] is not None else pi_max
+    likelihood_sigma = knobs['likelihood_sigma']
     gate_by_attunement = knobs['gate_by_attunement']
     gate_temperature = knobs['gate_temperature']
     replay_softmax = knobs['replay_softmax']
@@ -1416,28 +1741,27 @@ def run_simulation(
     theta_m = params['theta_m']
     theta_v = params['theta_v']
 
-    sim = SensoryInputSystem(
-        low_salience_threshold=sensory_py_rng.uniform(0.3, 0.7),
-        high_salience_threshold=sensory_py_rng.uniform(0.7, 0.95),
-        salience_decay=salience_decay,
-        highly_variable_rate=highly_variable_rate,
-        low_salience_var_rate=low_salience_var_rate,
-        event_rate=event_rate,
-        memory_buffer_size=memory_buffer_size,
-        memory_decay=memory_decay,
-        memory_prune_threshold=memory_prune_threshold,
-        py_random=sensory_py_rng,
-        np_random=sensory_np_rng,
-    )
+    if data_adapter is not None:
+        total_ticks = int(data_adapter.get_total_ticks())
+        observed_mode = 1
 
-    _, _, _, vis_arr, hear_arr, touch_arr, smell_arr, taste_arr, _, _ = _generate_base_arrays(
-        total_ticks,
-        seed=rng_streams.numpy_seed,
-        rng=rng,
-        jax_key=rng_streams.jax_key,
-    )
+    if env is None and data_adapter is None:
+        sensory_system = SensoryInputSystem(
+            low_salience_threshold=sensory_py_rng.uniform(0.3, 0.7),
+            high_salience_threshold=sensory_py_rng.uniform(0.7, 0.95),
+            salience_decay=salience_decay,
+            highly_variable_rate=highly_variable_rate,
+            low_salience_var_rate=low_salience_var_rate,
+            event_rate=event_rate,
+            memory_buffer_size=memory_buffer_size,
+            memory_decay=memory_decay,
+            memory_prune_threshold=memory_prune_threshold,
+            py_random=sensory_py_rng,
+            np_random=sensory_np_rng,
+        )
+        env = SensoryEnvironment(sensory_system)
 
-    modalities = _init_modalities(vis_arr, hear_arr, touch_arr)
+    modalities = _init_modalities()
     state = SimulationState()
 
     series = _init_per_tick_series(total_ticks)
@@ -1446,10 +1770,25 @@ def run_simulation(
     logs: List[Dict] = []
 
     # Rolling counters for branch conditions
+    env_state = env.reset(int(effective_seed)) if env is not None else None
+    last_action: Optional[bool] = None
     for i in range(total_ticks):
+        if data_adapter is not None:
+            observation = _build_adapter_observation(data_adapter, i)
+            if "memory_load" in observation and observation["memory_load"] is not None:
+                observation["short_term_size"] = float(observation["memory_load"]) * mem_capacity
+        elif env is not None:
+            agent_state = {
+                "dynamic_prune": _compute_dynamic_prune(base_prune_threshold, state.stress_total),
+                "stress_total": state.stress_total,
+            }
+            env_state, observation, _, _, _ = env.step(env_state, agent_state, last_action, i)
+        else:
+            observation = {}
+
         tick_out = _run_single_tick(
             i,
-            sim=sim,
+            observation=observation,
             modalities=modalities,
             state=state,
             base_prune_threshold=base_prune_threshold,
@@ -1470,14 +1809,11 @@ def run_simulation(
             beta=beta,
             gamma=gamma,
             tau=tau,
+            tau_fast=tau_fast,
             stress_inner_sigmoid=stress_inner_sigmoid,
             stress_decay=stress_decay,
             stress_gain=stress_gain,
             stress_offset=stress_offset,
-            pi_aff=pi_aff,
-            pi_str=pi_str,
-            pi_mem=pi_mem,
-            pi_vol=pi_vol,
             theta_params=params,
             gate_by_attunement=gate_by_attunement,
             gate_temperature=gate_temperature,
@@ -1486,13 +1822,28 @@ def run_simulation(
             norm_ext_load=norm_ext_load,
             norm_mem_load=norm_mem_load,
                 norm_aff_vol=norm_aff_vol,
-                replay_softmax=replay_softmax,
-                softmax_temp=softmax_temp,
-                explore_error_gain=explore_error_gain,
-                explore_floor=explore_floor,
-                rng=rng,
-                schema_stress_prev=series.schema_stress[i-1] if i > 0 else 0.0,
+            replay_softmax=replay_softmax,
+            softmax_temp=softmax_temp,
+            explore_error_gain=explore_error_gain,
+            explore_floor=explore_floor,
+            rng=rng,
+            schema_stress_prev=series.schema_stress[i-1] if i > 0 else 0.0,
+            pi_min=pi_min,
+            pi_max=pi_max,
+            pi_eps=pi_eps,
+            pi_aff_min=pi_aff_min,
+            pi_aff_max=pi_aff_max,
+            pi_mem_min=pi_mem_min,
+            pi_mem_max=pi_mem_max,
+            pi_vol_min=pi_vol_min,
+            pi_vol_max=pi_vol_max,
+            pi_stress_min=pi_stress_min,
+            pi_stress_max=pi_stress_max,
+            pi_ext_min=pi_ext_min,
+            pi_ext_max=pi_ext_max,
+            likelihood_sigma=likelihood_sigma,
             )
+        last_action = tick_out.action_executed
 
         _record_tick_series(
             i,
@@ -1503,6 +1854,8 @@ def run_simulation(
             ext_load_series=series.ext_load_series,
             affect_vol_series=series.affect_vol_series,
             schema_stress=series.schema_stress,
+            stress_fast_series=series.stress_fast_series,
+            stress_slow_series=series.stress_slow_series,
             attunement_scores=series.attunement_scores,
             replay_mode_series=series.replay_mode_series,
             selection_conf_series=series.selection_conf_series,
@@ -1515,6 +1868,7 @@ def run_simulation(
             self_model_update_series=series.self_model_update_series,
             suppression_applied_series=series.suppression_applied_series,
             early_dismissal_series=series.early_dismissal_series,
+            action_nll_series=series.action_nll_series,
         )
 
         s_term, ext_term, mem_term, vol_term = tick_out.att_terms
@@ -1524,15 +1878,18 @@ def run_simulation(
             tick=i,
             att_latent=tick_out.att_latent,
             stress_latent=tick_out.stress_latent,
+            stress_fast=tick_out.stress_fast,
+            stress_slow=tick_out.stress_slow,
             att_bounded=tick_out.att_bounded,
             stress_bounded=tick_out.stress_bounded,
             theta_params=params,
-            pi_aff=pi_aff,
-            pi_str=pi_str,
+            pi_aff=tick_out.pi_aff,
+            pi_str=tick_out.pi_stress,
             pi_ext=tick_out.pi_ext,
-            pi_mem=pi_mem,
-            pi_vol=pi_vol,
+            pi_mem=tick_out.pi_mem,
+            pi_vol=tick_out.pi_vol,
             aff=tick_out.avg_affect_feedback,
+            modality_loads=observation.get("modality_loads") if isinstance(observation, dict) else None,
             s_term=s_term,
             ext_term=ext_term,
             mem_term=mem_term,
@@ -1544,6 +1901,7 @@ def run_simulation(
             replay_mode=tick_out.replay_mode,
             selection_confidence=tick_out.selection_confidence,
             action_executed=tick_out.action_executed,
+            action_prob=tick_out.action_prob,
             prediction_error=tick_out.prediction_error,
             episodic_write=tick_out.episodic_write,
             semantic_micro_update=tick_out.semantic_micro_update,
@@ -1555,11 +1913,24 @@ def run_simulation(
             dynamic_prune=tick_out.dynamic_prune,
             attunement_score=series.attunement_scores[i],
             schema_stress_value=series.schema_stress[i],
+            observed_action=tick_out.observed_action,
+            action_residual=tick_out.action_residual,
+            action_nll=tick_out.action_nll,
+            ext_residual=tick_out.ext_residual,
+            ext_nll=tick_out.ext_nll,
+            mem_residual=tick_out.mem_residual,
+            mem_nll=tick_out.mem_nll,
+            stress_residual=tick_out.stress_residual,
+            stress_nll=tick_out.stress_nll,
         ))
         state.selection_confidence = tick_out.selection_confidence
 
     # --- Full‑tick stats before any thinning ---
-    full_stats = _compute_full_stats(series.attunement_scores, series.schema_stress)
+    full_stats = _compute_full_stats(
+        series.attunement_scores,
+        series.schema_stress,
+        series.action_nll_series,
+    )
 
     # --- Diagnostics (non-invasive summaries for saved results_trials) ---
     diagnostics = _build_diagnostics(

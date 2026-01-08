@@ -37,5 +37,5 @@ def test_save_overwrites_existing_file(tmp_path):
     second = SimulationConfig(total_ticks=2)
     save_simulation_config(first, path=str(cfg_file))
     save_simulation_config(second, path=str(cfg_file))
-    reloaded = load_simulation_.config(path=str(cfg_file))
+    reloaded = load_simulation_config(path=str(cfg_file))
     assert reloaded.total_ticks == 2
