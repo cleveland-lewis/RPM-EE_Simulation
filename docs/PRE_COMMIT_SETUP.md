@@ -118,6 +118,7 @@ git commit --no-verify -m "Emergency commit"
 - ✅ Clinical presets validation
 - ✅ Experiment config validation
 - ✅ Documentation reference checking
+- ✅ **TODO/FIXME prevention** (see [TODO Prevention Policy](TODO_PREVENTION_POLICY.md))
 
 ## Hook Execution Order
 

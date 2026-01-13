@@ -84,6 +84,7 @@ git commit -m "Update clinical preset"
 ✅ File validation (YAML, JSON, Markdown)  
 ✅ Clinical presets validation  
 ✅ Experiment configs  
+✅ **No TODOs/FIXMEs** (create issues instead)  
 
 ## Troubleshooting
 

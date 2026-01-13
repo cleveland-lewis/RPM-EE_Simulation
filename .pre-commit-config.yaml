@@ -37,7 +37,7 @@ repos:
         args: 
           - --fix
           - --exit-non-zero-on-fix
-          - --select=E,W,F,I,N,UP,B,A,C4,DTZ,T10,DJ,EM,EXE,ISC,PIE,PYI,RSE,RET,SIM,TID,ARG,PTH,PD,PGH,PL,TRY,NPY,RUF
+          - --select=E,W,F,I,N,UP,B,A,C4,DTZ,T10,DJ,EM,EXE,ISC,PIE,PYI,RSE,RET,SIM,TID,ARG,PTH,PD,PGH,PL,TRY,NPY,RUF,FIX
         types: [python]
       
       # Ruff formatter (as backup to black)
@@ -232,6 +232,16 @@ repos:
   # ==========================================================================
   # 7. RPM-EE Project-Specific Checks
   # ==========================================================================
+
+  # 7.0 Prevent TODO comments
+  - repo: local
+    hooks:
+      - id: check-no-todos
+        name: check-no-todos (prevent TODO/FIXME)
+        entry: bash -c 'if grep -rn --include="*.py" -E "(TODO|FIXME|XXX|HACK|OPTIMIZE|REVIEW|REFACTOR|DEPRECATED|BUG|PERF):" .; then echo "❌ Found TODO/FIXME comments. Please create an issue instead."; exit 1; fi'
+        language: system
+        types: [python]
+        pass_filenames: false
 
   # 7.1 Validate clinical presets configuration
   - repo: local
