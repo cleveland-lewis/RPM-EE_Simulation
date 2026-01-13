@@ -1,0 +1,297 @@
+# RPM-EE Pre-commit Hook Configuration
+# Ensures code quality, formatting consistency, and security before commits
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # ==========================================================================
+  # 1. Language and Formatting Consistency
+  # ==========================================================================
+  
+  # 1.1 Black - Python code formatter
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        name: black
+        language_version: python3.10
+        args: ["--line-length=100"]
+        types: [python]
+
+  # 1.2 isort - Import statement organizer
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (import sorting)
+        args: ["--profile", "black", "--line-length=100"]
+        types: [python]
+
+  # 1.3 Ruff - Fast Python linter and formatter
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.14
+    hooks:
+      # Ruff linter
+      - id: ruff
+        name: ruff (linting)
+        args: 
+          - --fix
+          - --exit-non-zero-on-fix
+          - --select=E,W,F,I,N,UP,B,A,C4,DTZ,T10,DJ,EM,EXE,ISC,PIE,PYI,RSE,RET,SIM,TID,ARG,PTH,PD,PGH,PL,TRY,NPY,RUF
+        types: [python]
+      
+      # Ruff formatter (as backup to black)
+      - id: ruff-format
+        name: ruff (formatting)
+        types: [python]
+
+  # ==========================================================================
+  # 2. Static Type and Quality Checks
+  # ==========================================================================
+
+  # 2.1 mypy - Static type checker
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        name: mypy (type checking)
+        args: 
+          - --ignore-missing-imports
+          - --no-strict-optional
+          - --warn-redundant-casts
+          - --warn-unused-ignores
+        additional_dependencies:
+          - types-PyYAML
+          - types-requests
+          - numpy
+        types: [python]
+        # Only check src/ and test files, skip generated code
+        files: ^(src/|test.*\.py)
+        exclude: ^(src/__pycache__|.*\.pyc)
+
+  # ==========================================================================
+  # 3. Security and Secrets Detection
+  # ==========================================================================
+
+  # 3.1 detect-secrets - Prevent committing secrets
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        name: detect-secrets
+        args: 
+          - --baseline
+          - .secrets.baseline
+          - --exclude-files
+          - '.*\.ipynb$'
+          - --exclude-files
+          - 'package-lock.json'
+        exclude: package-lock.json
+
+  # 3.2 Bandit - Security issue scanner
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.6
+    hooks:
+      - id: bandit
+        name: bandit (security scan)
+        args: 
+          - -c
+          - pyproject.toml
+          - -r
+          - src/
+        additional_dependencies: ["bandit[toml]"]
+
+  # ==========================================================================
+  # 4. Documentation and Configuration Validation
+  # ==========================================================================
+
+  # 4.1 YAML validation
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.33.0
+    hooks:
+      - id: yamllint
+        name: yamllint
+        args: 
+          - --config-file=.yamllint.yaml
+        files: \.(yaml|yml)$
+
+  # 4.2 JSON validation
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-json
+        name: check-json
+      - id: pretty-format-json
+        name: pretty-format-json
+        args: ['--autofix', '--indent=2']
+        exclude: ^package-lock\.json$
+
+  # 4.3 Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.38.0
+    hooks:
+      - id: markdownlint
+        name: markdownlint
+        args: ['--fix', '--config', '.markdownlint.json']
+        files: \.md$
+        exclude: ^(CHANGELOG\.md|node_modules/)
+
+  # 4.4 Python docstring style checking
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        name: pydocstyle
+        args:
+          - --convention=numpy
+          - --add-ignore=D100,D104,D105,D107,D203,D213
+        files: ^src/.*\.py$
+
+  # ==========================================================================
+  # 5. General Pre-commit Hooks (built-in)
+  # ==========================================================================
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      # Filesystem checks
+      - id: check-added-large-files
+        name: check-added-large-files
+        args: ['--maxkb=5000']
+      - id: check-case-conflict
+        name: check-case-conflict
+      - id: check-symlinks
+        name: check-symlinks
+      - id: destroyed-symlinks
+        name: destroyed-symlinks
+      
+      # File format checks
+      - id: check-yaml
+        name: check-yaml
+        exclude: ^(.*templates/.*\.yaml|helm/.*)$
+      - id: check-toml
+        name: check-toml
+      - id: check-xml
+        name: check-xml
+      
+      # Merge conflict and syntax checks
+      - id: check-merge-conflict
+        name: check-merge-conflict
+      - id: check-ast
+        name: check-ast (Python syntax)
+      
+      # Whitespace and line ending fixes
+      - id: trailing-whitespace
+        name: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+        name: end-of-file-fixer
+      - id: mixed-line-ending
+        name: mixed-line-ending
+        args: ['--fix=lf']
+      
+      # Python-specific checks
+      - id: check-docstring-first
+        name: check-docstring-first
+      - id: debug-statements
+        name: debug-statements (check for pdb)
+      - id: name-tests-test
+        name: name-tests-test
+        args: ['--pytest-test-first']
+        files: ^tests/.*\.py$
+      
+      # Executable and shebang checks
+      - id: check-executables-have-shebangs
+        name: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+        name: check-shebang-scripts-are-executable
+
+  # ==========================================================================
+  # 6. Testing (Optional - can be slow, consider CI instead)
+  # ==========================================================================
+
+  # Pytest - Run only fast smoke tests on commit
+  - repo: local
+    hooks:
+      - id: pytest-quick
+        name: pytest (quick smoke tests)
+        entry: pytest
+        language: system
+        types: [python]
+        args: 
+          - -v
+          - --tb=short
+          - -m
+          - "not slow"
+          - --maxfail=1
+        pass_filenames: false
+        stages: [commit]
+        # Uncomment to enable (disabled by default for speed)
+        # always_run: true
+
+  # ==========================================================================
+  # 7. RPM-EE Project-Specific Checks
+  # ==========================================================================
+
+  # 7.1 Validate clinical presets configuration
+  - repo: local
+    hooks:
+      - id: validate-presets
+        name: validate-presets (RPM-EE)
+        entry: python scripts/validate_presets.py
+        language: system
+        files: ^src/presets\.py$
+        pass_filenames: false
+        stages: [commit]
+
+  # 7.2 Validate experiment configuration files
+  - repo: local
+    hooks:
+      - id: validate-experiment-config
+        name: validate-experiment-config (RPM-EE)
+        entry: python scripts/validate_experiment_config.py
+        language: system
+        files: ^(config/.*\.(yaml|yml|json)|.*experiment.*\.(yaml|yml|json))$
+        pass_filenames: true
+        stages: [commit]
+
+  # 7.3 Check for broken asset references in docs
+  - repo: local
+    hooks:
+      - id: check-doc-references
+        name: check-doc-references (RPM-EE)
+        entry: python scripts/check_doc_references.py
+        language: system
+        files: ^docs/.*\.md$
+        pass_filenames: true
+        stages: [commit]
+
+# =============================================================================
+# Configuration
+# =============================================================================
+
+default_stages: [commit]
+fail_fast: false
+minimum_pre_commit_version: '2.20.0'
+
+# Exclude patterns (globally)
+exclude: |
+  (?x)^(
+    .*\.pyc$|
+    .*/__pycache__/.*|
+    .*/\.git/.*|
+    node_modules/.*|
+    .*/\.venv/.*|
+    .*/venv/.*|
+    .*\.egg-info/.*|
+    build/.*|
+    dist/.*|
+    \.tox/.*|
+    \.pytest_cache/.*|
+    \.mypy_cache/.*|
+    \.ruff_cache/.*|
+    saved_logs/.*|
+    results/.*|
+    logs/.*|
+    Users/.*
+  )$
