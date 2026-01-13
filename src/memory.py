@@ -6,10 +6,26 @@ class MemoryStore:
     def __init__(self, max_short_term=1000):
         self.short_term = deque(maxlen=max_short_term)
         self.long_term = {}
+        # Clinical preset parameters (can be updated)
+        self.capacity = 7  # Default WM capacity (7±2)
+        self.decay_rate = 0.01  # Default decay rate
 
     def store_events(self, tagged_events):
         for event in tagged_events:
             self.short_term.append(event)
+        # Apply memory decay based on clinical preset
+        self._apply_decay()
+    
+    def _apply_decay(self):
+        """Apply decay to memory items based on clinical preset decay rate."""
+        for event in self.short_term:
+            if 'prioritization_score' in event:
+                event['prioritization_score'] *= (1.0 - self.decay_rate)
+    
+    def get_working_memory_load(self):
+        """Calculate working memory load based on capacity."""
+        active_items = sum(1 for e in self.short_term if e.get('prioritization_score', 0) > 0.5)
+        return min(1.0, active_items / self.capacity) if self.capacity > 0 else 0.0
 
     def match_patterns(self, new_events):
         matched = []
