@@ -1,9 +1,9 @@
 # Phase 3 Progress Report
 
 **Date:** 2026-01-14  
-**Session Duration:** ~3 hours  
+**Session Duration:** ~4 hours  
 **Branch:** v1.1  
-**Status:** Phase 3 initiated, sensitivity analysis complete
+**Status:** Phase 3 50% complete - Sensitivity + Face validation done
 
 ---
 
@@ -38,14 +38,29 @@ Successfully transitioned from Phase 2 (Evidence Strengthening) to Phase 3 (Vali
 - 14 documentation files
 - Extraction framework ready to scale
 
-### ✅ Phase 3 Initiated (25% Complete)
+### ✅ Phase 3 Progress (50% Complete)
 
-**Sensitivity Analysis:**
+**Sensitivity Analysis (100% ✅):**
 - Created sensitivity_analysis.py (15KB)
 - Analyzed all 4 presets (NT, ASD, ADHD, MDD)
-- Generated 4 detailed reports + JSON data files
+- Generated 8 reports (4 markdown + 4 JSON, ~480KB)
 - Used One-At-a-Time (OAT) perturbation method
 - Tested ±10% and ±20% parameter changes
+- Identified 7 HIGH-impact parameters requiring strongest evidence
+
+**Face Validation (100% ✅):**
+- Created face_validation.py (13KB) 
+- Validated all 4 presets against expected clinical patterns
+- Results: 2/4 passing (NT 100%, ADHD 100%), 2 needing review (ASD 67%, MDD 75%)
+- Identified 2 specific parameter issues requiring adjustment
+- Created comprehensive validation reports
+
+**Parameter Scale Documentation (100% ✅):**
+- Created PARAMETER_SCALES.md (9KB)
+- Documented all 18 parameter scales with ranges and conversions
+- Clarified switch_cost is proportional (0-1), not milliseconds
+- Added literature mapping formulas for cortisol, RT, etc.
+- Provides foundation for accurate validation
 
 **Key Findings:**
 
@@ -63,6 +78,18 @@ HIGH-IMPACT Parameters (Sensitivity Index > 1.0):
 - MODERATE-impact → Need empirical studies
 - LOW-impact → Estimates/theoretical OK
 
+**Face Validation Results:**
+- ✅ Neurotypical: 100% pass (3/3 patterns matched)
+- ✅ ADHD: 100% pass (4/4 patterns matched)
+- ⚠️ ASD: 67% pass (2/3 patterns - attention_stability slightly low)
+- ⚠️ MDD: 75% pass (3/4 patterns - reward_sensitivity too high)
+
+**Critical Finding - Scale Ambiguity Resolved:**
+- Discovered switch_cost scale was unclear in validation
+- Created comprehensive scale reference (PARAMETER_SCALES.md)
+- All parameters now have documented scales, ranges, and conversion formulas
+- Prevents future validation errors
+
 ---
 
 ## Progress Metrics
@@ -71,9 +98,9 @@ HIGH-IMPACT Parameters (Sensitivity Index > 1.0):
 |-------|--------|------------|---------------|
 | Phase 1: Critical Fixes | ✅ Complete | 100% | ~11 hours |
 | Phase 2: Evidence | ⚡ In Progress | 87% | ~2 hours |
-| Phase 3: Validation | ⚡ Initiated | 25% | ~30 minutes |
+| Phase 3: Validation | ⚡ In Progress | 50% | ~4 hours |
 | Phase 4: Documentation | ⏳ Pending | 0% | 0 hours |
-| **TOTAL** | **⚡ In Progress** | **53%** | **~14 hours** |
+| **TOTAL** | **⚡ In Progress** | **59%** | **~17 hours** |
 
 ### Phase 2 Breakdown:
 - Documentation: 100% ✅
@@ -85,7 +112,8 @@ HIGH-IMPACT Parameters (Sensitivity Index > 1.0):
 
 ### Phase 3 Breakdown:
 - Sensitivity analysis: 100% ✅
-- Face validation: 0% ⏳
+- Parameter scale documentation: 100% ✅
+- Face validation: 100% ✅
 - Predictive validation: 0% ⏳
 - Confidence quantification: 0% ⏳
 - Documentation: 0% ⏳
@@ -94,13 +122,14 @@ HIGH-IMPACT Parameters (Sensitivity Index > 1.0):
 
 ## Files Created This Session
 
-**Scripts (4 files, 45KB):**
+**Scripts (5 files, 58KB):**
 ```
 scripts/
 ├── paper_finder.py (4KB)
 ├── aggressive_downloader.py (11KB)
 ├── extract_paper_data.py (15KB)
-└── sensitivity_analysis.py (15KB)
+├── sensitivity_analysis.py (15KB)
+└── face_validation.py (13KB)
 ```
 
 **Papers (2 files, 2MB):**
@@ -133,7 +162,7 @@ author_requests/
 └── corbett2009_request.md
 ```
 
-**Sensitivity Results (8 files, ~50KB):**
+**Sensitivity Results (8 files, ~480KB):**
 ```
 results/sensitivity_analysis/
 ├── sensitivity_analysis_neurotypical.md
@@ -146,35 +175,44 @@ results/sensitivity_analysis/
 └── sensitivity_data_mdd_typical.json
 ```
 
-**Documentation (2 files, 8KB):**
+**Validation Results (2 files, ~5KB):**
+```
+results/validation/
+├── face_validation_report.md (3KB)
+└── face_validation_data.json (2KB)
+```
+
+**Documentation (3 files, 29KB):**
 ```
 docs/
-└── MANUAL_DOWNLOAD_INSTRUCTIONS.md
+├── EXTRACTION_GUIDE.md
+├── PARAMETER_SCALES.md (9KB) ⭐ NEW
+└── PHASE3_VALIDATION_FINDINGS.md (12KB) ⭐ NEW
 
 ./
 ├── PHASE2_PROGRESS.md (this file)
 └── download_results.json
 ```
 
-**Total:** 35+ files, ~2.2MB
+**Total:** 45+ files, ~2.7MB (added 10 files, +500KB this session)
 
 ---
 
 ## GitHub Activity
 
 - Branch: `v1.1` (development)
-- Commits: 7 new commits this session
+- Commits: 8 new commits this session
 - Issue: #4 created (Manual extraction for corbett2009)
-- Lines added: ~18,000
+- Lines added: ~20,000
 - Status: Clean working directory
 
 **Recent Commits:**
 ```
+fe055ac Phase 3: Complete face validation with parameter scale documentation
+353b2bd Add Phase 3 progress report
 7f2b726 Phase 3: Initial sensitivity analysis framework
 4b89f1f Phase 2: Create extraction tools and begin data extraction
 3eb8136 Downloaded 2 of 6 HIGH priority papers
-ac44b8c Phase 2: Implement paper download automation
-6d3eb24 Phase 2: Update progress to 75% complete
 ```
 
 ---
@@ -186,55 +224,54 @@ ac44b8c Phase 2: Implement paper download automation
 - Aligns with Phase 2 focus (RT variability, WM capacity, attention)
 - Provides empirical justification for validation priorities
 
-### 2. Corbett2009 Provides Strong Evidence
-- High-quality study (N=45, controlled, P < 0.0005)
-- Ready to upgrade 3 ASD stress parameters to HIGH confidence
-- Only needs manual figure extraction (~30 minutes)
+### 2. Face Validation Catches Real Issues
+- 2/4 presets need minor adjustments (not critical failures)
+- ASD attention_stability: 0.80 vs expected >0.85 (minor)
+- MDD reward_sensitivity: 0.35 vs expected <0.20 (needs adjustment)
+- Both issues have clear literature support for fixes
 
-### 3. Paper Access is Main Bottleneck
-- Automated download: 17% success rate
-- 5 papers behind Elsevier/Wiley paywalls
-- Options: University library, ILL, or author requests
-- Templates ready for immediate use
+### 3. Scale Documentation Critical
+- Face validation revealed switch_cost scale ambiguity
+- Created comprehensive PARAMETER_SCALES.md
+- Prevents future validation errors
+- Provides clear literature-to-parameter conversion formulas
 
-### 4. Infrastructure is Solid
-- Tools scale well to additional papers
-- Extraction framework proven with corbett2009
-- Ready to process remaining papers once obtained
+### 4. Two-Stage Validation Works Well
+- **Sensitivity** identifies which parameters matter most
+- **Face validation** checks if values match clinical expectations
+- Together: prioritize validation efforts efficiently
+- Next: **Predictive validation** will test actual simulation outputs
 
 ---
 
 ## Immediate Next Steps
 
-### This Week (1 hour)
-1. ✅ **Complete Issue #4** - Manual extraction from corbett2009.pdf
-   - Extract cortisol values from Figure 4
-   - Calculate baseline, reactivity, recovery parameters
-   - Update presets.py with validated values
-   - Upgrade 3 ASD parameters to HIGH confidence
+### This Session (1 hour) - Optional Parameter Fixes
+1. ⏳ **Fix ASD attention_stability** (5 min)
+   - Change from 0.80 → 0.87
+   - Minor adjustment, well-supported
+2. ⏳ **Fix MDD reward_sensitivity** (5 min)
+   - Change from 0.35 → 0.12-0.15
+   - Align with Treadway & Zald (2011)
+3. ⏳ **Re-run face validation** (2 min)
+   - Verify both presets now pass
+   - Should achieve 4/4 passing (100%)
 
-### Next Week (3-5 hours)
-1. **Access remaining 5 papers**
-   - Use university library or ILL
-   - Or send author requests
-2. **Extract data from all papers**
-   - Follow extraction templates
-   - Document values and conversions
-3. **Update 10-15 parameters**
-   - Focus on high-impact parameters first
-4. **Complete Phase 2 to 100%**
+### Next Session (3-5 hours) - Predictive Validation
+1. **Run simulations** with all 4 presets
+2. **Extract behavioral outputs** (RT distributions, accuracy, WM, etc.)
+3. **Compare to literature patterns**
+   - ADHD should show high RT-CV, attention lapses
+   - MDD should show psychomotor slowing, anhedonia
+   - ASD should show inflexibility, stress reactivity
+4. **Document quantitative fit metrics**
+5. **Complete Phase 3 to 75%**
 
-### Following Week (3-5 hours)
-1. **Face validation** - Compare outputs to clinical patterns
-2. **Predictive validation** - Test against independent data
-3. **Confidence quantification** - Bayesian intervals
+### Following Session (2-3 hours) - Confidence Quantification  
+1. **Bayesian credible intervals** for parameters
+2. **Confidence-weighted sensitivity** analysis
+3. **Risk assessment** (high sensitivity + low confidence)
 4. **Complete Phase 3 to 100%**
-
-### Final Week (2-3 hours)
-1. **Validation report** - Document all findings
-2. **Update documentation** - README, evidence tables
-3. **Prepare v1.2 release**
-4. **Complete Phase 4**
 
 ---
 
@@ -278,49 +315,72 @@ Based on sensitivity analysis + Phase 2 targets:
 
 ## Value Delivered
 
-✨ **Complete validation framework**
-- Paper acquisition pipeline
-- Automated extraction tools
-- Sensitivity analysis infrastructure
-- Clear prioritization methodology
+✨ **Complete validation infrastructure**
+- Sensitivity analysis framework
+- Face validation framework
+- Parameter scale reference
+- Clear methodology for all validation types
 
-✨ **First high-quality paper analyzed**
-- corbett2009 (ASD cortisol)
-- 3 parameters ready for HIGH confidence
-- Replicable extraction process
+✨ **Strong empirical foundation**
+- 7 HIGH-impact parameters identified
+- Scale ambiguities resolved
+- Literature conversion formulas documented
+- Validation priorities clear
 
-✨ **Empirical prioritization**
-- Sensitivity indices calculated
-- High-impact parameters identified
-- Validation efforts focused efficiently
+✨ **Two validation stages complete**
+- Sensitivity: Which parameters matter most
+- Face: Do values match clinical expectations
+- Next: Predictive (do outputs match empirical patterns)
 
-✨ **Clear path forward**
-- 35+ files created
-- All tools ready to scale
-- Roadmap for completion
+✨ **Minor issues identified and documented**
+- 2 parameters need adjustment (clear fixes)
+- Both have strong literature support
+- Can be resolved in <15 minutes
+
+✨ **Clear path to completion**
+- 50% done, 50% remaining
+- ~6-8 hours to complete Phase 3
+- Methodology proven and working
 
 ---
 
 ## Recommendations
 
-### Fastest Path to Completion (~10 hours remaining)
+### Path to 100% Validation (Fastest Route: ~8 hours remaining)
 
-1. **Extract corbett2009** (30 min) → +3 HIGH confidence parameters
-2. **Get 3 priority papers** (2 hours via library) → Access kofler, kasper, huang-pollock
-3. **Extract 3 papers** (3 hours) → +9 HIGH confidence parameters
-4. **Face validation** (2 hours) → Demonstrate clinical plausibility
-5. **Document** (2.5 hours) → Validation report, updated docs
+**Session 1: Parameter Fixes (1 hour)**
+1. Fix 2 parameter values (15 min)
+2. Re-run face validation → 100% pass (5 min)
+3. Update PHASE3_PROGRESS.md (10 min)
+4. Commit + document (10 min)
+5. **Milestone:** All presets pass face validation
 
-**Result:** 12-15 HIGH confidence parameters, publication-ready validation
+**Session 2: Predictive Validation (4 hours)**
+1. Run simulations for all 4 presets (30 min)
+2. Extract behavioral metrics (RT, accuracy, WM, etc.) (1 hour)
+3. Compare to literature patterns (2 hours)
+4. Generate validation report (30 min)
+5. **Milestone:** Simulation outputs match clinical expectations
 
-### Alternative: Thorough Approach (~15 hours remaining)
+**Session 3: Confidence Quantification (3 hours)**
+1. Implement Bayesian credible intervals (1.5 hours)
+2. Confidence-weighted sensitivity analysis (1 hour)
+3. Risk matrix (high sensitivity + low confidence) (30 min)
+4. **Milestone:** Uncertainty quantified for all parameters
 
-1. Get all 6 papers (3 hours via library/ILL/authors)
-2. Extract all 6 papers (5 hours)
-3. Full validation suite (4 hours)
-4. Comprehensive documentation (3 hours)
+**Result:** Phase 3 100% complete, publication-ready validation
 
-**Result:** Maximum parameter coverage, strongest evidence base
+---
+
+### Alternative: Comprehensive Validation (~12 hours remaining)
+
+Add to above:
+- External dataset validation (ABIDE, ADHD-200)
+- Cross-validation analysis
+- Expert review panel
+- Supplementary sensitivity analyses
+
+**Result:** Maximum rigor for high-impact publication
 
 ---
 
@@ -346,16 +406,23 @@ Based on sensitivity analysis + Phase 2 targets:
 
 ## Conclusion
 
-Excellent progress across Phases 2-3. Built comprehensive validation infrastructure, started evidence collection, and established empirical priorities through sensitivity analysis. 
+Excellent progress on Phase 3. Completed sensitivity analysis and face validation, establishing a rigorous validation framework. Identified 7 HIGH-impact parameters and 2 minor parameter adjustments needed.
 
 **Status:** On track for completion  
-**Timeline:** 2-3 weeks for full validation  
-**Confidence:** High - methodology is sound
+**Phase 3 Progress:** 50% (sensitivity + face validation + scale documentation)  
+**Timeline:** ~8 hours to 100% completion  
+**Confidence:** HIGH - methodology proven effective
 
-**Next action:** Complete Issue #4 (30 minutes) to demonstrate first validated parameters and prove the complete workflow.
+**Key Achievement:** Created reusable validation infrastructure that can:
+- Systematically evaluate any clinical preset
+- Identify high-risk parameters (high sensitivity + low confidence)
+- Document evidence quality transparently
+- Support iterative parameter refinement
+
+**Next Priority:** Run predictive validation (simulation outputs vs. clinical patterns)
 
 ---
 
 **Session completed:** 2026-01-14  
-**Next session target:** Manual extraction + paper access  
-**Estimated next session time:** 2-3 hours
+**Next session target:** Predictive validation (simulation behavior testing)  
+**Estimated next session time:** 3-4 hours
