@@ -1,0 +1,159 @@
+{
+  "total_presets": 4,
+  "presets_passing": 2,
+  "presets_needing_review": 2,
+  "preset_results": {
+    "neurotypical": {
+      "preset": "neurotypical",
+      "total_patterns": 3,
+      "patterns_passed": 3,
+      "patterns_failed": 0,
+      "details": [
+        {
+          "parameter": "wm_capacity",
+          "status": "PASS",
+          "expectation": "normal",
+          "rationale": "Cowan (2001): 4\u00b11 items",
+          "value": 4.0,
+          "passed": true
+        },
+        {
+          "parameter": "rt_variability",
+          "status": "PASS",
+          "expectation": "low",
+          "rationale": "Typical CV ~0.10-0.20",
+          "value": 0.15,
+          "passed": true
+        },
+        {
+          "parameter": "stress_baseline",
+          "status": "PASS",
+          "expectation": "low",
+          "rationale": "Healthy resting cortisol",
+          "value": 0.3,
+          "passed": true
+        }
+      ],
+      "pass_rate": 1.0,
+      "overall_status": "PASS"
+    },
+    "asd_typical": {
+      "preset": "asd_typical",
+      "total_patterns": 3,
+      "patterns_passed": 2,
+      "patterns_failed": 1,
+      "details": [
+        {
+          "parameter": "stress_reactivity",
+          "status": "PASS",
+          "expectation": "elevated",
+          "rationale": "Corbett et al. (2009): ASD shows 2x cortisol response to social stress",
+          "value": 0.6,
+          "passed": true
+        },
+        {
+          "parameter": "attention_stability",
+          "status": "FAIL",
+          "expectation": "inflexible_but_sustained",
+          "rationale": "ASD shows hyperfocus, difficulty disengaging (see v1.1 doc)",
+          "value": 0.8,
+          "passed": false
+        },
+        {
+          "parameter": "switch_cost",
+          "status": "PASS",
+          "expectation": "high",
+          "rationale": "Set-shifting deficits in ASD (Hill 2004)",
+          "value": 0.25,
+          "passed": true
+        }
+      ],
+      "pass_rate": 0.6666666666666666,
+      "overall_status": "NEEDS_REVIEW"
+    },
+    "adhd_typical": {
+      "preset": "adhd_typical",
+      "total_patterns": 4,
+      "patterns_passed": 4,
+      "patterns_failed": 0,
+      "details": [
+        {
+          "parameter": "rt_variability",
+          "status": "PASS",
+          "expectation": "very_high",
+          "rationale": "Kofler et al. (2013) meta-analysis: 3x variability vs controls",
+          "value": 0.45,
+          "passed": true
+        },
+        {
+          "parameter": "attention_stability",
+          "status": "PASS",
+          "expectation": "low",
+          "rationale": "Sustained attention deficits core to ADHD",
+          "value": 0.6,
+          "passed": true
+        },
+        {
+          "parameter": "vigilance_decrement",
+          "status": "PASS",
+          "expectation": "steep",
+          "rationale": "Rapid performance decline over time (Huang-Pollock 2012)",
+          "value": 0.025,
+          "passed": true
+        },
+        {
+          "parameter": "wm_capacity",
+          "status": "PASS",
+          "expectation": "reduced",
+          "rationale": "Kasper et al. (2012): ~1 SD below controls",
+          "value": 3.0,
+          "passed": true
+        }
+      ],
+      "pass_rate": 1.0,
+      "overall_status": "PASS"
+    },
+    "mdd_typical": {
+      "preset": "mdd_typical",
+      "total_patterns": 4,
+      "patterns_passed": 3,
+      "patterns_failed": 1,
+      "details": [
+        {
+          "parameter": "base_rt",
+          "status": "PASS",
+          "expectation": "slowed",
+          "rationale": "Tsourtos et al. (2002): 15-20% psychomotor slowing",
+          "value": 600.0,
+          "passed": true
+        },
+        {
+          "parameter": "positive_affect",
+          "status": "PASS",
+          "expectation": "very_low",
+          "rationale": "Treadway & Zald (2011): Anhedonia core symptom",
+          "value": 0.25,
+          "passed": true
+        },
+        {
+          "parameter": "stress_baseline",
+          "status": "PASS",
+          "expectation": "elevated",
+          "rationale": "Burke et al. (2005) meta-analysis: Chronic HPA dysregulation",
+          "value": 0.55,
+          "passed": true
+        },
+        {
+          "parameter": "reward_sensitivity",
+          "status": "FAIL",
+          "expectation": "blunted",
+          "rationale": "Treadway & Zald (2011): Reduced reward responsiveness in depression",
+          "value": 0.35,
+          "passed": false
+        }
+      ],
+      "pass_rate": 0.75,
+      "overall_status": "NEEDS_REVIEW"
+    }
+  }
+}
