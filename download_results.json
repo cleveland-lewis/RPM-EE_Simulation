@@ -1,0 +1,55 @@
+{
+  "downloaded": [
+    {
+      "id": "corbett2009",
+      "doi": "10.1186/2040-2392-1-13",
+      "title": "ASD cortisol",
+      "pmcid": "PMC2802360",
+      "alternative_sources": [
+        "https://molecularautism.biomedcentral.com/articles/10.1186/2040-2392-1-13",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2802360/pdf/"
+      ],
+      "local_path": "papers/corbett2009.pdf"
+    },
+    {
+      "id": "huang-pollock2012",
+      "doi": "10.1037/a0027205",
+      "title": "ADHD vigilance",
+      "pmcid": "PMC3391585",
+      "alternative_sources": [],
+      "local_path": "papers/huang-pollock2012.pdf"
+    }
+  ],
+  "failed": [
+    {
+      "id": "kofler2013",
+      "doi": "10.1016/j.cpr.2013.06.001",
+      "title": "Reaction time variability in ADHD",
+      "pmcid": null,
+      "alternative_sources": [
+        "https://www.sciencedirect.com/science/article/pii/S0272735813000695"
+      ]
+    },
+    {
+      "id": "burke2005",
+      "doi": "10.1016/j.psyneuen.2005.02.010",
+      "title": "Depression and cortisol",
+      "pmcid": null,
+      "alternative_sources": []
+    },
+    {
+      "id": "kasper2012",
+      "doi": "10.1016/j.cpr.2012.07.001",
+      "title": "ADHD working memory",
+      "pmcid": null,
+      "alternative_sources": []
+    },
+    {
+      "id": "crawford2004",
+      "doi": "10.1348/0144665031752934",
+      "title": "PANAS validity",
+      "pmcid": null,
+      "alternative_sources": []
+    }
+  ]
+}
