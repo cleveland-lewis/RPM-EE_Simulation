@@ -63,6 +63,20 @@ def run_preset_test(preset_name, episodes=100):
     print(f"  Attention Stability:{params['attention_stability']:.2f}")
     print(f"  Exploration Rate:   {params['exploration_rate']:.2f}")
     
+    # Display confidence levels
+    summary = presets.get_preset_summary(preset_name)
+    high = sum(1 for p in summary.values() if p['confidence'] == 'HIGH')
+    mod = sum(1 for p in summary.values() if p['confidence'] == 'MODERATE')
+    low = sum(1 for p in summary.values() if p['confidence'] == 'LOW')
+    total = len(summary)
+    strength_pct = (high * 3 + mod * 2 + low) / (total * 3) * 100
+    
+    print(f"\nParameter Confidence Levels:")
+    print(f"  HIGH:      {high}/{total} ({high/total*100:.0f}%)")
+    print(f"  MODERATE:  {mod}/{total} ({mod/total*100:.0f}%)")
+    print(f"  LOW:       {low}/{total} ({low/total*100:.0f}%)")
+    print(f"  Overall strength: {strength_pct:.1f}% (HIGH=100%, MODERATE=67%, LOW=33%)")
+    
     return metrics
 
 

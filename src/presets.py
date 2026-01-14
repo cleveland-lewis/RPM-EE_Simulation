@@ -18,9 +18,12 @@ from typing import Dict, List, Optional
 
 __all__ = [
     'CLINICAL_PRESETS',
+    'PARAMETER_CONFIDENCE',
     'get_preset',
     'list_presets',
     'get_preset_description',
+    'get_parameter_confidence',
+    'get_preset_summary',
 ]
 
 # =============================================================================
@@ -212,6 +215,98 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
 }
 
 
+# =============================================================================
+# PARAMETER CONFIDENCE LEVELS
+# =============================================================================
+# Evidence quality for each parameter:
+# - HIGH: Meta-analysis or multiple direct studies with quantitative values
+# - MODERATE: Single study or indirect evidence with reasonable inference
+# - LOW: Theoretical estimate or no direct empirical measurement
+
+PARAMETER_CONFIDENCE: Dict[str, Dict[str, str]] = {
+    'neurotypical': {
+        'base_rt': 'HIGH',              # Ratcliff & McKoon (2008) - comprehensive review
+        'rt_variability': 'MODERATE',   # Typical CV range from multiple studies
+        'rt_slowing': 'HIGH',           # N/A for baseline (multiplier=1.0)
+        'base_accuracy': 'MODERATE',    # Luce (1986) - general cognitive psych data
+        'accuracy_decline': 'MODERATE', # Load effects well-documented in literature
+        'wm_capacity': 'HIGH',          # Cowan (2001) - seminal work, widely replicated
+        'wm_decay_rate': 'LOW',         # Estimated, no direct per-tick measure
+        'attention_stability': 'LOW',   # Theoretical estimate from attention literature
+        'switch_cost': 'LOW',           # No specific quantitative value from sources
+        'vigilance_decrement': 'LOW',   # Rate not quantified, estimated from theory
+        'stress_baseline': 'LOW',       # Scale mapping (cortisol → 0-1) unclear
+        'stress_reactivity': 'LOW',     # Scale mapping unclear, theoretical estimate
+        'stress_recovery': 'LOW',       # No time-course data for recovery rates
+        'positive_affect': 'LOW',       # Theoretical estimate, no direct mapping
+        'negative_affect': 'LOW',       # Theoretical estimate, no direct mapping
+        'reward_sensitivity': 'LOW',    # Theoretical estimate from motivation literature
+        'prediction_error_gain': 'LOW', # No direct measurement, theoretical value
+        'exploration_rate': 'LOW',      # Theoretical estimate, no direct measurement
+    },
+    'asd_typical': {
+        'base_rt': 'MODERATE',          # Happé & Frith (2006) - qualitative claim
+        'rt_variability': 'MODERATE',   # Limited direct data on CV in ASD
+        'rt_slowing': 'MODERATE',       # 10-15% claim needs verification
+        'base_accuracy': 'MODERATE',    # Geurts et al. (2009) - flexibility data
+        'accuracy_decline': 'LOW',      # Limited evidence for load effects
+        'wm_capacity': 'MODERATE',      # Steele et al. (2007) - direct WM study
+        'wm_decay_rate': 'LOW',         # Inferred from "manipulation impaired"
+        'attention_stability': 'MODERATE', # Multiple studies show intact sustained attention
+        'switch_cost': 'MODERATE',      # Yerys et al. (2009) + Geurts - direct evidence
+        'vigilance_decrement': 'LOW',   # Rate not specified in sources
+        'stress_baseline': 'HIGH',      # Corbett et al. (2009) - direct cortisol measurement
+        'stress_reactivity': 'MODERATE',# Corbett et al. - elevated response observed
+        'stress_recovery': 'MODERATE',  # Corbett et al. - prolonged elevation noted
+        'positive_affect': 'LOW',       # Indirect inference from sensory reactivity
+        'negative_affect': 'LOW',       # Indirect inference from sensory reactivity
+        'reward_sensitivity': 'LOW',    # Limited evidence, theoretical estimate
+        'prediction_error_gain': 'LOW', # No direct measurement
+        'exploration_rate': 'LOW',      # Theoretical inference from reduced flexibility
+    },
+    'adhd_typical': {
+        'base_rt': 'MODERATE',          # Klein et al. (2006) - slightly faster noted
+        'rt_variability': 'HIGH',       # Kofler et al. (2013) META-ANALYSIS (319 studies!)
+        'rt_slowing': 'MODERATE',       # Multiple studies show slight slowing
+        'base_accuracy': 'HIGH',        # Kofler meta-analysis - omission errors quantified
+        'accuracy_decline': 'MODERATE', # Multiple studies show load effects
+        'wm_capacity': 'HIGH',          # Kasper et al. (2012) - meta-analysis
+        'wm_decay_rate': 'LOW',         # Estimated from capacity deficit
+        'attention_stability': 'HIGH',  # Huang-Pollock et al. (2012) - direct measurement
+        'switch_cost': 'MODERATE',      # Lower cost from multiple studies (hyper-switching)
+        'vigilance_decrement': 'MODERATE', # Huang-Pollock - strong evidence for steep decline
+        'stress_baseline': 'MODERATE',  # Lackschewitz et al. (2008) - physiological data
+        'stress_reactivity': 'MODERATE',# Lackschewitz et al. - high reactivity measured
+        'stress_recovery': 'LOW',       # Impaired regulation noted, not quantified
+        'positive_affect': 'LOW',       # Limited evidence, theoretical estimate
+        'negative_affect': 'LOW',       # Limited evidence, theoretical estimate
+        'reward_sensitivity': 'MODERATE', # Sonuga-Barke (2005) - delay aversion theory
+        'prediction_error_gain': 'LOW', # Theoretical inference from impulsivity
+        'exploration_rate': 'MODERATE', # Inferred from delay aversion + impulsivity
+    },
+    'mdd_typical': {
+        'base_rt': 'MODERATE',          # Tsourtos et al. (2002) - psychomotor slowing
+        'rt_variability': 'LOW',        # Limited data on CV in depression
+        'rt_slowing': 'MODERATE',       # Tsourtos - 15-20% claim needs verification
+        'base_accuracy': 'MODERATE',    # Porter et al. (2003) - drug-free patients
+        'accuracy_decline': 'MODERATE', # Porter et al. - performance under load
+        'wm_capacity': 'MODERATE',      # Christopher & MacDonald (2005) - direct WM study
+        'wm_decay_rate': 'LOW',         # Estimated from load impairment
+        'attention_stability': 'MODERATE', # Snyder (2013) - EF impairments review
+        'switch_cost': 'MODERATE',      # Snyder (2013) - EF impairments noted
+        'vigilance_decrement': 'LOW',   # Limited evidence, estimated
+        'stress_baseline': 'HIGH',      # Burke et al. (2005) META-ANALYSIS (361 studies!)
+        'stress_reactivity': 'MODERATE',# Burke et al. - HPA dysregulation documented
+        'stress_recovery': 'MODERATE',  # Burke et al. - prolonged elevation
+        'positive_affect': 'HIGH',      # Treadway & Zald (2011) - comprehensive anhedonia review
+        'negative_affect': 'MODERATE',  # Multiple depression studies document elevated NA
+        'reward_sensitivity': 'MODERATE', # Treadway & Zald - reduced reward processing
+        'prediction_error_gain': 'LOW', # Theoretical inference from rumination
+        'exploration_rate': 'LOW',      # Inferred from Nolen-Hoeksema rumination theory
+    },
+}
+
+
 def get_preset(name: str) -> Dict[str, float]:
     """
     Get a clinical preset by name.
@@ -307,3 +402,51 @@ def get_preset_description(name: str) -> str:
 # 24. Nolen-Hoeksema (2000). The role of rumination in depressive disorders
 #
 # =============================================================================
+
+
+def get_parameter_confidence(preset: str, param: str) -> str:
+    """
+    Get confidence level for a specific parameter.
+    
+    Args:
+        preset: Preset name (e.g., 'neurotypical', 'asd_typical')
+        param: Parameter name (e.g., 'wm_capacity', 'stress_baseline')
+        
+    Returns:
+        Confidence level: 'HIGH', 'MODERATE', 'LOW', or 'UNKNOWN'
+        
+    Examples:
+        >>> get_parameter_confidence('adhd_typical', 'rt_variability')
+        'HIGH'
+        >>> get_parameter_confidence('neurotypical', 'exploration_rate')
+        'LOW'
+    """
+    if preset not in PARAMETER_CONFIDENCE:
+        return 'UNKNOWN'
+    return PARAMETER_CONFIDENCE.get(preset, {}).get(param, 'UNKNOWN')
+
+
+def get_preset_summary(preset: str) -> Dict[str, Dict[str, any]]:
+    """
+    Get preset parameters with confidence levels.
+    
+    Args:
+        preset: Preset name
+        
+    Returns:
+        Dictionary mapping parameter names to dicts with 'value' and 'confidence'
+        
+    Example:
+        >>> summary = get_preset_summary('adhd_typical')
+        >>> summary['wm_capacity']
+        {'value': 3.0, 'confidence': 'HIGH'}
+    """
+    params = get_preset(preset)
+    confidence = PARAMETER_CONFIDENCE.get(preset, {})
+    return {
+        param: {
+            'value': value,
+            'confidence': confidence.get(param, 'UNKNOWN')
+        }
+        for param, value in params.items()
+    }
