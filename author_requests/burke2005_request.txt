@@ -1,0 +1,25 @@
+Subject: Request for Full Text: Depression and cortisol responses to psychological stress: A meta-analysis
+
+Dear Dr. HM,
+
+I am a researcher conducting a systematic validation of computational model parameters for clinical populations. I am extracting quantitative values from peer-reviewed literature to strengthen our evidence base.
+
+I would like to request access to your paper:
+
+  Depression and cortisol responses to psychological stress: A meta-analysis
+  Psychoneuroendocrinology, 2005
+  DOI: 10.1016/j.psyneuen.2005.02.010
+
+Your work is cited in our parameter validation for: mdd_stress_baseline
+
+Specifically, I need to extract the following from your paper:
+- [TODO: Fill in specific values needed]
+
+Would you be able to share a PDF copy?
+
+Thank you for your time and consideration.
+
+Best regards,
+[Your name]
+[Your affiliation]
+[Your email]

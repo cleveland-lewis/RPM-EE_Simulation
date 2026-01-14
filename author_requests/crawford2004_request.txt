@@ -1,0 +1,25 @@
+Subject: Request for Full Text: The PANAS: Construct validity
+
+Dear Dr. JR,
+
+I am a researcher conducting a systematic validation of computational model parameters for clinical populations. I am extracting quantitative values from peer-reviewed literature to strengthen our evidence base.
+
+I would like to request access to your paper:
+
+  The PANAS: Construct validity
+  British Journal of Clinical Psychology, 2004
+  DOI: 10.1348/0144665031752934
+
+Your work is cited in our parameter validation for: affect_parameters
+
+Specifically, I need to extract the following from your paper:
+- [TODO: Fill in specific values needed]
+
+Would you be able to share a PDF copy?
+
+Thank you for your time and consideration.
+
+Best regards,
+[Your name]
+[Your affiliation]
+[Your email]

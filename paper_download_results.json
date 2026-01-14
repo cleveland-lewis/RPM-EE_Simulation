@@ -1,0 +1,92 @@
+{
+  "downloaded": [],
+  "open_access_found": [],
+  "not_open_access": [
+    {
+      "id": "kofler2013",
+      "title": "Reaction time variability in ADHD: A meta-analytic review of 319 studies",
+      "authors": [
+        "Kofler M.J.",
+        "Rapport M.D."
+      ],
+      "year": 2013,
+      "journal": "Clinical Psychology Review",
+      "doi": "10.1016/j.cpr.2013.06.001",
+      "priority": "HIGH",
+      "parameter": "adhd_rt_variability",
+      "doi_url": "https://doi.org/10.1016/j.cpr.2013.06.001"
+    },
+    {
+      "id": "burke2005",
+      "title": "Depression and cortisol responses to psychological stress: A meta-analysis",
+      "authors": [
+        "Burke H.M.",
+        "Davis M.C."
+      ],
+      "year": 2005,
+      "journal": "Psychoneuroendocrinology",
+      "doi": "10.1016/j.psyneuen.2005.02.010",
+      "priority": "HIGH",
+      "parameter": "mdd_stress_baseline",
+      "doi_url": "https://doi.org/10.1016/j.psyneuen.2005.02.010"
+    },
+    {
+      "id": "kasper2012",
+      "title": "Moderators of working memory deficits in children with ADHD",
+      "authors": [
+        "Kasper L.J.",
+        "Alderson R.M.",
+        "Hudec K.L."
+      ],
+      "year": 2012,
+      "journal": "Clinical Psychology Review",
+      "doi": "10.1016/j.cpr.2012.07.001",
+      "priority": "HIGH",
+      "parameter": "adhd_wm_capacity",
+      "doi_url": "https://doi.org/10.1016/j.cpr.2012.07.001"
+    },
+    {
+      "id": "corbett2009",
+      "title": "Elevated cortisol during play in children with autism",
+      "authors": [
+        "Corbett B.A.",
+        "Mendoza S."
+      ],
+      "year": 2009,
+      "journal": "Molecular Autism",
+      "doi": "10.1186/2040-2392-1-13",
+      "priority": "HIGH",
+      "parameter": "asd_stress_baseline",
+      "doi_url": "https://doi.org/10.1186/2040-2392-1-13"
+    },
+    {
+      "id": "huang-pollock2012",
+      "title": "Evaluating vigilance deficits in ADHD",
+      "authors": [
+        "Huang-Pollock C.L.",
+        "Karalunas S.L."
+      ],
+      "year": 2012,
+      "journal": "Journal of Abnormal Psychology",
+      "doi": "10.1037/a0027205",
+      "priority": "HIGH",
+      "parameter": "adhd_attention_stability",
+      "doi_url": "https://doi.org/10.1037/a0027205"
+    },
+    {
+      "id": "crawford2004",
+      "title": "The PANAS: Construct validity",
+      "authors": [
+        "Crawford J.R.",
+        "Henry J.D."
+      ],
+      "year": 2004,
+      "journal": "British Journal of Clinical Psychology",
+      "doi": "10.1348/0144665031752934",
+      "priority": "MEDIUM",
+      "parameter": "affect_parameters",
+      "doi_url": "https://doi.org/10.1348/0144665031752934"
+    }
+  ],
+  "failed": []
+}
