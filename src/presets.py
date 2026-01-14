@@ -29,17 +29,17 @@ __all__ = [
 #
 # NEUROTYPICAL (NT):
 #   • RT: 400-600ms (simple tasks), 600-900ms (complex tasks) [Ratcliff & McKoon, 2008]
-#   • Accuracy: 85-95% typical [Sanders, 1998]
+#   • Accuracy: 85-95% typical [Luce, 1986]
 #   • Working memory: 4±1 items [Cowan, 2001 - modern consensus]
 #   • Stress: Moderate reactivity, adaptive recovery [McEwen, 1998]
 #   • Attentional control: Flexible, goal-directed [Posner & Petersen, 1990]
 #
 # AUTISM SPECTRUM DISORDER (ASD):
 #   • RT: 10-15% slower than NT [Happé & Frith, 2006]
-#   • Accuracy: Comparable mean but higher variability [Van Eylen et al., 2011]
-#   • Working memory: Intact capacity, impaired manipulation [Williams et al., 2006]
+#   • Accuracy: Comparable mean but higher variability [Geurts et al., 2009]
+#   • Working memory: Intact capacity, impaired manipulation [Steele et al., 2007]
 #   • Stress: Elevated baseline, prolonged recovery [Corbett et al., 2009]
-#   • Attentional switching: Reduced flexibility [Yerys et al., 2009]
+#   • Attentional switching: Reduced flexibility [Yerys et al., 2009; Geurts et al., 2009]
 #   • Sensory reactivity: Heightened sensitivity [Robertson & Baron-Cohen, 2017]
 #
 # ADHD (ATTENTION-DEFICIT/HYPERACTIVITY DISORDER):
@@ -276,31 +276,34 @@ def get_preset_description(name: str) -> str:
 # 2. Cowan (2001). The magical number 4 in short-term memory: A reconsideration of mental storage capacity
 # 3. McEwen (1998). Stress, adaptation, and disease: Allostasis and allostatic load
 # 4. Posner & Petersen (1990). The attention system of the human brain
-# 5. Sanders (1998). Elements of human performance
+# 5. Luce, R. D. (1986). Response Times: Their Role in Inferring Elementary Mental Organization.
+#    Oxford University Press. (Accuracy baselines: 85-95% typical for simple tasks)
 #
 # ASD:
-# 7. Happé & Frith (2006). The weak coherence account: Detail-focused cognitive style in autism
-# 8. Van Eylen et al. (2011). Cognitive flexibility in autism spectrum disorder
-# 9. Williams et al. (2006). Memory profile in ASD
-# 10. Corbett et al. (2009). Elevated cortisol during play is associated with stress in children with ASD
-# 11. Yerys et al. (2009). Set-shifting in children with ASD
-# 12. Robertson & Baron-Cohen (2017). Sensory perception in autism
+# 6. Happé & Frith (2006). The weak coherence account: Detail-focused cognitive style in autism
+# 7. Geurts, H. M., Corbett, B., & Solomon, M. (2009). The paradox of cognitive flexibility in autism.
+#    Trends in Cognitive Sciences, 13(2), 74-82. (Set-shifting and flexibility deficits)
+# 8. Steele, S. D., Minshew, N. J., Luna, B., & Sweeney, J. A. (2007). Spatial working memory deficits in autism.
+#    Journal of Autism and Developmental Disorders, 37(4), 605-612.
+# 9. Corbett, B. A., et al. (2009). Elevated cortisol during play is associated with stress in children with ASD
+# 10. Yerys, B. E., et al. (2009). Set-shifting in children with ASD
+# 11. Robertson & Baron-Cohen (2017). Sensory perception in autism
 #
 # ADHD:
-# 13. Klein et al. (2006). Intra-subject variability in ADHD
-# 14. Kofler et al. (2013). Reaction time variability in ADHD: A meta-analytic review
-# 15. Kasper et al. (2012). Moderators of working memory deficits in ADHD
-# 16. Huang-Pollock et al. (2012). Evaluating vigilance deficits in ADHD
-# 17. Lackschewitz et al. (2008). Physiological and psychological stress responses in ADHD
-# 18. Sonuga-Barke (2005). Causal models of ADHD: Delay aversion
+# 12. Klein et al. (2006). Intra-subject variability in ADHD
+# 13. Kofler et al. (2013). Reaction time variability in ADHD: A meta-analytic review
+# 14. Kasper et al. (2012). Moderators of working memory deficits in ADHD
+# 15. Huang-Pollock et al. (2012). Evaluating vigilance deficits in ADHD
+# 16. Lackschewitz et al. (2008). Physiological and psychological stress responses in ADHD
+# 17. Sonuga-Barke (2005). Causal models of ADHD: Delay aversion
 #
 # MDD:
-# 19. Tsourtos et al. (2002). Evidence of information processing speed deficits in depression
-# 20. Porter et al. (2003). Neurocognitive impairment in drug-free depression
-# 21. Christopher & MacDonald (2005). The impact of clinical depression on working memory
-# 22. Treadway & Zald (2011). Reconsidering anhedonia in depression
-# 23. Burke et al. (2005). Depression and cortisol: A meta-analysis
-# 24. Snyder (2013). Major depressive disorder is associated with broad impairments in executive function
-# 25. Nolen-Hoeksema (2000). The role of rumination in depressive disorders
+# 18. Tsourtos et al. (2002). Evidence of information processing speed deficits in depression
+# 19. Porter et al. (2003). Neurocognitive impairment in drug-free depression
+# 20. Christopher & MacDonald (2005). The impact of clinical depression on working memory
+# 21. Treadway & Zald (2011). Reconsidering anhedonia in depression
+# 22. Burke et al. (2005). Depression and cortisol: A meta-analysis
+# 23. Snyder (2013). Major depressive disorder is associated with broad impairments in executive function
+# 24. Nolen-Hoeksema (2000). The role of rumination in depressive disorders
 #
 # =============================================================================
