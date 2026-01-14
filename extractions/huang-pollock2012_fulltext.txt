@@ -1,0 +1,668 @@
+Cumulative Adversity and Smaller Gray Matter Volume in Medial
+Prefrontal, Anterior Cingulate, and Insula Regions
+Emily B. Ansell , Kenneth Rando , Keri Tuit , Joseph Guarnaccia , and Rajita Sinha
+Department of Psychiatry (EBA, KR, KT, RS); and Department of Neurology (JG), Yale University
+School of Medicine, New Haven, Connecticut
+Abstract
+Background— Cumulative adversity and stress are associated with risk of psychiatric disorders.
+While basic science studies show repeated and chronic stress effects on prefrontal and limbic
+neurons, human studies examining cumulative stress and effects on brain morphology are rare.
+Thus, we assessed whether cumulative adversity is associated with differences in gray matter
+volume, particularly in regions regulating emotion, self-control, and top-down processing in a
+community sample.
+Methods— One hundred three healthy community participants, aged 18 to 48 and 68% male,
+completed interview assessment of cumulative adversity and a structural magnetic resonance
+imaging protocol. Whole-brain voxel-based-morphometry analysis was performed adjusting for
+age, gender, and total intracranial volume.
+Results— Cumulative adversity was associated with smaller volume in medial prefrontal cortex
+(PFC), insular cortex, and subgenual anterior cingulate regions (familywise error corrected, p <.
+001). Recent stressful life events were associated with smaller volume in two clusters: the medial
+PFC and the right insula. Life trauma was associated with smaller volume in the medial PFC,
+anterior cingulate, and subgenual regions. The interaction of greater subjective chronic stress and
+greater cumulative life events was associated with smaller volume in the orbitofrontal cortex,
+insula, and anterior and subgenual cingulate regions.
+Conclusions— Current results demonstrate that increasing cumulative exposure to adverse life
+events is associated with smaller gray matter volume in key prefrontal and limbic regions involved
+in stress, emotion and reward regulation, and impulse control. These differences found in
+community participants may serve to mediate vulnerability to depression, addiction, and other
+stress-related psychopathology.
+Keywords
+Brain MRI; chronic stress; cumulative adversity; gray matter volume; life trauma; prefrontal
+cortex; recent adverse life events
+© 2012 Society of Biological Psychiatry
+Address correspondence to Rajita Sinha, Ph.D., Yale University School of Medicine, Department of Psychiatry, Yale Stress Center, 2
+Church Street, South, Suite 209, New Haven, CT 06519; Rajita.Sinha@yale.edu.
+Dr. Guarnaccia has served on the speaker panel and as a consultant for Biogen, Inc; Teva Pharmaceuticals; Accorda Pharmaceuticals;
+Pfizer, Inc; Serono, Inc; Bayer Pharmaceuticals; and Abbott Pharmaceuticals. Dr. Sinha is on the Scientific Advisory Board for
+Embera Neurotherapeutics and is also a consultant for Glaxo-Smith Kline Pharmaceuticals. All other authors reported no biomedical
+financial interests or potential conflicts of interest.
+Supplementary material cited in this article is available online.
+NIH Public Access
+Author Manuscript
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+Published in final edited form as:
+Biol Psychiatry . 2012 July 1; 72(1): 57–64. doi:10.1016/j.biopsych.2011.11.022.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+Cumulative adversity and repeated exposure to stressful life events are known to increase
+risk of mood and anxiety disorders (1–6) and addictive disorders (2,5,7). The neurobiology
+of these disorders identifies the corticostriatal-limbic brain circuits as critical to the
+pathophysiology of these illnesses (7–9). This circuitry, which includes regions of the
+prefrontal cortex (PFC), insular cortex, the hippocampus, amygdala, and ventral and dorsal
+striatum, is also known to mediate the allostatic processes involved in experiencing and
+coping with stressful experiences (10,11), but the effects of repeated stress exposure or
+cumulative adversity and chronic stress on changes in brain morphology in humans are not
+well studied.
+Basic science research has shown that repeated and chronic stress changes brain structure,
+morphology, and function in key regions of the corticostriatal-limbic circuitry, particularly
+in the PFC (10–12). Stress affects gray matter volume through a number of possible
+mechanisms, including loss of neurons, decreased dendritic branching, spine density, and/or
+decreased neurogenesis (12–19). For example, restraint stress in rats resulted in a 16%
+decrease in dendritic spine density and a 20% decrease in total length and branch number in
+medial PFC (mPFC) pyramidal neurons (18). In another study, restraint stress in rats
+resulted in a 20% retraction of apical dendritic arbors in the mPFC, while simultaneously
+resulting in an increase by 43% in the apical dendritic arborization in the orbitofrontal cortex
+(15). Loss of synaptic connections, particularly between the medial prefrontal and
+orbitofrontal cortex regions and amygdala, has been associated with loss of inhibitory
+affective control and presence of clinical mood disorders (8,20–22). Interestingly, some of
+these changes may occur in very brief periods of time following a stressor (23,24).
+The majority of human research assessing brain changes associated with stress has focused
+on psychiatric samples of patients with stress-related disorders, such as mood, anxiety, and
+addictive disorders. For example, a recent meta-analysis (22) of brain volume differences in
+patients with major depression revealed that the predominant differences in volume occurred
+in the frontal lobe regions, specifically prefrontal and orbitofrontal cortex, areas associated
+with emotional processing and stress responsivity. In addition, the subgenual anterior
+cingulate cortex gray matter volume is significantly reduced in patients with mood disorders
+(25). Gray matter reductions in the prefrontal regions appear to be similar in the
+pathophysiology of depression versus posttraumatic stress disorder (26). Among patients
+with alcohol or substance use disorders, neural changes in frontal, insular, and limbic striatal
+regions have been reported (27–29). Interestingly, two studies with nonpsychiatric samples
+also report decreased volume in corticostriatal-limbic regions, such as the hippocampus,
+orbitofrontal cortex, insula, anterior cingulate, and medial prefrontal cortex, associated with
+greater perceived stress (30) and greater geographical proximity to events on 9/11 (31).
+Thus, changes in gray matter volume are associated with stress-related psychiatric disorders
+but also with a recent adverse life event and perceived stress, suggesting that some stress-
+related changes in gray matter volume may act as vulnerability markers that precede the
+presence of stress-related psychiatric disorders.
+Therefore, to clarify the role of stress and adversity on differences in brain morphology, the
+current study assessed effects of cumulative adversity and stress exposure on brain
+morphology using whole-brain voxel-based morphometric analysis of structural magnetic
+resonance imaging (MRI) scans in a nonpsychiatric community sample. Cumulative
+adversity and chronic stress were assessed using the Cumulative Adversity Interview (CAI)
+(32), a well-established checklist of specific stressful events that have accumulated over the
+lifetime (recent events, life trauma, major life events) and chronic stress based on the
+subjects’ perceived appraisal of distress. This assessment has been previously used in large
+prospective studies of stressful life events and chronic stress examining risk for substance
+and psychiatric disorders (2,3,5,33–37). Recent research has found that greater cumulativeAnsell et al. Page 2
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+stress, as measured by the CAI, was associated with maladaptive physiological stress
+processes, such as heart rate variability (38) and greater neural responses to stress in a
+community sample (39). Based on previous basic science and human research and the
+known changes in brain regions involved in stress regulation and stress-related psychiatric
+disorders, we hypothesized that higher cumulative adversity and chronic stress would be
+associated with lower brain volume in the medial prefrontal cortex and limbic regions, such
+as the insular cortex, amygdala, and hippocampus. Given that the two prior studies
+examined specific types of stress, such as recent life events and perceived stress, we also
+explored whether specific types of stressful life events (e.g., trauma, recent life events,
+major life events, or perceived chronic stress) and the interaction of cumulative stressful life
+events with the experience of subjective, chronic stress may have distinct associations with
+structural morphology.
+Methods and Materials
+Participants
+One hundred three individuals, 70 (68%) men and 33 (32%) women, were recruited from a
+community sample who responded to advertisements placed either online or in local
+newspapers and at a community center in and around the New Haven area. All participants
+were required to be between the ages of 18 and 50 years, able to read and write in English to
+at least a sixth grade level, and meet stringent health requirements assessed by a specialist
+research nurse. Exclusion criteria included DSM-IV dependence for any drug or alcohol
+other than nicotine, head injury, or use of prescribed medications for any psychiatric or
+medical disorders. All participants gave both written and verbal informed consent and the
+study was approved by the Human Investigation Committee of the Yale University School
+of Medicine. Demographics for the sample are reported in Table 1.
+Potential subjects completed an initial screening over the telephone to determine eligibility
+based on inclusion/exclusion criteria. Following initial eligibility screening, participants
+were scheduled for an assessment session and a scanning session. During the first session,
+participants met with research assistants to complete informed consent forms and complete
+medical, substance abuse, and psychiatric health assessments including the Structured
+Clinical Interview for DSM-IV (40) and the CAI (32). Participants received a physical
+examination with a research nurse assessing cardiovascular, renal, hepatic, pancreatic,
+hematopoietic, and thyroid function to ensure all participants were in good health. During a
+subsequent session, participants underwent MRI data acquisition. Breathalyzer and urine
+toxicology screens were conducted at each appointment to ensure drug-free status among
+participants and to verify smoking status.
+Cumulative Adversity Interview (CAI)
+This 140-item interview is a multifaceted assessment of stressful life events and chronic,
+subjective stress previously used in prospective, longitudinal research on stress and
+psychopathology (2–5,32–37). Additional information on the content, reliability, and
+frequencies of events can be found in Supplement 1. Trained interviewers ask participants
+about the occurrence and frequency of specific major life events, recent life events, life
+trauma, and chronic stressors during their lifetime. Prior research supports the use of
+interviewers to efficiently improve reliability and validity of retrospective reports of
+stressful life events (41).
+MRI Data Acquisition
+Subjects were scanned on a Siemens 3 Tesla scanner (Trio; Siemens AG, Erlangen,
+Germany). Data for each subject consisted of a single sagittally acquired high-resolution T1-Ansell et al. Page 3
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+weighted magnetization prepared rapid acquisition gradient-echo scan: 176 slices, 1 mm3
+isotropic voxels, field of view = 256 × 256 mm, data acquisition matrix = 256 ×256,
+repetition time = 2530 msec, echo time = 3.66 msec, flip angle = 7°.
+Segmentation and Registration
+Image segmentation and registration were performed using the VBM8 toolbox (C. Gaser,
+Department of Psychiatry, University of Jena, Germany; http://dbm.neuro.uni-jena.de/vbm8)
+in Statistical Parametric Mapping 8 (SPM8; Wellcome Trust Centre for Neuroimaging,
+University College London, England). After applying a nonlocal means de-noising filter to
+improve signal-to-noise ratio to the data (42), VBM8 uses an adaptive maximum a posteriori
+technique (43) and a hidden Markov random field (44) to determine the optimal
+segmentation. The segmentation procedure also models partial volume effects to account for
+image voxels that are mixtures of pure tissue types (45). As all model parameters are
+estimated from the image data, VBM8 does not use tissue probability maps for tissue
+classification.
+As manual segmentation is considered the gold standard for evaluating the quality of
+automated tissue classification (e.g., [46,47]), the resulting segmentations were validated
+visually (cf. [48,49]). Particular attention was given to the thickness of the cortical surface,
+which was compared visually with each subject’s native space image. Gray matter
+segmentation demonstrated appropriate face validity in all images.
+The outputs from the segmentation procedure were rigid-body aligned segmentations for
+each subject. The gray matter, white matter, and cerebrospinal fluid segmentations were
+input into DARTEL (diffeomorphic anatomical registration through exponentiated lie
+algebra) (50) in SPM8. DARTEL is a high-dimensional, diffeomorphic registration
+algorithm that has performed well in a comparison of registration algorithms (51). DARTEL
+creates an average template from the data, and the images are registered to this space.
+Therefore, in an additional step, the DARTEL-registered data were affine-transformed to
+Montreal Neurological Institute (MNI) space, modulated, and smoothed with a 6-mm
+Gaussian filter. With modulation, voxel values reflect relative local volume differences
+between images. Gaussian smoothing reduces the effects of residual misregistration on
+potential group differences and reduces departures from normality that may occur at some
+voxels (52). The default parameter settings were also used for all steps of the DARTEL
+registration. Final outputs were smoothed, modulated gray matter segments (1.5 mm^3
+voxels).
+Data Analysis
+Statistical parametric maps were created in SPM8 to perform between-group comparisons
+using the smoothed, modulated, and normalized gray matter tissue segmentations output by
+DARTEL. Separate regression models were created with each scale derived from the CAI as
+the independent variable and local gray matter volume as the dependent measure. Covariates
+controlled for subject age, gender, and an estimate of total intracranial volume calculated by
+voxel-wise summation in a MATLAB script (The MathWorks, Inc., Natick, Massachusetts;
+Ged Ridgway, http://www.cs.ucl.ac.uk/staff/g.ridgway/vbm/get_totals.m) of the native space
+gray, white, and cerebrospinal fluid segmentations for each subject.
+Whole-Brain Analysis
+The whole-brain statistical analysis was conducted using random field-based cluster-size
+testing (cf. [53]) and familywise error rate (FWE) correction for multiple comparisons. The
+cluster size test increases sensitivity, relative to voxel-based tests, for spatially extended
+signals (54), and low thresholds increase the power of these tests for signals of large spatialAnsell et al. Page 4
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+extent (55). The analysis of cluster extent also better characterizes the spatially distributed
+nature of group differences within spatially smooth data (56). Clusters were formed from
+contiguous voxels exceeding an uncorrected one-tailed threshold of p < .025. The FWE
+corrected threshold for significant cluster size was set at one-tailed p < .05.
+Anatomical regions within significant clusters were initially identified in statistical
+parametric mapping outputs from MNI space coordinates, using the Automated Anatomy
+Library (57) within the Wake Forest University PickAtlas (ANSIR Laboratory, Wake Forest
+University School of Medicine, Winston-Salem, North Carolina) (58). Anatomical regions
+were confirmed and Brodmann areas (BA) determined using the Talairach Atlas (Research
+Imaging Center, University of Texas Health Science Center, San Antonio, Texas) (after
+conversion to Talairach coordinates, MNI to Talairach conversion was performed using the
+Nonlinear Yale MNI to Talairach Conversion Algorithm) (59).
+Results
+Sample means and standard deviations for CAI scales are displayed in Table 1. Correlations
+between CAI subscales, age, and education are provided in Supplement 1. Traumatic life
+events had a modest, but significant, positive association with age. In addition, the combined
+cumulative adverse life events counts (CALE) score had a modest but significant correlation
+with chronic stress ( r = .23), supporting assertions that both scales may reflect distinct
+measures of stressful experiences.
+A summary of regions in which smaller gray matter volume (GMV) was observed for each
+CAI scale is provided in Supplement 1. A negative relationship was found between gray
+matter volume and the measure of CALE in a large region in the medial prefrontal cortex,
+anterior cingulate, and right insula (FWE p < .001, cluster extent 20,679 voxels; Figure 1).
+This cluster further included gyrus rectus and orbitofrontal cortex (BA 11/10) bilaterally and
+extended in the superior direction to include the dorsomedial prefrontal cortex (BA 10/9).
+This cluster also extended laterally into the right inferior frontal gyrus (BA 47), the
+frontopolar cortex (BA 10) bilaterally, the anterior cingulate (BA 24/32), ventral striatum,
+caudate, and most of the right insular cortex. There were no FWE-corrected associations
+between CAI scale and regions with increased volume identified in our analyses.
+To examine whether other sociodemographic or psychiatric variables may account for the
+CAI associations with GMV, we ran additional models examining CALE associations with
+GMV. The Shipley Institute of Living Scale (60), which is a global measure of cognitive
+functioning, was used to assess IQ and the Center for Epidemiologic Studies Depression
+Scale (61) was used to assess depressive symptoms. In addition, smoking status and
+education level were obtained from intake interviews. All models remained significant
+(FWE corrected) when smoking ( p < .001), depression ( p <.001), IQ ( p <.001), or education
+level ( p <.001) were covaried. Only small changes in cluster size were observed and regions
+remained the same.
+Among the individual CAI subscales, no differences in gray matter volume were identified
+for the major life events or chronic stress subscales. However, a significant negative
+relationship was found between gray matter volume and the measure of recent life events in
+the medial prefrontal cortex (FWE p <.001, cluster extent = 7131 voxels) and the right
+insula (FWE p = .028, cluster extent = 3893 voxels), as depicted in red in Figure 2. The
+cluster in medial PFC included gyrus rectus and orbitofrontal cortex bilaterally (BA 11/10);
+frontopolar cortex (BA 10), mostly in the left hemisphere; and extended into dorsomedial
+PFC (BA 9). The cluster in the right insula extended across most of this region and alsoAnsell et al. Page 5
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+included parts of right orbitofrontal cortex (BA 10/11), putamen, and a small area of the
+right superior temporal gyrus (including BA 22 and 38).
+Gray matter volume was also negatively related to the life trauma subscale in the medial
+prefrontal cortex (FWE p < .001, cluster extent 12,835 voxels), including bilateral gyrus
+rectus and orbitofrontal cortex (BA 11/10), as well as Brodmann areas 9 and 8 in the
+dorsomedial PFC. This cluster also extended laterally into the right inferior frontal gyrus
+(BA 47) and frontopolar cortex bilaterally (BA 10), posteriorly into the rostral anterior
+cingulate (BA 24/32), and the subgenual area (BA 25), ventral striatum, and caudate. This is
+depicted in yellow in Figure 2. Overlap in regions between recent life events and trauma
+regions are indicated in orange.
+The interaction of CALE × chronic stress was also examined, controlling for the main
+effects of CALE and chronic stress. Greater accumulation of adverse life events with a
+greater subjective experience of chronic stress was associated with less gray matter volume
+within a cluster in the orbitofrontal cortex (FWE p < .001, cluster extent 7175 voxels; Figure
+3). This cluster extended bilaterally in the orbitofrontal cortex (BA 11/10) and inferior
+frontal gyrus (BA 45/47) and the subgenual cingulate region (BA 25), as well as into the left
+ventral anterior cingulate (BA 32) and right anterior insula.
+Discussion
+In the current study, cumulative adversity over the lifetime was associated with smaller gray
+matter volume in key frontal and limbic-striatal stress-related brain regions. Smaller gray
+matter volumes were associated with greater cumulative stressful life events in the
+frontopolar cortex, ventromedial and orbital frontal cortex, gyrus rectus, inferior frontal
+gyrus, anterior cingulate, caudate, and subgenual cingulate. Among stressful life events,
+both traumatic and recent life events (those which occurred in the year before assessment)
+were associated with regions of smaller gray matter volume. Interestingly, chronic stress, the
+scale that measures subjects’ experience of ongoing life stressors, was not independently
+associated with structural changes. However, the interaction of greater chronic stress with
+greater number of cumulative adverse events was associated with significantly smaller gray
+matter volume in the orbitofrontal cortex, subgenual area, anterior cingulate, and right
+anterior insula. On the other hand, individuals who experienced more adverse life events
+without the experience of ongoing subjective chronic stress showed a positive association
+between higher adverse life events and increased volume in the orbitofrontal cortex, similar
+to contrasting mPFC and orbitofrontal cortex findings identified previously in animal
+models (15). Importantly, these findings demonstrate that accumulation of adversity via
+exposure to repeated stressful life events, as measured by a sum of adverse life events, was
+associated with less gray matter in key brain regions involved in emotion regulation,
+contextual processing, and self control and that such effects were also moderated by higher
+subjective chronic stress within the orbitofrontal and subgenual cingulate regions. These
+effects remained even when related demographic and psychiatric variables were included in
+the model.
+Repeated and chronic stress-related changes in the medial prefrontal cortical neuronal
+synaptic density and spine loss have been well documented in basic science research (10–
+12). This research is consistent with the current data showing that a history of more
+cumulative adverse life events was associated with lower gray matter volume in medial
+prefrontal regions, including the rostral and subgenual anterior cingulate and medial
+orbitofrontal regions. The mPFC is extensively connected to subcortical limbic structures
+and is known to regulate stress and emotional arousal (8,62), and reduced brain volume in
+this key region may partially mediate the vulnerability for depression, addiction, and otherAnsell et al. Page 6
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+stress-related psychopathology. Furthermore, structural and functional changes in the stress-
+related regions of the medial and lateral prefrontal cortices, amygdala, hippocampus, ventral
+and dorsal striatum, insula, and midbrain regions also influence reward processing and make
+up the addiction circuitry (9,63–65). Thus, cumulative adversity and stress and excessive
+alcohol and drug use each can affect neurobiological processes that promote addictive
+behavior patterns and ultimately chronic disease risk (7). Smaller brain volume in these
+regions highlights one potential pathway by which cumulative stress may convey risk for
+addiction, loss of self-control, and reward-focused behaviors (9,66,67). In addition, the
+mPFC and the insular cortex are involved in social cognition and processing such that lower
+volume in this region may also adversely affect functioning involved in regulating
+interpersonal relationships and negotiating social contexts (68,69). It may also mediate the
+effects of stress on risk for anxiety disorders (70,71). This may be one pathway by which
+cumulative adversity compounds itself through difficulties in relationships, loss of socially
+supportive relations, and increased anxiety.
+Despite some prior research pointing to morphological differences in the hippocampus (30),
+we did not find associations between stress and the hippocampus. Hippocampal reductions
+have been previously associated with psychiatric disorders and, in more limited research,
+with experience of stress (72,73). In the context of the current findings, these data would
+suggest that changes in hippocampal brain morphology may be more clearly related to the
+pathophysiology of these specific disorders and not necessarily as a result of adversity or
+stress alone (11,19,74,75). Given that the current sample consisted of community
+participants without psychiatric disorders, we may speculate that individuals who experience
+stressful life events but who do not exhibit signs of psychopathology may demonstrate
+expected morphological changes in the top-down mechanisms of stress processing and not
+in the frequently accompanying hippocampal regions. On the other hand, stress-related
+neurochemical changes in limbic regions, such as the amygdala and hippocampal regions,
+may be more easily detected in region-of-interest morphological analysis and functional
+neural responses and not easily observable in whole-brain morphological analysis.
+Although recent life events were associated with less volume in the mPFC and the right
+insula, major life events were not associated with any significant morphological changes.
+Translational research has demonstrated that stress can result in structural alterations in
+relatively short periods of time (23,24). Findings for the recent life event scale may
+represent the acute effects of environmental insults on gray matter volume. This finding also
+fits other research suggesting that some morphological alterations resulting from stress may,
+given the right circumstances, be overcome over time (76). In the present sample, a history
+of traumatic life events was associated with smaller volume in the mPFC, including the
+ventromedial and dorsomedial prefrontal cortex and rostral anterior and subgenual cingulate.
+Less volume in the subgenual cingulate, gyrus rectus, orbitofrontal cortex, inferior frontal
+gyrus, left ventral anterior cingulate, and right anterior insula was greatest for those
+individuals who had a history of more adverse life events and who also reported feeling
+chronically stressed. Only in the context of cumulative adverse life events was the effect of
+chronic and subjective distress associated with smaller GMV.
+Overall, our findings suggest that cumulative adverse life events, including recent and
+traumatic life events, are associated with smaller gray matter volume in key regions of the
+brain involved in emotional, social, and self-regulation, as well as top-down control of
+limbic and reward-focused processes. The cumulative effects of these environmental
+exposures on the brain suggest that mediation of future stressful or demanding events may
+be more challenging for these individuals, particularly if the event requires effortful control,
+emotion regulation, or integrated social processing. It may be through these stress-induced
+alterations that individuals with a history of cumulative adversity experience increasing riskAnsell et al. Page 7
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+for future stressful and adverse life events (2) and concomitant risk of stress-related mental
+and physical health outcomes. Future research should identify mechanisms of resilience, as
+well as clinical treatments, which may mitigate the neurotoxic effects of cumulative
+adversity on brain volume. However, we should also note that lower volumes do not
+necessarily equate to poorer functioning (11,15,20,77). Stress may promote intense
+remodeling of mediating pathways and it may be that regions of lower volume represent
+greater efficiency in functioning or reflect adaptations and resilience. Further research is
+needed to examine the role that cumulative adversity has in functional responses to stress.
+The present study used a nonpsychiatric community sample to examine the effects of
+cumulative adversity on brain morphology in the absence of psychopathology. Given the
+region-specific differences identified in our findings in the context of prior research on
+GMV differences in psychiatric samples, it is likely that these participants are at risk for
+psychiatric disorders in the absence of protective and resilience factors. Future research
+should also examine how these structural changes resulting from chronic stress relate to
+changes in functional and clinical outcomes and how protective factors may moderate risk
+vulnerability in individuals who have experienced cumulative stress and adversity.
+There are several limitations to the current findings. Adverse life events were assessed
+retrospectively, which may lead to bias or errors in memory. However, test-retest reliability
+coefficients in a subsample of consecutively seen participants indicate good to excellent
+reliability of the interview assessment. In addition, it is highly unlikely that gray matter
+volume associations estimated at the more conservative whole-brain corrected level would
+result from systematic bias in subject retrospective reporting. It is more likely that memory
+biases would result in random error and, thus, a null finding. However, individual
+differences not assessed here may play a role in how an event is experienced or perceived
+and further research is needed to understand what role they may play. An additional
+limitation is the examination of gender differences. Disparate sample sizes in gender
+precluded the examination of gender separately and it may be that moderators of the effects
+of stress differ by sex. Future research with matched samples is warranted. In addition, this
+sample had a restricted age range (18 – 48 years), which limits the generalizability of the
+current findings to older adults and prevents us from examining whether long-term effects of
+cumulative adversity and chronic stress are associated with different regions than those
+identified presently. A post hoc analysis of an age and CALE interaction term was not
+significant, suggesting that this was not a factor in the current sample. On the other hand, the
+age range in the present sample may also be considered a potential strength by clarifying the
+significant role stress has on brain morphology independent of aging effects. Further
+research examining the accumulation of cumulative adversity and chronic stress in older
+adults is warranted. Finally, further research integrating cumulative adversity and stress
+effects on multimodal neuroimaging parameters, including voxel-based morphometric
+analysis and functional MRI, would be useful in understanding the combined morphological
+and functional effects of stress vulnerability.
+Our findings expand upon prior basic science research to demonstrate the impact of
+accumulating and chronic stress on decreased gray matter volume in key stress, emotion,
+and behavioral control regions of the brain within nonpsychiatric community individuals.
+Smaller volumes in these key regions may mediate the increased risk of chronic and
+cumulative stress on the development of stress-related disorders.
+Supplementary Material
+Refer to Web version on PubMed Central for supplementary material.Ansell et al. Page 8
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+Acknowledgments
+Funding was provided by National Institutes of Health Grants R01-AA013892, P50-DA016556, UL1-DE019586,
+PL1-DA024859, and K08-DA029641.
+References
+1. Caspi A, Sugden K, Moffitt TE, Taylor A, Craig IW, Harrington H, et al. Influence of life stress on
+depression: Moderation by a polymorphism in the 5-HTT gene. Science. 2003; 301:386–389.
+[PubMed: 12869766]
+2. Turner RJ, Lloyd DA. Cumulative adversity and drug dependence in young adults: Racial/ethnic
+contrasts. Addiction. 2003; 98:305–315. [PubMed: 12603230]
+3. Turner RJ, Lloyd DA. The stress process and the social distribution of depression. J Health Soc
+Behav. 1999; 40:374–404. [PubMed: 10643162]
+4. Turner, RJ.; Wheaton, B. Checklist measurement of stressful life events. In: Cohen, S.; Kessler, R.;
+Underwood, GL., editors. Measuring Stress. New York: Oxford University Press; 1995. p. 29-58.
+5. Lloyd DA, Turner RJ. Cumulative lifetime adversities and alcohol dependence in adolescence and
+young adulthood. Drug Alcohol Depend. 2008; 93:217–226. [PubMed: 17980975]
+6. Wheaton, B. Social stress. In: Aneshensel, CS.; Phelan, JC., editors. Handbook of the Sociology of
+Mental Health. New York: Plenum; 1999. p. 277-300.
+7. Sinha R. Chronic stress, drug use, and vulnerability to addiction. Ann N Y Acad Sci. 2008;
+1141:105–130. [PubMed: 18991954]
+8. Drevets WC, Price JL, Furey ML. Brain structural and functional abnormalities in mood disorders:
+Implications for neurocircuitry models of depression. Brain Struct Funct. 2008; 213:93–118.
+[PubMed: 18704495]
+9. Goldstein RZ, Craig AD, Bechara A, Garavan H, Childress AR, Paulus MP, Volkow ND. The
+neurocircuitry of impaired insight in drug addiction. Trends Cogn Sci. 2009; 13:372–380. [PubMed:
+19716751]
+10. Arnsten AF. Prefrontal cortical network connections: Key site of vulnerability in stress and
+schizophrenia. Int J Dev Neurosci. 2011; 29:215–223. [PubMed: 21345366]
+11. McEwen BS, Gianaros PJ. Central role of the brain in stress and adaptation: Links to
+socioeconomic status, health, and disease. Ann N Y Acad Sci. 2010; 1186:190–222. [PubMed:
+20201874]
+12. Arnsten AF. Stress signalling pathways that impair prefrontal cortex structure and function. Nat
+Rev Neurosci. 2009; 10:410–422. [PubMed: 19455173]
+13. Duman RS, Malberg J, Nakagawa S, D’Sa C. Neuronal plasticity and survival in mood disorders.
+Biol Psychiatry. 2000; 48:732–739. [PubMed: 11063970]
+14. Duman RS. Depression: A case of neuronal life and death? Biol Psychiatry. 2004; 56:140–145.
+[PubMed: 15271581]
+15. Liston C, Miller MM, Goldwater DS, Radley JJ, Rocher AB, Hof PR, et al. Stress-induced
+alterations in prefrontal cortical dendritic morphology predict selective impairments in perceptual
+attentional set-shifting. J Neurosci. 2006; 26:7870–7874. [PubMed: 16870732]
+16. Lupien SJ, McEwen BS, Gunnar MR, Heim C. Effects of stress throughout the lifespan on the
+brain, behaviour and cognition. Nat Rev Neurosci. 2009; 10:434–445. [PubMed: 19401723]
+17. Radley JJ, Morrison JH. Repeated stress and structural plasticity in the brain. Ageing Res Rev.
+2005; 4:271–287. [PubMed: 15993654]
+18. Radley JJ, Rocher AB, Miller M, Janssen WG, Liston C, Hof PR, et al. Repeated stress induces
+dendritic spine loss in the rat medial prefrontal cortex. Cereb Cortex. 2006; 16:313–320. [PubMed:
+15901656]
+19. Sapolsky RM. Glucocorticoids and hippocampal atrophy in neuropsychiatric disorders. Arch Gen
+Psychiatry. 2000; 57:925–935. [PubMed: 11015810]
+20. Drevets WC. Orbitofrontal cortex function and structure in depression. Ann N Y Acad Sci. 2007;
+1121:499–527. [PubMed: 17872395]Ansell et al. Page 9
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+21. Herwig U, Baumgartner T, Kaffenberger T, Bruhl A, Kottlow M, Schreiter-Gasser U, et al.
+Modulation of anticipatory emotion and perception processing by cognitive control. Neuroimage.
+2007; 37:652–662. [PubMed: 17588776]
+22. Koolschijn PC, van Haren NE, Lensvelt-Mulders GJ, Hulshoff Pol HE, Kahn RS. Brain volume
+abnormalities in major depressive disorder: A meta-analysis of magnetic resonance imaging
+studies. Hum Brain Mapp. 2009; 30:3719–3735. [PubMed: 19441021]
+23. Brown SM, Henning S, Wellman CL. Mild, short-term stress alters dendritic morphology in rat
+medial prefrontal cortex. Cereb Cortex. 2005; 15:1714–1722. [PubMed: 15703248]
+24. Izquierdo A, Wellman CL, Holmes A. Brief uncontrollable stress causes dendritic retraction in
+infralimbic cortex and resistance to fear extinction in mice. J Neurosci. 2006; 26:5733–5738.
+[PubMed: 16723530]
+25. Drevets WC, Savitz J, Trimble M. The subgenual anterior cingulate cortex in mood disorders. CNS
+Spectr. 2008; 13:663–681. [PubMed: 18704022]
+26. Kroes MC, Rugg MD, Whalley MG, Brewin CR. Structural brain abnormalities common to
+posttraumatic stress disorder and depression. J Psychiatry Neurosci. 2011; 36:100077.
+27. Fein G, Di Sclafani V, Cardenas VA, Goldmann H, Tolou-Shams M, Meyerhoff DJ. Cortical gray
+matter loss in treatment-naive alcohol dependent individuals. Alcohol Clin Exp Res. 2002;
+26:558–564. [PubMed: 11981133]
+28. Rando K, Hong KI, Bhagwagar Z, Li CS, Bergquist K, Guarnaccia J, Sinha R. Association of
+frontal and posterior cortical gray matter volume with time to alcohol relapse: A prospective study.
+Am J Psychiatry. 2011; 168:183–192. [PubMed: 21078704]
+29. Franklin TR, Acton PD, Maldjian JA, Gray JD, Croft JR, Dackis CA, et al. Decreased gray matter
+concentration in the insular, orbitofrontal, cingulate, and temporal cortices of cocaine patients.
+Biol Psychiatry. 2002; 51:134–142. [PubMed: 11822992]
+30. Gianaros PJ, Jennings JR, Sheu LK, Greer PJ, Kuller LH, Matthews KA. Prospective reports of
+chronic life stress predict decreased grey matter volume in the hippocampus. Neuroimage. 2007;
+35:795–803. [PubMed: 17275340]
+31. Ganzel BL, Kim P, Glover GH, Temple E. Resilience after 9/11: Multimodal neuroimaging
+evidence for stress-related change in the healthy adult brain. Neuroimage. 2008; 40:788–795.
+[PubMed: 18234524]
+32. Turner RJ, Wheaton B, Lloyd DA. The epidemiology of social stress. Am Sociol Rev. 1995;
+60:104–125.
+33. Whitesell NR, Beals J, Mitchell CM, Keane EM, Spicer P, Turner RJ. AI-SUPERPFP Team . The
+relationship of cumulative and proximal adversity to onset of substance dependence symptoms in
+two American Indian communities. Drug Alcohol Depend. 2007; 91:279–288. [PubMed:
+17640829]
+34. Turner RJ, Lloyd DA, Taylor J. Stress burden, drug dependence and the nativity paradox among
+U.S. Hispanics. Drug Alcohol Depend. 2006; 83:79–89. [PubMed: 16330158]
+35. Turner RJ, Lloyd DA. Stress burden and the lifetime incidence of psychiatric disorder in young
+adults: Racial and ethnic contrasts. Arch Gen Psychiatry. 2004; 61:481–488. [PubMed: 15123493]
+36. Lloyd DA, Turner RJ. Cumulative adversity and posttraumatic stress disorder: Evidence from a
+diverse community sample of young adults. Am J Orthopsychiatry. 2003; 73:381–391. [PubMed:
+14609400]
+37. Turner RJ, Lloyd DA. Lifetime traumas and mental health: The significance of cumulative
+adversity. J Health Soc Behav. 1995; 36:360–376. [PubMed: 8719054]
+38. Lampert, RL.; Tuit, K.; Sinha, R. Stress, adverse life events and depressed autonomic function as
+measured by heart rate variability in a community sample. Presented at the American Heart
+Association Scientific Meeting; November 13-16, 2011; Orlando, Florida. 2011.
+39. Seo, D.; Tsou, KA.; Ansell, EB.; Tuit, K.; Sinha, R. Cumulative adversity is associated with
+abnormal fMRI neural responses to emotional stress and adverse health outcomes. Presented at the
+Annual Meeting of the Society for Neuroscience; November 12-16, 2011; Washington, DC. 2011.
+40. First, MB.; Spitzer, RL.; Gibbon, M.; Williams, JBW. Structured Clinical Interview for DSM-IV
+Axis I Disorders - Patient Version (SCID-I/P). New York: New York State Psychiatric Institute;
+1996.Ansell et al. Page 10
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+41. Dohrenwend BP. Inventorying stressful life events as risk factors for psychopathology: Toward
+resolution of the problem of intracategory variability. Psychol Bull. 2006; 132:477–495. [PubMed:
+16719570]
+42. Coupe P, Yger P, Prima S, Hellier P, Kervrann C, Barillot C. An optimized blockwise nonlocal
+means denoising filter for 3-D magnetic resonance images. IEEE Trans Med Imaging. 2008;
+27:425–441. [PubMed: 18390341]
+43. Rajapakse JC, Giedd JN, Rapoport JL. Statistical approach to segmentation of single-channel
+cerebral MR images. IEEE Trans Med Imaging. 1997; 16:176–186. [PubMed: 9101327]
+44. Cuadra MB, Cammoun L, Butz T, Cuisenaire O, Thiran JP. Comparison and validation of tissue
+modelization and statistical classification methods in T1-weighted MR brain images. IEEE Trans
+Med Imaging. 2005; 24:1548–1565. [PubMed: 16350916]
+45. Tohka J, Zijdenbos A, Evans A. Fast and robust parameter estimation for statistical partial volume
+models in brain MRI. Neuroimage. 2004; 23:84–97. [PubMed: 15325355]
+46. Anbeek P, Vincken KL, van Osch MJ, Bisschops RH, van der Grond J. Probabilistic segmentation
+of white matter lesions in MR imaging. Neuroimage. 2004; 21:1037–1044. [PubMed: 15006671]
+47. Bouix S, Martin-Fernandez M, Ungar L, Nakamura M, Koo MS, McCarley RW, Shenton ME. On
+evaluating brain tissue classifiers without a ground truth. Neuroimage. 2007; 36:1207–1224.
+[PubMed: 17532646]
+48. Cerasa A, Messina D, Nicoletti G, Novellino F, Lanza P, Condino F, et al. Cerebellar atrophy in
+essential tremor using an automated segmentation method. AJNR Am J Neuroradiol. 2009;
+30:1240–1243. [PubMed: 19342539]
+49. Davies RR, Scahill VL, Graham A, Williams GB, Graham KS, Hodges JR. Development of an
+MRI rating scale for multiple brain regions: Comparison with volumetrics and with voxel-based
+morphometry. Neuroradiology. 2009; 51:491–503. [PubMed: 19308367]
+50. Ashburner J. A fast diffeomorphic image registration algorithm. Neuroimage. 2007; 38:95–113.
+[PubMed: 17761438]
+51. Klein A, Andersson J, Ardekani BA, Ashburner J, Avants B, Chiang MC, et al. Evaluation of 14
+nonlinear deformation algorithms applied to human brain MRI registration. Neuroimage. 2009;
+46:786–802. [PubMed: 19195496]
+52. Ashburner J, Friston KJ. Voxel-based morphometry–the methods. Neuroimage. 2000; 11:805–821.
+[PubMed: 10860804]
+53. Hayasaka S, Nichols TE. Validating cluster size inference: Random field and permutation
+methods. Neuroimage. 2003; 20:2343–2356. [PubMed: 14683734]
+54. Poline JB, Worsley KJ, Evans AC, Friston KJ. Combining spatial extent and peak intensity to test
+for activations in functional imaging. Neuroimage. 1997; 5:83–96. [PubMed: 9345540]
+55. Friston KJ, Holmes A, Poline JB, Price CJ, Frith CD. Detecting activations in PET and fMRI:
+Levels of inference and power. Neuroimage. 1996; 4:223–235. [PubMed: 9345513]
+56. Chumbley JR, Friston KJ. False discovery rate revisited: FDR and topological inference using
+Gaussian random fields. Neuroimage. 2009; 44:62–70. [PubMed: 18603449]
+57. Tzourio-Mazoyer N, Landeau B, Papathanassiou D, Crivello F, Etard O, Delcroix N, et al.
+Automated anatomical labeling of activations in SPM using a macroscopic anatomical parcellation
+of the MNI MRI single-subject brain. Neuroimage. 2002; 15:273–289. [PubMed: 11771995]
+58. Maldjian JA, Laurienti PJ, Kraft RA, Burdette JH. An automated method for neuroanatomic and
+cytoarchitectonic atlas-based interrogation of fMRI data sets. Neuroimage. 2003; 19:1233–1239.
+[PubMed: 12880848]
+59. Lacadie CM, Fulbright RK, Rajeevan N, Constable RT, Papademetris X. More accurate Talairach
+coordinates for neuroimaging using non-linear registration. Neuroimage. 2008; 42:717–725.
+[PubMed: 18572418]
+60. Shipley W. A self-administering scale for measuring intellectual impairment and deterioration. J
+Psychol. 1940; 9:371–377.
+61. Radloff LS. The CES-D Scale: A self-report depression scale for research in the general
+population. Appl Psychol Meas. 1977; 1:385–401.Ansell et al. Page 11
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+62. Price JL, Carmichael ST, Drevets WC. Networks related to the orbital and medial prefrontal
+cortex: A substrate for emotional behavior? Prog Brain Res. 1996; 107:523–536. [PubMed:
+8782540]
+63. Naqvi NH, Rudrauf D, Damasio H, Bechara A. Damage to the insula disrupts addiction to cigarette
+smoking. Science. 2007; 315:531–534. [PubMed: 17255515]
+64. Kalivas PW, Volkow ND. The neural basis of addiction: A pathology of motivation and choice.
+Am J Psychiatry. 2005; 162:1403–1413. [PubMed: 16055761]
+65. Li CS, Sinha R. Inhibitory control and emotional stress regulation: Neuroimaging evidence for
+frontal-limbic dysfunction in psycho-stimulant addiction. Neurosci Biobehav Rev. 2008; 32:581–
+597. [PubMed: 18164058]
+66. Paulus MP. Neural basis of reward and craving–a homeostatic point of view. Dialogues Clin
+Neurosci. 2007; 9:379–387. [PubMed: 18286798]
+67. Posner MI, Rothbart MK, Sheese BE, Tang Y. The anterior cingulate gyrus and the mechanism of
+self-regulation. Cogn Affect Behav Neurosci. 2007; 7:391–395. [PubMed: 18189012]
+68. Heatherton TF. Neuroscience of self and self-regulation. Annu Rev Psychol. 2011; 62:363–390.
+[PubMed: 21126181]
+69. Eisenberger NI, Lieberman MD, Williams KD. Does rejection hurt? An FMRI study of social
+exclusion. Science. 2003; 302:290–292. [PubMed: 14551436]
+70. Paulus MP, Stein MB. Interoception in anxiety and depression. Brain Struct Funct. 2010; 214:451–
+463. [PubMed: 20490545]
+71. Stein MB, Paulus MP. Imbalance of approach and avoidance: The yin and yang of anxiety
+disorders. Biol Psychiatry. 2009; 66:1072–1074. [PubMed: 19944792]
+72. Lee HY, Tae WS, Yoon HK, Lee BT, Paik JW, Son KR, et al. Demonstration of decreased gray
+matter concentration in the midbrain encompassing the dorsal raphe nucleus and the limbic
+subcortical regions in major depressive disorder: An optimized voxel-based morphometry study. J
+Affect Disord. 2011; 133:128–136. [PubMed: 21546094]
+73. Zhang J, Tan Q, Yin H, Zhang X, Huan Y, Tang L, et al. Decreased gray matter volume in the left
+hippocampus and bilateral calcarine cortex in coal mine flood disaster survivors with recent onset
+PTSD. Psychiatry Res. 2011; 192:84–90. [PubMed: 21498053]
+74. Sapolsky RM. The possibility of neurotoxicity in the hippocampus in major depression: A primer
+on neuron death. Biol Psychiatry. 2000; 48:755–765. [PubMed: 11063972]
+75. Sapolsky RM. Chickens, eggs and hippocampal atrophy. Nat Neurosci. 2002; 5:1111–1113.
+[PubMed: 12404003]
+76. Holzel BK, Carmody J, Evans KC, Hoge EA, Dusek JA, Morgan L, et al. Stress reduction
+correlates with structural changes in the amygdala. Soc Cogn Affect Neurosci. 2010; 5:11–17.
+[PubMed: 19776221]
+77. McEwen BS. Stress, sex, and neural adaptation to a changing environment: Mechanisms of
+neuronal remodeling. Ann N Y Acad Sci. 2010; 1204(suppl):E38–E59. [PubMed: 20840167]Ansell et al. Page 12
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+Figure 1.
+Using whole-brain voxel-based morphometry, more cumulative adverse life events were
+associated with lower mean gray matter volume (GMV), after controlling for age, sex, and
+total intracranial volume in a region (20,679 voxels; familywise error p < .001) of the medial
+prefrontal cortex, anterior cingulate, and right insula (x = 5.4, y = 13.5, z = 11.5). R2 for
+regression line = .17. ROI, region of interest identified in the whole-brain voxel-based
+morphometry.Ansell et al. Page 13
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+Figure 2.
+Using whole-brain voxel-based morphometry, more frequent recent life events and more
+traumatic life events were associated with lower mean gray matter volume (GMV) after
+controlling for age, sex, and total intracranial volume. Regions of interest are displayed (top
+row: x = 43.5; y = 13.5, z = −6; bottom row: x = 4.0, y = 47.0, z = 3.0) with recent life
+events regions in red, traumatic life events regions in yellow, and overlapping regions
+indicated in orange. Recent life events are associated with a region of the medial prefrontal
+cortex (7131 voxels; familywise error [FWE] p = .001) and the right insula (3893 voxels;
+FWE p = .028). R2 for the recent life events prefrontal region regression line = .13 and for
+the insula region = .13. Traumatic life events are associated with a region (12,835 voxels;
+FWE p <.001) of the medial prefrontal cortex, anterior cingulate, and subgenual areas. R2
+for the traumatic life events regression line = .15. ROI, region of interest identified in the
+whole-brain voxel-based morphometry.Ansell et al. Page 14
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+Figure 3.
+Using whole-brain voxel-based morphometry, more cumulative adverse life events and
+greater chronic stress were associated with lower mean gray matter volume (familywise
+error p <.001; x = 4.5, y = 22.5, z = −12.5), after controlling for age, sex, and total
+intracranial volume and the main effects of both scales in a region (7175 voxels) of the
+orbitofrontal cortex, anterior cingulate, insula, and subgenual areas. The regression
+interaction is depicted in the graph.Ansell et al. Page 15
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author Manuscript
+
+NIH-PA Author Manuscript NIH-PA Author Manuscript NIH-PA Author ManuscriptAnsell et al. Page 16
+Table 1
+Demographics of Sample ( n = 103)
+Age
+ Mean (SD) 27.71 (7.98)
+ Median 25
+ Range 18–48
+Years of Educationa 15.25 (1.97)
+Gender (% Male) 70 (68)
+Race
+ African American, n (%) 20 (19)
+ Caucasian, n (%) 72 (70)
+ Hispanic, n (%) 5 (5)
+ Asian, n (%) 3 (3)
+ Other, n (%) 3 (3)
+Cumulative Adverse Life Eventsa 8.49 (5.10)
+Major Life Eventsa 1.57 (1.42)
+Life Traumasa 4.61 (3.42)
+Recent Life Eventsa 2.30 (2.14)
+Chronic Stressorsa 7.79 (4.39)
+SD, standard deviation.
+aMean values (standard deviations); all other measures reported in frequency (percents).
+Biol Psychiatry . Author manuscript; available in PMC 2013 July 01.
+

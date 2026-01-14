@@ -1,0 +1,773 @@
+RESEARCH Open Access
+Elevated cortisol during play is associated with
+age and social engagement in children with
+autism
+Blythe A Corbett1,2*, Clayton W Schupp3, David Simon4,5, Niles Ryan4,5, Sally Mendoza6
+Abstract
+Background: The hallmark characteristic of autism is impaired reciprocal social interaction. While children find
+social interaction stress-reducing, many children with autism may find social interaction stress-inducing. The current
+study was designed to examine stress responsivity as measured by cortisol by comparing children with autism to
+neurotypical peers during an ecologically valid 20-minute playground paradigm.
+Methods: The experiment involved sets of three children: a child with autism, a neurotypical child, and a
+confederate. Participants included 45 prepubescent males between 8 and 12 years of age (21 with autism and 24
+neurotypical children).
+Results: Children with autism showed fewer initiations ( c²(1) = 4.03, P= 0.044), rejected initiations from others
+more ( c²(1) = 7.10, P= 0.008) and spent less time interacting during motor (F(1,43) = 16.7, P= 0.0002) and
+cooperative (F(1,43) = 14.78, P= 0.0004) play. Repeated measures analysis of the cortisol values revealed a
+significant model ( c²(4) = 22.76, P< 0.0005) that included time of measurement, diagnosis and age as main effects
+and an interaction between diagnosis and age. Thus, as age increased among children with autism, they
+experienced enhanced cortisol levels while age did not modify expected cortisol levels for typical children. Stress
+responsivity was associated with more peripheral equipment play for motor ( c²(3) = 12.3, P= 0.006) and
+cooperative ( c²(3) = 8.24, P= 0.04) play as well as reduced nonverbal social skills during motor ( c²(1) = 5.52,
+P= 0.018) and cooperative play ( c²(1) = 4.53, P= 0.033).
+Conclusions: Overall, children with autism engaged in fewer social overtures and spent less time interacting than
+typically developing peers during play. The peer interaction paradigm resulted in significantly higher levels of cortisol
+in many children with autism. Distinct patterns emerged within the autism group based on developmental (older),
+biological (cortisol responder) and behavioral patterns (peripheral group interaction). The enhanced cortisol response
+was observed in children who voluntarily engaged in interaction; thus, it does not support the notion of a response
+to social threat. Rather, it appears to reflect attendant metabolic preparedness and enhanced arousal from engaging
+socially. The data suggest that many children with autism activate hypothalamic-pituitary-adrenal responses in
+relatively benign social situations, which appears to be a function of age and level of social engagement. The
+findings support the need to teach coping strategies in addition to fundamental social skills to youth with autism.
+Background
+Autism is characterized by impairment in verbal and
+nonverbal communication, reciprocal social interaction
+and a restricted repertoire of activities and interests [1].
+The symptoms fall on a continuum of severity referredto as autism spectrum disorder (ASD), in which
+impaired social functioning is the hallmark feature
+across the spectrum. Adequate social knowledge relies
+on the ability to interpret another person ’s behavior, to
+interact in both complex soc ial groups and close rela-
+tionships, to empathize and to predict how others will
+feel, think and act.
+Play is critical for the development of social, cognitive
+and motor skills [2,3]. Even though poor reciprocal* Correspondence: blythe.corbett@vanderbilt.edu
+1Department of Psychiatry, Vanderbilt University, 1601 23rd Avenue South,
+Nashville, TN 37212, USA
+Full list of author information is available at the end of the articleCorbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13
+© 2010 Corbett et al; licensee BioMed Central Ltd. This is an Open Access article distributed under the terms of the Creative Commons
+Attribution License (http://creativecommons.org/licenses/by/2.0), which permits unrestricted use, distribution, and reproduction in
+any medium, provided the original work is properly cited.
+
+social interaction is the hallm ark deficit in autism, sur-
+prisingly few observational studies of play exist [4-7]and they primarily utilize only questionnaires or con-trived laboratory conditions. The type of environmentand context can affect social interaction, with enclosedenvironments facilitating imitation and gross motor play
+in autism [8,9]. Playground observation can assist in
+screening for ASD [6] and may serve as an ecologicallyvalid approach to elucidate social and psychobiologicalprofiles in autism, including social stress.
+Stress and anxiety are technically different constructs,
+and both have been reported from the earliest concep-tualizations of autism [10] and alluded to in classifica-
+tion systems [11,12]. In this study, stress refers to the
+response to perceived threat to the physiological or psy-
+chological integrity of an organism, often leading to theincreased release of glucocorti coids (e.g., cortisol) [e.g.,
+13, 14]. Anxiety, on the other hand, pertains to a feelingof apprehension or worry that may be state- or trait-based (e.g., [15]). Many children with autism have signif-icant anxiety [16,17], and notable physiological stresshas been reported [18-20]. Furthermore, these con-
+structs can be closely linked and may co-occur.
+Limited research has examined how stress may be
+associated with aspects of social functioning in autism[21-23]. While many children find social interactionstress-reducing, children with autism often appear tofind social interaction stress-inducing. Increased stressand anxiety in autism may be the result of dysfunctionof the amygdala, a brain structure involved in the detec-
+tion of threats and mobilizing an appropriate behavioral
+response [24,25]. The amygdala is fundamentallyinvolved in social cognition [26] and is a key regulatorof the limbic hypothalamic pituitary adrenocortical(LHPA) axis and a mediator of processive stimuli [27].
+T h eL H P Aa x i si sh i g h l yr e g u l a t e d ,a n dt h es y s t e mi s
+dependent on the ability to maintain, respond and resetitself through a homeostatic process involving three pri-
+mary interrelated processes: the maintenance of a diur-
+nal rhythm, activation in re sponse to stress or threat
+and the restoration of basal activity via negative feed-back mechanisms. Once activated, a neuroendocrinecascade is initiated which results in the release of gluco-corticoids from the adrenal gland. In humans, cortisol isthe primary glucocorticoid, which, once released, resultsin a suite of metabolic changes and engages in a nega-
+tive feedback loop to return the system to basal levels.
+Thus, cortisol is a widely used biological marker of bothstress activation and restoration of homeostasis.Although the concentrations of cortisol in saliva arelower, it has been established that the correlationbetween plasma cortisol and salivary cortisol is high(0.71 to 0.96) and that the temporal changes of cortisolin saliva closely mimic those in blood in response topotentially stressful events [28,29]. Thus, salivary cortisol
+provides a useful, noninvasive biomarker for use withchildren.
+The rhythmicity and responsivity of the LHPA axis in
+autism have been investigated, revealing abnormalitiesin neuroendocrine function, including an exaggerated
+stress response to various environmental events [18-20].
+However, notable variability, exposure history and otherfactors may influence LHPA regulation and responsivityin autism [22,30,31]. Developmental research shows thatstress reactivity is dynamic and that responsivity mayvary based on context [32] as well as age and approachbehavior in children [33]. Moreover, social variables caninduce, enhance or diminish the stress response [34].
+Despite the growing literature, research has been scant
+in terms of the influence of social factors, especiallyunder more ecologically valid paradigms [22,35]. Autismis heterogeneous, and the social behavior that defines itis diverse [12]. It may be the case that differences insocial behavior may also reflect distinct underlying psy-chobiological profiles related to LHPA responsivity [31].
+The purpose of the investigation was to evaluate corti-
+sol responsiveness in a naturalistic playground social
+setting. A well-established, direct observational measureof natural social behavior with peers in autism has beenlacking. This led to the establishment of our peer inter-action paradigm, which was developed with colleagueson the basis of transactional behavioral measures ofsocial behavior in nonhuman primates [36-38], social
+initiation in autism [5] and clinical expertise in observa-
+tional techniques in autism [39,40]. This ecologically
+valid design permits the careful investigation of socialinteraction in a play-based paradigm. It also allows realtime assessment of social variables to be directly com-pared to stress reactivity.
+In contrast to many studies of physiological responsiv-
+ity which inherently aim to solicit a stress response [41],the paradigm was designed to emulate a “real life ”play-
+ground to determine whether such environments would
+be deemed physiologically stressful. The peer interactiondescribed below includes only three children andinvolves solicited but not fo rced interaction. There was
+no evaluative threat or peer rejection, both of whichhave been shown to activate the LHPA [41,42]. We rea-soned that if a participant exhibited social stress undersuch benign conditions, then responses may be even
+more notable on a typical school playground with many
+children, enhanced stimulation and challenging socialexchanges. On the basis of previous research showingenhanced stress responsivity in children with autism[18,22], we hypothesized that many children with autismwould show an increase in salivary cortisol following thepeer interaction compared to their average afternoonhome level, baseline (arrival/acclimation) level and the
+Corbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 2 of 12
+
+cortisol values of neurotypical children. Our previous
+work led us to predict that variability in cortisol respon-sivity would be evident [31]. Thus, we hypothesized thatsocial and biological phenotypes would be evident; spe-cifically, enhanced social interaction would result in anincrease in cortisol in the autism group, whereas more
+social interaction would be associated with reduced cor-
+tisol in the neurotypical group. Since it was a new para-digm, specific ap r i o r i hypotheses regarding the
+behavioral coding variables were not considered beyondthe total social interaction time.
+Materials and methods
+Informed written consent was obtained from parents,
+and verbal assent was obtained from all research partici-
+pants prior to inclusion in the study. The InstitutionalReview Board of the University of California, Davis,approved the study.
+Participants
+Participants included 45 pr epubescent male children
+matched on age between 8 and 12 years, 21 children with
+high functioning autism and 24 typically developing chil-
+dren (three with autism had unusable data). The inclu-sion criteria for the experimental group consisted of boysdiagnosed with autistic disorder (not Asperger syndromeor pervasive developmental disorder-not otherwise speci-fied) based on DSM-IV criteria [1] and corroborated bystandardized procedures (e.g., Autism Diagnostic Obser-vation Schedule-Generic (ADOS-G [43])).
+Children with autism were excluded if they demon-
+strated known co-occurring neurological disorders (e.g.,seizures, n= 1) or genetic alterations (e.g., fragile X syn-
+drome) or if they were unable to complete significantportions of the research protocol. The neurotypical par-ticipants had an absence of a neurodevelopmental disor-der, learning disability or the presence of current or pastpsychiatric disorders dete rmined by parent interview.
+The study also included age-matched confederates who
+underwent an assessment to rule out the presence of adisorder or disability. They were established in theMIND Institute subject tracking system and expressedinterest in engaging in research. The confederatesreceived the same compensation as the research partici-pants and were scheduled based on the age of the aut-ism/typical pair. Over the course of the study, three
+confederates were utilized and each received training
+from research personnel, ob served other confederates
+prior to their initiation and received feedback followingeach playground interaction.
+Diagnostic and classification measures
+The Autism Diagnostic Observation Schedule (ADOS
+[43]) is a semistructured interview designed to assessbehaviors indicative of autism. For inclusion, a score of
+≥10 on the social communication domain was required.
+The Wechsler Abbreviated Scale of Intelligence (WASI
+[44]) is a measure of cognitive ability that was used toobtain an estimate of intellectual functioning. Participa-tion required an IQ of ≥75.
+The Pubertal Development Scale (PDS [45]) is a par-
+ent report measure which allows an estimate of the par-ticipant ’s level of pubertal development, an important
+consideration in developmental studies involving hormo-nal assays. We enrolled participants who had not for-mally entered puberty defined as having a score of 3based on ratings of 1 (change not yet begun) in each ofthree categories: voice, pubic hair and facial hair.
+Dependent measures
+The Social Communication Questionnaire (SCQ [46]) is
+a screening tool for ASD. Scores of ≥15 are suggestive
+of ASD, while scores of ≥2 2a r es u g g e s t i v eo fa u t i s m .
+Neurotypical participants scoring ≥10 were excluded.
+The Social Responsiveness Scale (SRS [47]) is a parent
+questionnaire addressing several domains of behavior
+characteristic of autism.
+Cortisol sampling protocol
+Our diurnal collection proto col is detailed elsewhere
+[48], and the data are part of a separate investigation.Briefly, basal levels of salivary cortisol were collectedfrom the home four times per day (immediately uponwaking, 30 minutes postwaking, in the afternoon and
+evening prior to bed) for six diurnal cycles. Morning
+and evening samples were collected prior to food con-sumption or brushing teeth. The afternoon sampleswere collected between 1300 and 1500 hours at least 1hour after a meal, and the average afternoon sample wasused as a comparison to baseline for the peer interactionstressor. The protocol was discontinued if the partici-pant became ill (e.g., feve r) and resumed once health
+status improved. For the stress protocol, four salivary
+samples were obtained, including (S1) a baseline sampletaken after arrival (~15-minute acclimation) just prior tothe playground peer interaction within a relaxed, privatewaiting room, (S2) postplay, (S3) 20 minutes postplay,and (S4) 40 minutes postplay (see Figure 1).
+Our standardized collection procedures are detailed
+elsewhere [18,48]. In brief, the participant is given Tri-
+dent Original Sugarless chewing gum (Cadbury Adams
+USA LLC, Parsippany, NJ, USA), which serves as a salivastimulant, then the child de posits saliva into a tube by
+passive drool. Samples were stored in a -20°C freezer.
+Prior to assay, samples were thawed and centrifuged at6000 rpm for 10 minutes to separate aqueous compo-nent from mucins and other suspended particles. Assayswere performed using coated-tube radioimmunoassayCorbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 3 of 12
+
+kits (Siemens Medical Solu tions Diagnostics, Los
+Angeles, CA, USA). Assay procedures were modified to
+accommodate overall lower levels of cortisol in human
+saliva relative to plasma as follows: (1) standards were
+diluted to concentrations ranging from 2.76 to 345
+nmol/L, (2) sample volume was increased to 200 μl, and
+(3) incubation times were extended to 3 hours. Serial
+dilution of samples indicates that the modified assay dis-
+plays a linearity of 0.98 and a least detectable dose of
+1.3854 nmol/L. Intra- and interassay coefficients of var-
+iation were 3.91 and 5.26, respectively.
+Peer interaction playground paradigm
+We designed an ecologically valid interaction that
+blends prescribed sequence s of play while permitting
+considerable flexibility in the protocol to allow natural
+behavior to occur (see validity findings in Behavioral
+Coding below).
+The paradigm occurs on a fenced 60 ”×6 0 ”play-
+ground containing large equipment and open space for
+cooperative games [8,9]. In order not to impinge on the
+natural environment, resea rch personnel remained in
+the building. The entire transaction was recorded with
+four cameras and sound equipment. Two fixed video
+cameras are housed on the b uilding exterior in glass
+cases that rotate to observe different areas of the play-
+ground with one camera actively recording at any given
+time. Adjacent to the playground is a concealed video
+control room where the cameras are monitored and
+controlled. Two portable cameras were also used to
+record through windows (see Figure 2).
+Thus, different points of view of the scene were
+recorded and synchronized into a uniform format using
+Apple Final Cut Pro 5 video editing software (Apple
+Computer Inc., Cupertino , CA, USA), resulting in a
+three-screen image used to code the social transaction
+(see Noldus below).
+The interaction paradigm consists of a child with aut-
+ism, a typically developing child, and an age-matched
+confederate. The confederate provides behavioral struc-
+ture to the free play, permitting key interactive
+sequences that consistently occur within a natural social
+setting. Each child was provided with a fanny packcontaining a small battery-powered microphone that
+was clipped to the child ’s shirt. Each device was
+recorded onto a separate channel on a sound mixer.
+The confederate wore earphones that enabled direct
+communication with resear ch personnel who provided
+directive cues to ensure appropriate responding at key
+time points. The two participants were escorted to the
+playground simultaneously for a 20-minute play session
+that was divided into four 5-minute periods. The first
+period involves free play in which the three children
+engage in independent gross motor play. During the sec-
+ond period, the confederate solicits interaction on the
+play structures. The third period involves introduction
+of a box of toys (i.e., balls) that facilitate cooperative
+play. During the final period, the confederate solicits
+interaction surrounding one of the toys. Verbal cues at
+the 5-, 10- and 15-minute time periods were provided
+to the confederate via earphones to cue the confederate
+when to approach (second and fourth period) and when
+to engage in independent play (first and third period). If
+one or both of the child participants did not choose to
+play when asked, up to two additional bids were made
+spaced 1 minute apart. The confederate was fully trained
+and practiced on these basic procedures prior to the run
+of the study, and they were not told which child had
+autism or typical development.
+Behavioral coding
+Traditional behavioral coding is not adequate to capture
+the dynamic socioemotional and regulatory factors pro-
+posed to be problematic in autism. Thus, to more fully
+describe the interplay between the children, we utilized
+the social transaction method to characterize the inter-
+change as a whole, which has been used to carefully
+describe the complex social dynamics of nonhuman pri-
+mates [36,37]. Several behavioral variables were used,
+including equipment use (noncooperative use of the sur-
+rounding environment for entertainment purposes), ver-
+bal rejections (verbalizations specifically intended to
+terminate or prevent interaction) and avoidant move-
+ments (deliberate changes in position to either exit or
+avoid an interaction). The percentage of a child ’si n t e r -
+active participation was also examined.
+Figure 1 Time line for cortisol sampling before and following peer interaction . Figure T1 = Gross Motor Play, T2 = Solicited Motor Play, T3
+= Cooperative Play, T4 = Solicited Cooperative Play. S1 = Baseline (Preplay), S2 = Postplay, S3 = 20 minutes Postplay, S4 = 40 minutes Postplay.Corbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 4 of 12
+
+The reliability and validity data for the peer interac-
+tion measure is very good. Coding of interrater reliabil-
+ity using Cohen ’s/C20was K = 0.80, and test-retest
+reliability was 0.90 between two established raters. The
+peer interaction measure sho ws good face validity, and
+the construct validity is also strong. Specifically, as part
+of ongoing evaluation of the method, we compared the
+behavioral indices described below (e.g., percentage of
+time interacting, approach, avoid, gesture, equipment,
+proximity, reject) to a parent report questionnaire of
+social behavior in autism, the Social Responsiveness
+Scale (SRS) [47]. Using Pearson product correlations, we
+compared peer interaction v ariables during solicited
+motor (T2) and cooperative (T4) play. The correlation
+between the total SRS score and percentage of time
+interacting was r= -0.47 for T2 and r= -0.71 for T4,
+respectively, and the SRS su bdomains had values ran-
+ging from (-0.38, -0.46) for T2 and (-0.63, -0.70) for T4.
+The results correlate in a predictable direction, with the
+standardized SRS demonstrating an association pre-
+sumed related to aspects of social interaction. Further-
+more, the correlations are moderate, suggesting that our
+peer interaction is measuring a new construct and not
+simply redundant with the SRS (e.g., r≥0.80), which
+would make the new construct unnecessary [49].
+The Observer XT Version 8.0 (Noldus Information
+Technology, Leesburg, VA, USA) [50] was used for the
+collection and analysis of the interaction observational
+data. Analyses included (1) the standard ethological
+approach examining the frequency, duration and direc-
+tionality of target behaviors and (2) the transactional
+approach or who-does-what-to-whom format with a
+predefined list of behaviors [51]. Specifically, we utilized
+a modification of the transactional method developed in
+studies of nonhuman primate social behavior [38,52]. In
+this method, social interactions are organized in boutsbeginning with an overture by one individual, initiating
+a sequence of interactions between two or more partici-
+pants. Bouts of interaction can be analyzed for their
+complexity (e.g., the number of distinct moves), dura-
+tion, and for higher-order attributes, such as coopera-
+tion (interaction) and conflict (rejection).
+The descriptive unit of a transactional bout identifies
+an actor ’s attempt to alter its immediate state of associa-
+tion with a target subject by means of either an affilia-
+tive (cooperative) or antagonistic (compete) response.
+Within each transactional episode, the immediate
+responses of the subjects and the responses of the other
+children were coded. Actions that initiate a bout
+included a hierarchy of responses such as spatial, verbal,
+nonverbal gestures and objects, among others. Shifts in
+orientation and proximity assisted in determining the
+end of the bout. Each participant ’s data was analyzed
+separately while simultaneously viewing all three video
+scenes to capture the optimal transaction moment.
+Data analysis
+Independent two-sample t-tests were conducted to assess
+differences between the groups based on age and clinical
+variables. Previous results have shown IQ to differ signifi-
+cantly between groups; therefore, IQ was included in all
+behavior and cortisol models as a potential confounding
+variable if (1) it was found to independently predict the
+outcome variable and (2) the diagnosis coefficients chan-
+ged by 10% or more. The behavioral variables avoidance,
+rejection, equipment use and interactions for time periods
+T2 and T4 (when interaction by the confederate was
+initiated) were analyzed using Poisson regression, with
+diagnosis and age included as main effects and interaction
+terms. Poisson regression models allow direct comparison
+of average rates of initiation, social rejection, and interac-
+tion between children with autism and typical children.
+Figure 2 Peer interaction playground video . Three different points of view of the scene were recorded, synchronized into a uniform format
+and used to code the social transaction.Corbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 5 of 12
+
+The percentage of time spent interacting was treated as a
+continuous variable analyzed using standard linear regres-sion and included the same set of independent variablesand interactions used for th e other behavior variables.
+Models were reduced using a backward selection method,removing the interaction term followed by main effects.
+Salivary cortisol measurements are positive and
+skewed toward large values; thus, the log transformationwas performed to achieve a pproximate normality and
+was used in all cortisol analys es. Baseline preplay corti-
+sol measurements were compared to the average after-n o o nv a l u eu s i n gap a i r e d t-test. Given that values
+might differ by diagnosis, baselines were compared toafternoon levels within each group. The stress response
+consisting of the four cortisol measurements (baseline,
+postplay, 20 minutes postplay, 40 minutes postplay) wascharacterized using a repeated-measures linear mixed-effects model treating the obs ervations lon gitudinally.
+The model included time of measurement, age, SCQand SRS as continuous main effects, diagnosis as a cate-gorical main effect, and select two-way interactions. Abackward selection method was used to reduce the
+model by first removing insign ificant interactions fol-
+lowed by insignificant main effects. A Wald test wasused to test the validity of the final model selected. Arandom effect was included per child, and error termswere assumed to be independent, normally distributedand to have a common variance.
+The cortisol response was also dichotomized and used
+as an independent predictor of playground behavior.
+The maximum change in cortisol from arrival to either
+the 20-minute (S2) or 40-minute (S3) postbaseline mea-surements was calculated. We defined the 40% of parti-cipants with the highest cor tisol response to stress as
+the cortisol responder group and the 40% with the low-est response as the cortisol nonresponder group [53].
+An increase from baseline to the 20-minute period indi-cated a stress response to the beginning of the peer
+interaction, while an increase to the 40-minute period
+indicated a stress response to the end of the peer inter-action. The behavioral variables were then reanalyzedusing the methods described above with the additionalmain effect of responder status and select two-wayinteractions included.Results
+Analyses were conducted between 21 children with aut-ism and 24 neurotypical children. The means and stan-dard deviations of the demographic and dependent
+variables are displayed in Table 1.
+Playground behavior
+We were particularly interested in analyzing time peri-
+ods during solicited motor (T2) and cooperative (T4)play when interaction by the confederate was initiated.The behavioral data generated with Noldus ObserverXT [50], an observation and coding system (Noldus
+Information Technology, Leesburg, VA, USA (Table 2)),
+was analyzed using Poisson regression for count data,with diagnosis and age as main effects and interactionterm. Diagnosis was a significant predictor of proximityduring cooperative play ( c²(1) = 4.39, P=0 . 0 3 6 )s u c h
+that children with autism more frequently entered andthen left within close proximity of the other childrenwithout transitioning into an interaction. Analysis of
+initiations during cooperative play revealed diagnosis to
+be significant ( c²(1) = 4.03, P= 0.044), showing that
+typical children initiated more than children with aut-ism. Children with autism were also found to reject sig-nificantly more ( c²(1) = 7.10, P= 0.008) during solicited
+play and displayed greater independent use of equip-ment ( c²(1) = 16.80, P< 0.0005) during cooperative play
+than neurotypical children. IQ was found to be an inde-
+pendent predictor of many of the behavior variables,
+including proximity and both independent and groupequipment use; however, the diagnosis effect was notmodified to a large degree in these models, indicatingthat IQ was not a significant confounding variable.
+The percentage of total time interacting was treated as a
+continuous variable and analyzed using linear regression.Children with autism engaged in less time interacting dur-
+ing both motor (F(1,43) = 16.7, P= 0.0002) and coopera-
+tive play (F(1,43) = 14.78, P= 0.0004) (see Figure 3). These
+data lend support for our hypothesis showing less interac-tion during natural play for the children with autism.
+Cortisol responsivity
+Comparison of the baseline cortisol measurement to theaverage afternoon level found a significant difference for
+Table 1 Demographic and independent variables
+Autism Neurotypical
+Variable Mean SD Range Mean SD Range t-score df P value
+Age 10.0 1.1 8.0-12.0 9.9 1.5 8.1-12.5 0.18 43 0.86
+IQ 89.7 14.7 75-125 121.0 12.4 99-142 -7.77 43 <0.0005
+SRS 104.4 32.3 58-164 22.3 16.7 4-61 10.78 41 <0.0005
+SCQ 25.0 6.2 12-34 2.6 2.4 0-9 16.18 40 <0.0005
+SD, standard deviation; SRS, Social Responsiveness Scale; SCQ, Social Communication Questionnaire; df, degrees of freedom.Corbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 6 of 12
+
+the typical children (t(22) = 2.23, P=0 . 0 4 ) ,i n d i c a t i n ga
+higher than expected cortisol level at the beginning of
+the peer interaction. However, two of the younger typi-
+cal children had extreme outlying values (>2 standard
+deviations from the mean), and when removed, the dif-
+ferences were no longer statistically significant (t(20) =
+1.54, P= 0.14). Compared with their own home values,
+the children with autism did not have significantly dif-
+ferent cortisol levels (t(19) = 0.54, P= 0.60).
+The repeated-measures analysis of the cortisol values
+revealed a significant model ( c²(4) = 22.76, P< 0.0005)
+that included time, diagnosis and age as main effects
+and a diagnosis × age interaction (see Table 3). The SRS
+and SCQ main effects were not significant ( P> 0.05). In
+addition, the interaction terms between time and either
+age or diagnosis were not significant (all P>0 . 0 5 ) .
+Therefore, in the absence of interaction, the time main
+effect can be interpreted directly such that higher corti-
+sol levels occurred at baseline, with roughly a 5%
+decrease for every additional 20-minute time period.
+Since the values in the laboratory were similar to the
+afternoon values at home, we interpret this as thenormal circadian decline expected in the afternoon. The
+significant diagnosis × age interaction suggests that age
+is an important predictor of cortisol for children with
+autism such that older children experience higher corti-
+sol levels across time. Although age was treated as a
+continuous variable, Figur e 4 displays age based on a
+median split (younger vs. older), which was 9.8 years for
+both groups. Cortisol levels for typical children, how-
+ever, were not affected at a statistically significant level
+by age. IQ was not found to b e a significant indepen-
+dent predictor of cortisol l evels and therefore was not
+included in the models as a confounding variable.
+The playground behavior variables were analyzed
+again with responder status included with the other
+independent variables. Analysis of avoidance during
+cooperative play yielded a model with both age and
+r e s p o n d e rs t a t u sa sm a i ne f f e c t s( c²(2) = 9.25, P=
+0.009), showing that cortiso l responders avoided at a
+higher average rate than nonresponders and younger
+children had a greater avoidance rate than older chil-
+dren. Responder status was also a significant predictor
+of gesturing during both motor ( c²(1) = 5.52, P=0 . 0 1 8 )
+Figure 3 Boxplots of diagnosis and social interaction . Solicited motor play and cooperative play.Table 2 Peer interaction behavioral means and standard deviations by diagnosis
+Solicited motor play (T2) Cooperative play (T4)
+Autism Neurotypical Autism Neurotypical
+Variable Mean (SD) Mean (SD) Mean (SD) Mean (SD)
+Approach 0.86 (1.24) 0.63 (0.97) 0.57 (0.75) 0.63 (0.92)
+Gesture 0.48 (0.68) 0.50 (1.18) 0.29 (0.56) 0.75 (1.54)
+Equipment use 2.48 (2.46) 1.75 (2.13) 1.89 (2.13) 0.46 (0.66)
+Equipment use - gGroup 2.19 (2.52) 3.63 (3.32) 2.19 (2.14) 2.63 (1.58)
+Proximity 0.38 (0.74) 0.63 (1.31) 0.43 (0.81) 0.08 (0.28)
+Initiate 0.65 (0.93) 0.36 (0.73) 0.12 (0.33) 0.54 (0.86)
+Reject 0.82 (1.01) 0.18 (0.39) 0.88 (1.11) 0.41 (0.96)
+% time interacting 46 (31) 79 (24) 59 (39) 91 (13)
+SD, standard deviation.Corbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 7 of 12
+
+and cooperative play ( c²(1) = 4.53, P= 0.033) such that
+children exhibiting a heightened cortisol response ges-
+tured less often than those classified as nonresponders.
+More complex models that included responder status,
+age and their interaction w ere found that explained
+group equipment use for both solicited motor play
+(c²(3) = 12.3, P= 0.006) and cooperative play ( c²(3) =
+8.24, P= 0.04) where older children who were stress
+responders had the highest rates of equipment use with
+others.Discussion
+The investigation was conducted to evaluate the beha-
+vioral and physiological response to social interaction
+on a playground with novel peers. As predicted, the
+children with autism spent less time interacting during
+free play and solicited cooperative play (see Figure 4),
+which is similar to previous findings of social interac-
+tions during unstructured s ocial activities in autism
+[5]. The children with autis m exhibited more rejection
+during solicited play and tended to play more inde-
+pendently with the equipment than their typically
+developing peers. Importantly, however, the children
+with autism did engage in interaction to varying
+degrees and tended to respond to rather than initiate
+the play.
+In regard to cortisol responsivity related to playground
+exposure, a statistical inte raction was observed on the
+basis of diagnosis and age. Specifically, within the autism
+group, children experienced higher cortisol levels with
+increasing age, while among typical children cortisol
+levels were not modified by age. These findings suggest
+that some children with autism evidenced an enhanced
+Figure 4 Group patterns of average cortisol response to the peer interaction . Figure age subgroups (Older, Younger) were separated by
+median age within each diagnostic group. S1 = Baseline (Preplay), S2 = Postplay, S3 = 20 minutes postplay, S4 = 40 minutes postplay. nmol/L =
+nanomoles per liter.Table 3 Model coefficients for the cortisol stress
+response
+Variable Estimate (SE)
+Intercept 1.457 (0.490)
+Time -0.004 (0.001)
+Diagnosis -2.371 (0.933)
+Age -0.001 (0.049)
+Diagnosis* age 0.238 (0.095)
+Number of observations per participant 4
+Standard deviation of random effect 0.277
+SE, standard error of estimate.Corbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 8 of 12
+
+HPA response during socia l play leading to elevated
+cortisol.
+At first glance, it may be interpreted that socialization,
+at least with peers, is stressful and may be deemedthreatening in some way. Interestingly, however, manyof the children with autism did not completely remove
+themselves from the interaction as one might expect
+from a threatening situation. Older children with autismtended to play more in a group on the equipment dur-ing both motor and cooperative play and avoided less,indicating that they were voluntarily engaged in theinteraction. The younger children tended to avoid inter-acting at a higher rate than the older children with aut-ism. Thus, taken together, it may be that children with
+autism responded to the playground situation with an
+approach/avoidance conflict; they wanted to play butfound it possibility threatening. We conjecture thatyounger children with autis m responded to the conflict
+with greater avoidance, while older children with autismyielded to the attraction in spite of concurrent LHPAactivation. Meanwhile, the neurotypical children did notperceive the playground interaction as threatening,
+which is reflected in their biobehavioral profile.
+Developmental changes in the HPA axis have been
+s h o w ni nn o n h u m a np r i m a t e s[ 5 4 ] ,c h i l d r e n[ 5 5 ]a n dadolescents [56]. It is important to note that in neuroty-pical children, blunted cortisol responsivity to socialstress has been reported in children 11 and 13 years ofage compared to younger 9-year-old children [56],which is a sharp contrast to older children with autism.
+The inverse relationship in typically developing children
+suggests that the differenc e is not simply attributed to
+developmental factors. Since older children with autismshow enhanced cortisol with social engagement, thecomparison suggests that there is something uniqueabout this developmental stage and social stress in aut-i s m .I m p o r t a n t l y ,s i n c ew ee n r o l l e do n l yp r e p u b e r t a lchildren, the results do not appear to be associated with
+puberty.
+Interestingly, the parent report measures of social
+functioning (SRS and SCQ) were not predictive of corti-sol responsiveness or social interaction patterns on theplayground for either group. These measures are broad-based and less refined in being able to discern real-timesocial interaction which contributed to the need todevelop the peer interaction paradigm. Although parent
+report measures are good at distinguishing children with
+autism from neurotypical chil dren or identifying global
+problems, they are less able to identify discrete beha-viors that may map onto neuroendocrine profiles.
+It has long been shown that social variables can
+induce, enhance or diminish the stress response in pri-mates [34]. Increased cortisol may not always overlaponto fear-based constructs . It has been suggested thatcortisol levels in inhibited children may be associated
+with poor coping strategies rather than being related tothreat or fear [57]. In this way, elevations in cortisolcould be the result of a failure to have adaptiveresponses or coping strategie s to appropriately respond
+in the context. It has been suggested that awareness of
+such limitations may increase with age, contributing to
+enhanced social and evaluative anxiety in individualswith ASD [22,58]. Importantly, the stress response doesnot inhibit the older children from at least partiallyengaging in the interaction which is a stressful butpotentially rewarding situation.
+Therefore, the findings may be interpreted within the
+c o n t e x to fs o c i a lc o m p e t e n c ys u c ht h a ti ti sn o tm e r e l y
+a matter of the social situation being stressful; rather,
+the competency to engage in the interaction plays a rolein determining the magnitude of the LHPA response. Itis likely that the enhanced cortisol levels in the olderchildren with autism reflect preparation for social inter-action amid greater awareness of their own social limita-tions. In a study of young children, elevations in cortisolwere associated with age and greater approach behavior
+to the new peer situation [33]. Teaching coping strate-
+gies along with social skills may go far in improvingsocial competence while ameliorating the increasedreactivity to novel social situations.
+It was previously suggested that social anxiety in
+ASD resulted from repeated failure in social interac-tion [59], which could also be associated withenhanced responsivity of the LHPA axis. Recent
+reports suggest that as some youth with autism age,
+they gain greater insight into their social impairment,which leads to increased anxiety [22,58,59]. It may bereasoned that the older child characterized by moresocial interactions, increased self-awareness and higherbiological and psychological stress would likely benefitfrom treatment comprised of direct social skills train-ing, stress reduction techni ques and safe opportunities
+to interact and practice skills with others [60]. Conver-
+sely, younger children characterized by withdrawnbehavior, reduced motiva tion and lower stress may
+benefit from treatment appr oaches that utilize video or
+computer media and less reliance on face-to-face inter-action to acquire skills [40]. They may also be taughtto endure or cope with the stress in support of thepleasure that comes from social interaction. It is
+unclear if the limited social engagement is due to a
+lack of social interest or an attempt to limit exposureto situations that are potentially threatening. The clini-cal relevance of the findings may indicate an importantdevelopmental shift in which children with autismbegin to engage in less social avoidance that is alsocoupled with increased physiological arousal. Addi-tional studies that include longitudinal designs are Corbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 9 of 12
+
+needed to disentangle these age- or developmentally
+related factors.
+What remains unclear from these data is which neu-
+roendocrine pathways or brain structures may be impli-cated? A likely candidate is the amygdala, which is a keyregulator of the HPA axis and has been implicated in
+the neuropathology of autism in regard to both struc-
+ture and function (e.g., [25,61-65]), which has beenfurther associated with individual factors of age [64] andanxiety in individuals with autism [62,66]. It is alsoapparent that other neurohormones, including oxytocin,which have been associated with autism [67-71] andshown to moderate stress responsivity may play a rolein the phenotypic social stress profile in autism.
+The playground interaction described herein involves
+only three children and includes solicited but not forcedinteraction. The fact that the children with autismexhibited increased stress under such benign social con-ditions is concerning. Social stress may be even moresignificant under conventional school playground envir-onments with more children, increased stimulation andmore rejecting social exchanges.
+The study includes a new peer interaction paradigm
+designed to emulate a “real life ”playground environ-
+ment. Regarding potential limitations, it may be that thenovelty of the situation was the critical component asopposed to the social aspects per se. However, the asso-ciation between responder status and social engagementtends to refute this notion. A study regarding introduc-tion to a play setting without peers could disentangle
+this potential confound. The design also included a brief
+adaptation period of approximately 15 minutes prior togoing out on the playground. Some may argue that thisperiod was insufficient to allow participants to fullyadapt to the setting and recover from anticipatory eleva-tions [41]. The time period was a compromise, as anextended period of time might result in frustration.Importantly, the children adapted in a private, nonclini-
+cal room with couches and tables to elicit calmness
+before and after the peer interaction.
+Conclusions
+In summary, the data provide strong support for ourbehavioral coding method in being able to distinguishbetween children with autism and neurotypical children,as well as being able to identify individual differences
+within the autism group. In response to the natural peer
+interaction paradigm, distinct patterns emerged withinthe autism group on the basis of developmental, biologi-cal and behavioral response patterns. Taken together,these data suggest that many, but not all, children withautism mount measurable stress responses in relativelybenign social situations and that these appear to be afunction of age and level of social engagement.Consent
+Written informed consent was obtained from thepatients for publication of this manuscript and accom-panying images. A copy of the written consent is avail-
+able for review by the Editor-in-Chief of this journal.
+Acknowledgements
+The funding for this project was provided by National Institute of Health(NIH) award R01MH085717, NIH award K08NMHO72958, and a Children ’s
+Miracle Network Award to Blythe A. Corbett. We are thankful to the childrenand families that participate in our research. The authors are grateful to DanComins for his instrumental guidance in video capture and recording.
+Author details
+1Department of Psychiatry, Vanderbilt University, 1601 23rd Avenue South,
+Nashville, TN 37212, USA.2Vanderbilt Kennedy Center, PMB 40, 230 Appleton
+Place, Nashville, TN 37203, USA.3Graduate Group in Epidemiology, University
+of California, Davis, One Shields Avenue, Davis, CA, 95616, USA.4Department
+of Psychiatry and Behavioral Sciences, University of California, Davis, 2230
+Stockton Blvd., Sacramento, CA, 95817, USA.5The M.I.N.D. Institute, University
+of California, Davis, 2825 50th Street, Sacramento, CA, 95817, USA.
+6Department of Psychology, University of California, Davis, 134 Young Hall,
+Davis, CA, 95616, USA.
+Authors ’contributions
+BAC conceived of the study, developed the peer interaction paradigm with
+SPM, conducted and supervised the clinical evaluations, and drafted theinitial manuscript. CWS participated in the design of the study, conductedthe statistical analysis and prepared the results and statistical figures forpublication. DS participated in the development of the peer interactioncoding scheme, conducted and supervised the coding and coordinated thestudy. NR participated in study design, administered the protocols, collected
+salivary samples, and participated in manuscript preparation. SPM developed
+the peer interaction paradigm with BAC, supervised the cortisol assays,engaged in the interpretation of the results and contributed to themanuscript. All authors read and approved the final manuscript.
+Competing interests
+The authors declare that they have no competing interests.
+Received: 23 March 2010 Accepted: 27 September 2010
+Published: 27 September 2010
+References
+1. American Psychiatric Association: Diagnostic and statistical manual of mental
+disorders, Fourth Edition, Text Revision (DSM-IV-TR) Washington, DC: American
+Psychiatric Association 2000.
+2. Boucher J: Pretend play as improvisation: conversation in the preschool
+classroom. Br J Dev Psych 1999, 17:164-165.
+3. Pellegrini AD, Smith PK: Physical activity play: the nature and function of
+a neglected aspect of playing. Child Dev 1998, 69:577-598.
+4. Farmer-Dougan V, Kaszuba T: Reliability and validity of play-based
+observation: relationship between the PLAY Behavior Observation
+System and Standardized measures of cognitive social skills. Educ Psych
+1999, 19:429-440.
+5. Hauck M, Fein D, Waterhouse L, Feinstein C: Social initiations by autistic
+children to adults and other children. J Autism Dev Disord 1995,
+25:579-595.
+6. Ingram DH, Mayes SD, Troxell LB, Calhoun SL: Assessing children with
+autism, mental retardation, and typical development using the
+Playground Observation Checklist. Autism 2007, 11:311-319.
+7. Macintosh K, Dissanayake C: A comparative study of the spontaneous
+social interactions of children with high-functioning autism and childrenwith Asperger ’s disorder. Autism 2006, 10:199-220.
+8. Black M, Freeman BJ, Montgomery J: Systematic observation of play
+behavior in autistic children. J Autism Child Schizophr 1975, 5:363-371.Corbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 10 of 12
+
+9. Yuill N, Strieth S, Roake C, Aspden R, Todd B: Brief report: designing a
+playground for children with autistic spectrum disorders: effects onplayful peer interactions. J Autism Dev Disord 2007, 37:1192-1196.
+10. Kanner L: Autistic disturbances of affective contact. Nervous Child 1943,
+2:217-250.
+11. Rescorla L: Cluster analytic identification of autistic preschoolers. J Autism
+Dev Disord 1988, 18:475-492.
+12. Wing L, Gould J: Severe impairments of social interaction and associated
+abnormalities in children: epidemiology and classification. J Autism Dev
+Disord 1979, 9:11-29.
+13. McEwen BS: Stress, definition and concepts of. InEncyclopedia of Stress.
+Edited by: Fink GR. San Diego: Academic Press; 2000: 3:508-509.
+14. Levine S: Developmental determinants of sensitivity and resistance to
+stress. Psychoneuroendocrinology 2005, 30:939-946.
+15. Spielberger CD: The State-Trait Anxiety Inventory for Children Redwood City,
+CA: Consulting Psychologists Press 1971.
+16. Kim JA, Szatmari P, Bryson SE, Steiner DL, Wilson FJ: The prevalence of
+anxiety and mood problems among children with autism and Asperger
+Syndrome. Autism 2000, 4:117-132.
+17. Muris P, Steerneman P, Merckelbach H, Holdrinet I, Meesters C: Comorbid
+anxiety symptoms in children with pervasive developmental disorders. J
+Anxiety Disord 1998, 12:387-393.
+18. Corbett BA, Mendoza S, Abdullah M, Wegelin JA, Levine S: Cortisol
+circadian rhythms and response to stress in children with autism.
+Psychoneuroendocrinology 2006, 31:59-68.
+19. Maher KR, Harper JF, Macleay A, King MG: Peculiarities in the endocrine
+response to insulin stress in early infantile autism. J Nerv Ment Dis 1975,
+161:180-184.
+20. Richdale AL, Prior MR: Urinary cortisol circadian rhythm in a group of
+high-functioning children with autism. J Autism Dev Disord 1992,
+22:433-447.
+21. Jansen LM, Gispen-de Wied CC, van der Gaag RJ, van Engeland H:
+Differentiation between autism and multiple complex developmentaldisorder in response to psychosocial stress. Neuropsychopharmacology
+2003, 28:582-590.
+22. Lopata C, Volker MA, Putnam SK, Thomeer ML, Nida RE: Effect of social
+familiarity on salivary cortisol and self-reports of social anxiety and
+stress in children with high functioning autism spectrum disorders. J
+Autism Dev Disord 2008, 38:1866-1877.
+23. Naber FB, Swinkels SH, Buitelaar JK, Bakermans-Kranenburg MJ, van IMH,
+Dietz C, van Daalen E, van Engeland H: Attachment in toddlers with
+autism and other developmental disorders. J Autism Dev Disord 2007,
+37:1123-1138.
+24. Amaral DG, Corbett BA: The amygdala, autism and anxiety. Novartis Found
+Symp 2003, 251:177-187, discussion 187-197, 281-297.
+25. Baron-Cohen S, Ring HA, Bullmore ET, Wheelwright S, Ashwin C,
+Williams SC: The amygdala theory of autism. Neurosci Biobehav Rev 2000,
+24:355-364.
+26. Adolphs R: Social cognition and the human brain. Trends Cogn Neurosci
+1999, 3:469-479.
+27. Herman JP, Cullinan WE: Neurocircuitry of stress: central control of the
+hypothalamo-pituitary-adrenocortical axis. Trends Neurosci 1997, 20:78-84.
+28. Harris B, Watkins S, Cook N, Walker RF, Read GF, Riad-Fahmy D:
+Comparisons of plasma and salivary cortisol determinations for thediagnostic efficacy of the dexamethasone suppression test. Biol Psychiatry
+1990, 27:897-904.
+29. Kirschbaum C, Hellhammer DH: Salivary cortisol in psychobiological
+research: an overview. Neuropsychobiology 1989, 22:150-169.
+30. Corbett BA, Mendoza SP, Baym CL, Bunge SA, Levine S: Examining cortisol
+rhythmicity and responsivity to stress in children with Tourettesyndrome. Psychoneuroendocrinology 2008, 33:810-20.
+31. Corbett BA, Schupp CW, Levine S, Mendoza S: Comparing cortisol, stress
+and sensory sensitivity in children with autism. Autism Res 2009, 2:32-39.
+32. Gunnar MR, Tout K, de Haan M, Pierce S, Stansbury K: Temperament, social
+competence, and adrenocortical activity in preschoolers. Dev Psychobiol
+1997, 31:65-85.
+33. Stansbury K, Harris ML: Individual differences in stress reactions during a
+peer entry episode: effects of age, temperament, approach behavior,and self-perceived peer competence. J Exp Child Psychol 2000, 76:50-63.34. Levine S, Mody T: The long-term psychobiological consequences of
+intermittent postnatal separation in the squirrel monkey. Neurosci
+Biobehav Rev 2003, 27:83-89.
+35. Klimes-Dougan B, Hastings PD, Granger DA, Usher BA, Zahn-Waxler C:
+Adrenocortical activity in at-risk and normally developing adolescents:
+individual differences in salivary cortisol basal levels, diurnal variation,
+and responses to social challenges. Dev Psychopathol 2001, 13:695-719.
+36. Lyons D, Mason WA, Mendoza SP: Beyond the ethogram: Transactional
+analysis of behavior in primate social interchanges. Am J Primatol 1990,
+20:209.
+37. Lyons D, Mendoza S, Mason W: Sexual segregation in squirrel monkeys
+(Saimiri sciureus ): a transactional analysis of adult social dynamics.
+J
+Comp Psychol 1992, 106:323-330.
+38. Mason W, Long D, Mendoza S: Temperament and mother-infant conflict
+in macaques: a transactional analysis. InPrimate Social Conflict. Edited by:
+Mendoza WMS. Albany, NY: SUNY Press; 1993:205-227.
+39. Corbett BA: Video modeling: a window into the world of autism. Behav
+Analyst Today 2003, 4:367-377.
+40. Corbett BA, Abdullah M: Video modeling: why does it work for children
+with autism? J Early Intensive Behav Interv 2005, 2:2-8.
+41. Gunnar MR, Talge NM, Herrera A: Stressor paradigms in developmental
+studies: what does and does not work to produce mean increases insalivary cortisol. Psychoneuroendocrinology 2009, 34:953-967.
+42. Dickerson SS, Kemeny ME: Acute stressors and cortisol responses: a
+theoretical integration and synthesis of laboratory research. Psych Bull
+2004, 130:355-391.
+43. Lord C, Rutter M, DiLavore P, Risi S: Autism Diagnostic Observation Schedule-
+WPS Los Angeles, CA: Western Psychological Services 1999.
+44. Wechsler D: Wechsler Abbreviated Scale of Intelligence San Antonio, TX:
+Psychological Corporation 1999.
+45. Petersen AC, Crockett L, Richards M, Boxer A: A self-report measure of
+pubertal status: reliability, validity and initial norms. J Youth Adol 1988,
+17:117-131.
+46. Rutter M, Bailey A, Lord C: The Social Communication Questionnaire Los
+Angeles, CA: Western Psychological Services 2003.
+47. Constantino JN, Gruber CP: Social Responsiveness Scale Los Angeles, CA:
+Western Psychological Services 2005.
+48. Corbett BA, Mendoza S, Wegelin JA, Carmean V, Levine S: Variable cortisol
+circadian rhythms in children with autism and anticipatory stress. J Psych
+Neurosci 2008, 33:227-234.
+49. Kazdin AE: Research design in clinical psychology Boston: Allyn & Bacon, 4
+2002.
+50. Noldus: The Observer Wageningen, The Netherlands: Noldus Information
+Technology 2003.
+51. Emery NJ, Capitanio JP, Mason WA, Machado CJ, Mendoza SP, Amaral DG:
+The effects of bilateral lesions of the amygdala on dyadic socialinteractions in rhesus monkeys ( Macaca mulatta ).Behav Neurosci 2001,
+115:515-544.
+52. Mendoza SP, Mason W: Behavioral and endocrine consequences of
+heterosexual pair formation in squirrel monkeys. Physiol Behav 1989,
+46:597-603.
+53. Kunz-Ebrecht SR, Mohamed-Ali V, Feldman PJ, Kirschbaum C, Steptoe A:
+Cortisol responses to mild psychological stress are inversely associatedwith proinflammatory cytokines. Brain Behav Immun 2003, 17:373-383.
+54. Capitanio JP, Mendoza SP, Mason WA, Maninger N:
+Rearing environment
+and hypothalamic-pituitary-adrenal regulation in young rhesus monkeys
+(Macaca mulatta ).Dev Psychobiol 2005, 46:318-330.
+55. Watamura SE, Donzella B, Kertes DA, Gunnar MR: Developmental changes
+in baseline cortisol activity in early childhood: relations with nappingand effortful control. Dev Psychobiol 2004, 45:125-133.
+56. Gunnar MR, Wewerka S, Frenn K, Long JD, Griggs C: Developmental
+changes in hypothalamus-pituitary-adrenal activity over the transition toadolescence: normative changes and associations with puberty. Dev
+Psychopathol 2009, 21:69-85.
+57. Gunnar MR: Psychoendocrine studies of temperament and stress in early
+childhood: expanding current models. InTemperament: Individual
+Differences at the Interface of Biology and Behavior. Edited by: JE Bates TDW.
+Washington, DC: American Psychological Association; 1994:175-198.
+58. Kuusikko S, Pollock-Wurman R, Jussila K, Carter AS, Mattila ML, Ebeling H,
+Pauls DL, Moilanen I: Social anxiety in high-functioning children andCorbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 11 of 12
+
+adolescents with Autism and Asperger syndrome. J Autism Dev Disord
+2008, 38:1697-1709.
+59. Bellini S: The development of social anxiety in adolescents with autism
+spectrum disorders. Focus Autism Other Dev Dis 2006, 21:138-145.
+60. Bauminger N: The facilitation of social-emotional understanding and
+social interaction in high-functioning children with autism: intervention
+outcomes. J Autism Dev Disord 2002, 32:283-298.
+61. Ashwin C, Baron-Cohen S, Wheelwright S, O ’Riordan M, Bullmore ET:
+Differential activation of the amygdala and the ‘social brain ’during
+fearful face-processing in Asperger Syndrome. Neuropsychologia 2007,
+45:2-14.
+62. Corbett BA, Carmean V, Ravizza S, Wendelken C, Henry ML, Carter C,
+Rivera SM: A functional and structural study of emotion and face
+processing in children with autism. Psychiatry Res 2009, 173:196-205.
+63. Critchley HD, Daly EM, Bullmore ET, Williams SC, Van Amelsvoort T,
+Robertson DM, Rowe A, Phillips M, McAlonan G, Howlin P, Murphy DG: The
+functional neuroanatomy of social behaviour: changes in cerebral blood
+flow when people with autistic disorder process facial expressions. Brain
+2000, 123:2203-2212.
+64. Schumann CM, Hamstra J, Goodlin-Jones BL, Lotspeich LJ, Kwon H,
+Buonocore MH, Lammers CR, Reiss AL, Amaral DG: The amygdala is
+enlarged in children but not adolescents with autism; the hippocampus
+is enlarged at all ages. J Neurosci 2004, 24:6392-6401.
+65. Wang AT, Dapretto M, Hariri AR, Sigman M, Bookheimer SY: Neural
+correlates of facial affect processing in children and adolescents with
+autism spectrum disorder. J Am Acad Child Adolesc Psychiatry 2004,
+43:481-490.
+66. Juranek J, Filipek PA, Berenji GR, Modahl C, Osann K, Spence MA:
+Association between amygdala volume and anxiety level: magnetic
+resonance imaging (MRI) study in autistic children. J Child Neurol 2006,
+21:1051-1058.
+67. Carter CS: Sex differences in oxytocin and vasopressin: implications for
+autism spectrum disorders? Behav Brain Res 2007, 176:170-186.
+68. Carter CS, Grippo AJ, Pournajafi-Nazarloo H, Ruscio MG, Porges SW:
+Oxytocin, vasopressin and sociality. Prog Brain Res 2008, 170:331-336.
+69. Green L, Fein D, Modahl C, Feinstein C, Waterhouse L, Morris M: Oxytocin
+and autistic disorder: alterations in peptide forms. Biol Psychiatry 2001,
+50:609-613.
+70. Jacob S, Brune CW, Carter CS, Leventhal BL, Lord C, Cook EH Jr: Association
+of the oxytocin receptor gene (OXTR) in Caucasian children and
+adolescents with autism. Neurosci Lett 2007, 417:6-9.
+71. Modahl C, Green L, Fein D, Morris M, Waterhouse L, Feinstein C, Levin H:
+Plasma oxytocin levels in autistic children. Biol Psychiatry 1998,
+43:270-277.
+doi:10.1186/2040-2392-1-13
+Cite this article as: Corbett et al.:Elevated cortisol during play is
+associated with age and social engagement in children with autism.
+Molecular Autism 2010 1:13.
+Submit your next manuscript to BioMed Central
+and take full advantage of: 
+• Convenient online submission
+• Thorough peer review
+• No space constraints or color ﬁgure charges
+• Immediate publication on acceptance
+• Inclusion in PubMed, CAS, Scopus and Google Scholar
+• Research which is freely available for redistribution
+Submit your manuscript at 
+www.biomedcentral.com/submitCorbett et al .Molecular Autism 2010, 1:13
+http://www.molecularautism.com/content/1/1/13Page 12 of 12
+
