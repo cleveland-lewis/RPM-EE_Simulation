@@ -18,22 +18,39 @@ python src/main.py
 python test_clinical_presets.py
 ```
 
-## Clinical Presets
+## Clinical Presets (v1.1 - Preliminary Validation)
 
-Empirically-grounded models for 4 populations (based on 25 peer-reviewed studies):
+**Status:** Research models based on 24 peer-reviewed studies
+
+Clinical population models for comparative simulation:
 - **Neurotypical (NT)** - Baseline
 - **ASD** - Sensory reactivity, attentional inflexibility  
 - **ADHD** - High variability, poor sustained attention
 - **MDD** - Psychomotor slowing, anhedonia
+
+**Parameter Confidence:**
+- HIGH (15 params): Meta-analytic support (e.g., ADHD RT variability, MDD stress)
+- MODERATE (32 params): Single studies or indirect evidence
+- LOW (25 params): Theoretical estimates pending validation
+
+**Appropriate Use:**
+✅ Exploratory research, hypothesis generation, educational demos  
+❌ Clinical diagnosis, treatment decisions, individual predictions
 
 ```python
 from src.simulation import RPMEESimulation
 
 sim = RPMEESimulation(preset='adhd_typical')
 sim.run(episodes=100)
+
+# Check parameter confidence
+from src.presets import get_preset_summary
+summary = get_preset_summary('adhd_typical')
+print(f"WM capacity: {summary['wm_capacity']}")  # {'value': 3.0, 'confidence': 'HIGH'}
 ```
 
-See `docs/clinical_presets_v1.1.md` for details.
+See `docs/clinical_presets_v1.1.md` for complete documentation and
+`literature_validation_analysis.md` for evidence review.
 
 ## Pre-commit Hooks
 

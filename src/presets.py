@@ -1,13 +1,47 @@
 """
 Clinical Presets for RPM-EE v1.1
 
-This module defines empirically-grounded clinical population presets based
-on peer-reviewed literature from cognitive psychology and clinical neuroscience.
+VALIDATION STATUS: PRELIMINARY
 
-All parameters are based on clinical observables:
-- Response time (RT) metrics
+This module defines clinical population presets based on peer-reviewed literature
+from cognitive psychology and clinical neuroscience. Parameters are derived from
+24 empirical studies, with varying levels of evidence quality.
+
+PARAMETER CONFIDENCE LEVELS:
+- HIGH (15 params): Meta-analytic support or multiple direct studies
+- MODERATE (32 params): Single studies or indirect evidence
+- LOW (25 params): Theoretical estimates pending validation
+
+Use get_parameter_confidence() to check evidence quality for specific parameters.
+
+IMPORTANT LIMITATIONS:
+1. Scale mappings (e.g., cortisol → 0-1 stress) are approximate
+2. Some parameters (exploration, prediction error) lack direct empirical measures
+3. Individual differences within populations not captured
+4. No empirical validation against independent datasets yet
+5. Parameters represent group means, not individual-level predictions
+
+APPROPRIATE USE:
+✅ Exploratory modeling and hypothesis generation
+✅ Comparative simulations (relative differences between groups)
+✅ Educational demonstrations of clinical profiles
+✅ Preliminary research and proof-of-concept studies
+
+NOT APPROPRIATE FOR:
+❌ Clinical diagnosis or assessment
+❌ Treatment decisions or planning
+❌ Individual-level predictions
+❌ High-stakes decisions without validation
+
+NOT FOR CLINICAL USE - Research and educational purposes only.
+
+See docs/clinical_presets_v1.1.md for complete evidence review and
+literature_validation_analysis.md for detailed parameter justification.
+
+All parameters are based on clinical observables only:
+- Response time (RT) metrics and variability
 - Accuracy/error rates
-- Working memory capacity
+- Working memory capacity and decay
 - Attention/executive function measures
 - Stress reactivity and regulation
 

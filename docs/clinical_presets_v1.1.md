@@ -1,8 +1,67 @@
-# Clinical Presets Documentation
+# Clinical Presets Documentation (v1.1 - Preliminary Validation)
+
+## Validation Status
+
+**Current Status:** PRELIMINARY - Research estimates based on clinical literature
+
+RPM-EE v1.1 includes clinical presets for simulating cognitive and behavioral patterns characteristic of different clinical populations. All parameters are derived from 24 peer-reviewed studies, with **varying levels of evidence quality**.
+
+### Parameter Confidence Levels
+
+**HIGH CONFIDENCE** (15 parameters - meta-analytic support):
+- ADHD rt_variability: Kofler et al. (2013) - meta-analysis of 319 studies
+- MDD stress_baseline: Burke et al. (2005) - meta-analysis of 361 studies
+- ADHD wm_capacity: Kasper et al. (2012) - meta-analysis
+- ADHD attention_stability: Huang-Pollock et al. (2012) - direct measurement
+- MDD positive_affect: Treadway & Zald (2011) - comprehensive anhedonia review
+- Others: See PARAMETER_CONFIDENCE in src/presets.py
+
+**MODERATE CONFIDENCE** (32 parameters - single studies or indirect):
+- Most RT, accuracy, and attention parameters
+- Several stress/WM parameters from individual studies
+
+**LOW CONFIDENCE** (25 parameters - theoretical estimates):
+- ALL exploration_rate values - no direct measurement
+- ALL prediction_error_gain values - theoretical inference
+- Most vigilance_decrement rates - slopes not quantified
+- Most stress_recovery rates - no time-course data
+- Several affect parameters - indirect mappings
+
+### Known Limitations
+
+⚠️ **Scale Mapping:** Many parameters use 0-1 scales not directly measured in literature. Conversions (e.g., cortisol → stress_baseline) are approximate.
+
+⚠️ **Missing Data:** Some parameters lack direct empirical studies and are theoretical estimates based on related constructs.
+
+⚠️ **Individual Differences:** Presets represent group means. Real populations show high within-group variability.
+
+⚠️ **Context Effects:** Parameter values from specific tasks may not generalize to all simulation contexts.
+
+⚠️ **No Empirical Validation:** Simulation outputs have not yet been validated against independent datasets.
+
+### Appropriate Use
+
+✅ **GOOD FOR:**
+- Exploratory modeling of clinical populations
+- Hypothesis generation for empirical studies
+- Comparative simulations (relative differences between groups)
+- Educational demonstrations of clinical profiles
+- Preliminary research and proof-of-concept
+
+❌ **NOT APPROPRIATE FOR:**
+- Clinical diagnosis or screening
+- Treatment decisions or planning
+- Individual-level predictions
+- Precise quantitative predictions without validation
+- High-stakes decisions
+
+**NOT FOR CLINICAL USE - Research and educational purposes only.**
+
+---
 
 ## Overview
 
-RPM-EE v1.1 includes empirically-grounded clinical presets for simulating cognitive and behavioral patterns characteristic of different clinical populations. All parameters are based on **clinical observables only** - behavioral measures from peer-reviewed literature.
+All parameters are based on **clinical observables only** - behavioral measures from peer-reviewed literature.
 
 ## Available Presets
 
@@ -12,7 +71,7 @@ RPM-EE v1.1 includes empirically-grounded clinical presets for simulating cognit
 Baseline profile representing typical cognitive function:
 - **Response time:** ~500ms (simple tasks)
 - **Accuracy:** ~90%
-- **Working memory:** 7±2 items
+- **Working memory:** 4±1 items (Cowan, 2001)
 - **Stress response:** Moderate reactivity, adaptive recovery
 - **Attention:** Stable, flexible, goal-directed
 
