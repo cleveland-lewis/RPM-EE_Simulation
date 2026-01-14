@@ -8,8 +8,8 @@
 ## Summary
 
 - **Total Presets Validated:** 4
-- **Presets Passing:** 2 ✅
-- **Presets Needing Review:** 2 ⚠️
+- **Presets Passing:** 4 ✅
+- **Presets Needing Review:** 0 ⚠️
 
 ---
 
@@ -26,15 +26,15 @@
 
 ---
 
-## Asd Typical ⚠️
+## Asd Typical ✅
 
-**Overall Status:** NEEDS_REVIEW
-**Pass Rate:** 66.7% (2/3)
+**Overall Status:** PASS
+**Pass Rate:** 100.0% (3/3)
 
 | Parameter | Expectation | Value | Status | Rationale |
 |-----------|-------------|-------|--------|-----------|
 | stress_reactivity | elevated | 0.600 | ✅ | Corbett et al. (2009): ASD shows 2x cortisol response to soc... |
-| attention_stability | inflexible_but_sustained | 0.800 | ❌ | ASD shows hyperfocus, difficulty disengaging (see v1.1 doc)... |
+| attention_stability | inflexible_but_sustained | 0.870 | ✅ | ASD shows hyperfocus, difficulty disengaging (see v1.1 doc)... |
 | switch_cost | high | 0.250 | ✅ | Set-shifting deficits in ASD (Hill 2004)... |
 
 ---
@@ -53,17 +53,17 @@
 
 ---
 
-## Mdd Typical ⚠️
+## Mdd Typical ✅
 
-**Overall Status:** NEEDS_REVIEW
-**Pass Rate:** 75.0% (3/4)
+**Overall Status:** PASS
+**Pass Rate:** 100.0% (4/4)
 
 | Parameter | Expectation | Value | Status | Rationale |
 |-----------|-------------|-------|--------|-----------|
 | base_rt | slowed | 600.000 | ✅ | Tsourtos et al. (2002): 15-20% psychomotor slowing... |
 | positive_affect | very_low | 0.250 | ✅ | Treadway & Zald (2011): Anhedonia core symptom... |
 | stress_baseline | elevated | 0.550 | ✅ | Burke et al. (2005) meta-analysis: Chronic HPA dysregulation... |
-| reward_sensitivity | blunted | 0.350 | ❌ | Treadway & Zald (2011): Reduced reward responsiveness in dep... |
+| reward_sensitivity | blunted | 0.150 | ✅ | Treadway & Zald (2011): Reduced reward responsiveness in dep... |
 
 ---
 
@@ -97,11 +97,3 @@
 ---
 
 ## Recommendations
-
-### asd_typical
-- **attention_stability**: Expected inflexible_but_sustained, got 0.8
-  - Action: Review literature and adjust if needed
-
-### mdd_typical
-- **reward_sensitivity**: Expected blunted, got 0.35
-  - Action: Review literature and adjust if needed

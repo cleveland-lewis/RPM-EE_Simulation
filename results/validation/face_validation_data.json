@@ -1,7 +1,7 @@
 {
   "total_presets": 4,
-  "presets_passing": 2,
-  "presets_needing_review": 2,
+  "presets_passing": 4,
+  "presets_needing_review": 0,
   "preset_results": {
     "neurotypical": {
       "preset": "neurotypical",
@@ -40,8 +40,8 @@
     "asd_typical": {
       "preset": "asd_typical",
       "total_patterns": 3,
-      "patterns_passed": 2,
-      "patterns_failed": 1,
+      "patterns_passed": 3,
+      "patterns_failed": 0,
       "details": [
         {
           "parameter": "stress_reactivity",
@@ -53,11 +53,11 @@
         },
         {
           "parameter": "attention_stability",
-          "status": "FAIL",
+          "status": "PASS",
           "expectation": "inflexible_but_sustained",
           "rationale": "ASD shows hyperfocus, difficulty disengaging (see v1.1 doc)",
-          "value": 0.8,
-          "passed": false
+          "value": 0.87,
+          "passed": true
         },
         {
           "parameter": "switch_cost",
@@ -68,8 +68,8 @@
           "passed": true
         }
       ],
-      "pass_rate": 0.6666666666666666,
-      "overall_status": "NEEDS_REVIEW"
+      "pass_rate": 1.0,
+      "overall_status": "PASS"
     },
     "adhd_typical": {
       "preset": "adhd_typical",
@@ -116,8 +116,8 @@
     "mdd_typical": {
       "preset": "mdd_typical",
       "total_patterns": 4,
-      "patterns_passed": 3,
-      "patterns_failed": 1,
+      "patterns_passed": 4,
+      "patterns_failed": 0,
       "details": [
         {
           "parameter": "base_rt",
@@ -145,15 +145,15 @@
         },
         {
           "parameter": "reward_sensitivity",
-          "status": "FAIL",
+          "status": "PASS",
           "expectation": "blunted",
           "rationale": "Treadway & Zald (2011): Reduced reward responsiveness in depression",
-          "value": 0.35,
-          "passed": false
+          "value": 0.15,
+          "passed": true
         }
       ],
-      "pass_rate": 0.75,
-      "overall_status": "NEEDS_REVIEW"
+      "pass_rate": 1.0,
+      "overall_status": "PASS"
     }
   }
 }

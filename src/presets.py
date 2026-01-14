@@ -154,7 +154,7 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         'wm_decay_rate': 0.015,    # Faster decay under manipulation
         
         # Attention: reduced flexibility
-        'attention_stability': 0.80,    # Good sustained attention
+        'attention_stability': 0.87,    # Hyperfocus, inflexible but sustained
         'switch_cost': 0.25,            # Higher switching cost
         'vigilance_decrement': 0.008,   # Better sustained attention
         
@@ -240,7 +240,7 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         # Emotional: anhedonia (blunted positive affect)
         'positive_affect': 0.25,        # Severely reduced (anhedonia)
         'negative_affect': 0.55,        # Elevated negative affect
-        'reward_sensitivity': 0.35,     # Severely reduced
+        'reward_sensitivity': 0.15,     # Severely blunted (Treadway & Zald 2011)
         
         # Prediction: rumination, reduced exploration
         'prediction_error_gain': 0.70,  # Blunted learning
