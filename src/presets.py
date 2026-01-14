@@ -30,7 +30,7 @@ __all__ = [
 # NEUROTYPICAL (NT):
 #   • RT: 400-600ms (simple tasks), 600-900ms (complex tasks) [Ratcliff & McKoon, 2008]
 #   • Accuracy: 85-95% typical [Sanders, 1998]
-#   • Working memory: 7±2 items [Miller, 1956; Cowan, 2001]
+#   • Working memory: 4±1 items [Cowan, 2001 - modern consensus]
 #   • Stress: Moderate reactivity, adaptive recovery [McEwen, 1998]
 #   • Attentional control: Flexible, goal-directed [Posner & Petersen, 1990]
 #
@@ -45,7 +45,7 @@ __all__ = [
 # ADHD (ATTENTION-DEFICIT/HYPERACTIVITY DISORDER):
 #   • RT variability: 35-50% higher (IIV) [Klein et al., 2006; Kofler et al., 2013]
 #   • Omission errors: 2-3x higher [Kofler et al., 2013]
-#   • Working memory: Reduced capacity (~4-5 items) [Kasper et al., 2012]
+#   • Working memory: Reduced by ~1 item relative to NT [Kasper et al., 2012]
 #   • Sustained attention: Vigilance decrements over time [Huang-Pollock et al., 2012]
 #   • Stress: Impaired regulation, faster reactivity [Lackschewitz et al., 2008]
 #   • Temporal processing: Delay aversion [Sonuga-Barke, 2005]
@@ -53,7 +53,7 @@ __all__ = [
 # MAJOR DEPRESSIVE DISORDER (MDD):
 #   • RT: 15-20% slower (psychomotor slowing) [Tsourtos et al., 2002]
 #   • Accuracy: 5-10% reduction [Porter et al., 2003]
-#   • Working memory: Impaired, especially under load [Christopher & MacDonald, 2005]
+#   • Working memory: Reduced by ~0.5 items relative to NT [Christopher & MacDonald, 2005]
 #   • Affect: Anhedonia (blunted positive affect) [Treadway & Zald, 2011]
 #   • Stress: Elevated cortisol, HPA dysregulation [Burke et al., 2005]
 #   • Cognitive control: Impaired, higher error rates [Snyder, 2013]
@@ -76,7 +76,7 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         'accuracy_decline': 0.05,  # Decline under load
         
         # Working memory
-        'wm_capacity': 7.0,        # Items (Miller's 7±2)
+        'wm_capacity': 4.0,        # Items (Cowan's 4±1, modern consensus)
         'wm_decay_rate': 0.01,     # Per-tick decay
         
         # Attention/executive function
@@ -113,7 +113,7 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         'accuracy_decline': 0.08,  # More affected by load
         
         # Working memory: intact capacity, impaired manipulation
-        'wm_capacity': 7.0,        # Normal capacity
+        'wm_capacity': 4.0,        # Normal capacity (Cowan 2001)
         'wm_decay_rate': 0.015,    # Faster decay under manipulation
         
         # Attention: reduced flexibility
@@ -150,7 +150,7 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         'accuracy_decline': 0.12,  # Steeper decline under load
         
         # Working memory: reduced capacity
-        'wm_capacity': 4.5,        # Reduced to ~4-5 items
+        'wm_capacity': 3.0,        # Reduced ~1 item below NT (proportional)
         'wm_decay_rate': 0.018,    # Faster decay
         
         # Attention: poor sustained attention, high distractibility
@@ -187,7 +187,7 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         'accuracy_decline': 0.10,  # Higher decline under load
         
         # Working memory: impaired especially under load
-        'wm_capacity': 5.5,        # Reduced capacity
+        'wm_capacity': 3.5,        # Reduced ~0.5 items below NT (proportional)
         'wm_decay_rate': 0.022,    # Faster decay
         
         # Attention: impaired cognitive control
@@ -249,14 +249,14 @@ def get_preset_description(name: str) -> str:
     descriptions = {
         'neurotypical': (
             "Neurotypical baseline: moderate RT (~500ms), high accuracy (~90%), "
-            "normal working memory (7±2), adaptive stress response, flexible attention."
+            "normal working memory (4±1 items), adaptive stress response, flexible attention."
         ),
         'asd_typical': (
             "Autism Spectrum Disorder: 15% slower RT, heightened sensory reactivity, "
             "reduced attentional flexibility, elevated baseline stress, prolonged recovery."
         ),
         'adhd_typical': (
-            "ADHD: 35-50% higher RT variability, 2-3x omission errors, reduced working memory, "
+            "ADHD: 35-50% higher RT variability, 2-3x omission errors, reduced working memory (~3 items), "
             "poor sustained attention, impaired stress regulation, high impulsivity."
         ),
         'mdd_typical': (
@@ -274,10 +274,9 @@ def get_preset_description(name: str) -> str:
 # Neurotypical:
 # 1. Ratcliff & McKoon (2008). The diffusion decision model: Theory and data for two-choice decision tasks
 # 2. Cowan (2001). The magical number 4 in short-term memory: A reconsideration of mental storage capacity
-# 3. Miller (1956). The magical number seven, plus or minus two
-# 4. McEwen (1998). Stress, adaptation, and disease: Allostasis and allostatic load
-# 5. Posner & Petersen (1990). The attention system of the human brain
-# 6. Sanders (1998). Elements of human performance
+# 3. McEwen (1998). Stress, adaptation, and disease: Allostasis and allostatic load
+# 4. Posner & Petersen (1990). The attention system of the human brain
+# 5. Sanders (1998). Elements of human performance
 #
 # ASD:
 # 7. Happé & Frith (2006). The weak coherence account: Detail-focused cognitive style in autism
