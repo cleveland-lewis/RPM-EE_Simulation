@@ -1,0 +1,4220 @@
+{
+  "preset": "asd_typical",
+  "baseline_params": {
+    "base_rt": 0.45,
+    "rt_variability": 0.45,
+    "rt_slowing_rate": 0.002,
+    "base_accuracy": 0.85,
+    "accuracy_decline_rate": 0.001,
+    "wm_capacity": 3.0,
+    "wm_decay_rate": 0.018,
+    "attention_stability": 0.6,
+    "task_switch_cost": 0.35,
+    "vigilance_decrement": 0.015,
+    "stress_baseline": 0.55,
+    "stress_reactivity": 0.75,
+    "stress_recovery_rate": 0.015,
+    "positive_affect_baseline": 0.55,
+    "negative_affect_baseline": 0.55,
+    "reward_sensitivity": 0.7,
+    "prediction_error_gain": 0.8,
+    "exploration_rate": 0.25
+  },
+  "summary": {
+    "reward_sensitivity": {
+      "high_impact_outcomes": [
+        "reward_learning",
+        "reward_learning"
+      ],
+      "moderate_impact_outcomes": [
+        "reward_learning",
+        "reward_learning"
+      ],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response"
+      ],
+      "max_sensitivity": 1.0000000000000029,
+      "avg_sensitivity": 0.14285714285714296
+    },
+    "rt_variability": {
+      "high_impact_outcomes": [
+        "rt_cv",
+        "rt_cv"
+      ],
+      "moderate_impact_outcomes": [
+        "rt_cv",
+        "rt_cv"
+      ],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 1.0000000000000009,
+      "avg_sensitivity": 0.14285714285714285
+    },
+    "attention_stability": {
+      "high_impact_outcomes": [
+        "sustained_attention",
+        "sustained_attention"
+      ],
+      "moderate_impact_outcomes": [
+        "sustained_attention",
+        "sustained_attention"
+      ],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 1.0000000000000002,
+      "avg_sensitivity": 0.14285714285714282
+    },
+    "wm_capacity": {
+      "high_impact_outcomes": [
+        "wm_performance"
+      ],
+      "moderate_impact_outcomes": [
+        "wm_performance",
+        "wm_performance",
+        "wm_performance"
+      ],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 1.0000000000000018,
+      "avg_sensitivity": 0.14285714285714282
+    },
+    "base_accuracy": {
+      "high_impact_outcomes": [
+        "mean_accuracy"
+      ],
+      "moderate_impact_outcomes": [
+        "mean_accuracy",
+        "mean_accuracy",
+        "mean_accuracy"
+      ],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 1.0000000000000013,
+      "avg_sensitivity": 0.13865546218487398
+    },
+    "base_rt": {
+      "high_impact_outcomes": [
+        "mean_rt"
+      ],
+      "moderate_impact_outcomes": [
+        "mean_rt",
+        "mean_rt",
+        "mean_rt"
+      ],
+      "low_impact_outcomes": [
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 1.0000000000000009,
+      "avg_sensitivity": 0.14285714285714288
+    },
+    "prediction_error_gain": {
+      "high_impact_outcomes": [
+        "reward_learning"
+      ],
+      "moderate_impact_outcomes": [
+        "reward_learning",
+        "reward_learning",
+        "reward_learning"
+      ],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response"
+      ],
+      "max_sensitivity": 1.0000000000000009,
+      "avg_sensitivity": 0.14285714285714282
+    },
+    "stress_baseline": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [
+        "stress_response",
+        "stress_response",
+        "stress_response",
+        "stress_response"
+      ],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.5945945945945951,
+      "avg_sensitivity": 0.10741353598496463
+    },
+    "vigilance_decrement": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [
+        "sustained_attention",
+        "sustained_attention",
+        "sustained_attention",
+        "sustained_attention"
+      ],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.428571428571429,
+      "avg_sensitivity": 0.06122448979591837
+    },
+    "stress_reactivity": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [
+        "stress_response",
+        "stress_response",
+        "stress_response",
+        "stress_response"
+      ],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.4054054054054063,
+      "avg_sensitivity": 0.057915057915057924
+    },
+    "wm_decay_rate": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.2195121951219523,
+      "avg_sensitivity": 0.0313588850174216
+    },
+    "rt_slowing_rate": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.0,
+      "avg_sensitivity": 0.0
+    },
+    "accuracy_decline_rate": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.0,
+      "avg_sensitivity": 0.0
+    },
+    "task_switch_cost": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.0,
+      "avg_sensitivity": 0.0
+    },
+    "stress_recovery_rate": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.0,
+      "avg_sensitivity": 0.0
+    },
+    "positive_affect_baseline": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.0,
+      "avg_sensitivity": 0.0
+    },
+    "negative_affect_baseline": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.0,
+      "avg_sensitivity": 0.0
+    },
+    "exploration_rate": {
+      "high_impact_outcomes": [],
+      "moderate_impact_outcomes": [],
+      "low_impact_outcomes": [
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning",
+        "mean_rt",
+        "rt_cv",
+        "mean_accuracy",
+        "wm_performance",
+        "sustained_attention",
+        "stress_response",
+        "reward_learning"
+      ],
+      "max_sensitivity": 0.0,
+      "avg_sensitivity": 0.0
+    }
+  },
+  "results": [
+    {
+      "parameter": "base_rt \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": -19.999999999999996,
+      "sensitivity_index": 0.9999999999999998,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "base_rt \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": -9.999999999999998,
+      "sensitivity_index": 0.9999999999999998,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "base_rt \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 10.000000000000009,
+      "sensitivity_index": 1.0000000000000009,
+      "impact": "HIGH"
+    },
+    {
+      "parameter": "base_rt \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 19.999999999999996,
+      "sensitivity_index": 0.9999999999999998,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "base_rt \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_rt \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": -19.999999999999993,
+      "sensitivity_index": 0.9999999999999996,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "rt_variability \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": -9.999999999999996,
+      "sensitivity_index": 0.9999999999999996,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "rt_variability \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 10.000000000000009,
+      "sensitivity_index": 1.0000000000000009,
+      "impact": "HIGH"
+    },
+    {
+      "parameter": "rt_variability \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 20.000000000000004,
+      "sensitivity_index": 1.0000000000000002,
+      "impact": "HIGH"
+    },
+    {
+      "parameter": "rt_variability \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_variability \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "rt_slowing_rate \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": -19.999999999999986,
+      "sensitivity_index": 0.9999999999999992,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "base_accuracy \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": -10.0,
+      "sensitivity_index": 0.9999999999999999,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "base_accuracy \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 10.000000000000012,
+      "sensitivity_index": 1.0000000000000013,
+      "impact": "HIGH"
+    },
+    {
+      "parameter": "base_accuracy \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 17.64705882352942,
+      "sensitivity_index": 0.8823529411764709,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "base_accuracy \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "base_accuracy \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "accuracy_decline_rate \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": -19.999999999999982,
+      "sensitivity_index": 0.999999999999999,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "wm_capacity \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": -9.999999999999982,
+      "sensitivity_index": 0.9999999999999982,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "wm_capacity \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 10.000000000000018,
+      "sensitivity_index": 1.0000000000000018,
+      "impact": "HIGH"
+    },
+    {
+      "parameter": "wm_capacity \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 20.0,
+      "sensitivity_index": 1.0,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "wm_capacity \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_capacity \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 4.390243902439028,
+      "sensitivity_index": -0.21951219512195141,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 2.195121951219523,
+      "sensitivity_index": -0.2195121951219523,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": -2.1951219512195053,
+      "sensitivity_index": -0.2195121951219505,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": -4.3902439024390105,
+      "sensitivity_index": -0.2195121951219505,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "wm_decay_rate \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": -20.000000000000007,
+      "sensitivity_index": 1.0000000000000002,
+      "impact": "HIGH"
+    },
+    {
+      "parameter": "attention_stability \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": -9.999999999999996,
+      "sensitivity_index": 0.9999999999999996,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "attention_stability \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 9.999999999999996,
+      "sensitivity_index": 0.9999999999999996,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "attention_stability \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 20.000000000000007,
+      "sensitivity_index": 1.0000000000000002,
+      "impact": "HIGH"
+    },
+    {
+      "parameter": "attention_stability \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "attention_stability \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "task_switch_cost \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 8.571428571428566,
+      "sensitivity_index": -0.42857142857142827,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 4.28571428571429,
+      "sensitivity_index": -0.428571428571429,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": -4.28571428571429,
+      "sensitivity_index": -0.428571428571429,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": -8.571428571428566,
+      "sensitivity_index": -0.42857142857142827,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "vigilance_decrement \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": -1.9819819819819857,
+      "sensitivity_index": 0.09909909909909928,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 1.1640211640211742,
+      "sensitivity_index": -0.05820105820105871,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": -11.89189189189189,
+      "sensitivity_index": 0.5945945945945944,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "stress_baseline \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": -0.990990990991004,
+      "sensitivity_index": 0.09909909909910039,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.582010582010594,
+      "sensitivity_index": -0.05820105820105939,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": -5.9459459459459385,
+      "sensitivity_index": 0.5945945945945939,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "stress_baseline \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.9909909909909929,
+      "sensitivity_index": 0.09909909909909928,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": -0.5820105820105664,
+      "sensitivity_index": -0.05820105820105664,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 5.945945945945951,
+      "sensitivity_index": 0.5945945945945951,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "stress_baseline \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 1.9819819819819857,
+      "sensitivity_index": 0.09909909909909928,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": -1.1640211640211604,
+      "sensitivity_index": -0.05820105820105802,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_baseline \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 11.891891891891902,
+      "sensitivity_index": 0.5945945945945951,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "stress_baseline \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": -8.108108108108103,
+      "sensitivity_index": 0.40540540540540515,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": -4.054054054054052,
+      "sensitivity_index": 0.40540540540540515,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 4.054054054054063,
+      "sensitivity_index": 0.4054054054054063,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 8.108108108108103,
+      "sensitivity_index": 0.40540540540540515,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "stress_reactivity \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "stress_recovery_rate \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "positive_affect_baseline \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "negative_affect_baseline \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": -20.0,
+      "sensitivity_index": 1.0,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": -9.99999999999999,
+      "sensitivity_index": 0.9999999999999989,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 10.00000000000003,
+      "sensitivity_index": 1.0000000000000029,
+      "impact": "HIGH"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "reward_sensitivity \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 20.00000000000002,
+      "sensitivity_index": 1.0000000000000009,
+      "impact": "HIGH"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": -19.99999999999998,
+      "sensitivity_index": 0.9999999999999989,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": -9.99999999999999,
+      "sensitivity_index": 0.9999999999999989,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 10.00000000000001,
+      "sensitivity_index": 1.0000000000000009,
+      "impact": "HIGH"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "prediction_error_gain \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 20.0,
+      "sensitivity_index": 1.0,
+      "impact": "MODERATE"
+    },
+    {
+      "parameter": "exploration_rate \u2192 mean_rt",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 rt_cv",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 mean_accuracy",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 wm_performance",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 sustained_attention",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 stress_response",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 reward_learning",
+      "perturbation_pct": -20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 mean_rt",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 rt_cv",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 mean_accuracy",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 wm_performance",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 sustained_attention",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 stress_response",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 reward_learning",
+      "perturbation_pct": -10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": -0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 mean_rt",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 rt_cv",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 mean_accuracy",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 wm_performance",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 sustained_attention",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 stress_response",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 reward_learning",
+      "perturbation_pct": 10.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 mean_rt",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 rt_cv",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 mean_accuracy",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 wm_performance",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 sustained_attention",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 stress_response",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    },
+    {
+      "parameter": "exploration_rate \u2192 reward_learning",
+      "perturbation_pct": 20.0,
+      "outcome_change_pct": 0.0,
+      "sensitivity_index": 0.0,
+      "impact": "LOW"
+    }
+  ]
+}
