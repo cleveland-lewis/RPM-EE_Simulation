@@ -31,8 +31,32 @@ GRANULARITY -- IMPORTANT DEVIATION FROM THE ORIGINAL DESIGN:
     coarser comparison than originally scoped and should be reported as such
     (n=12 blocks per subject per task, not n=18*12 trials).
 
+TRIAL-LEVEL SEMANTICS CONFIRMED 2026-08-01 against the actual PsyScope
+stimulus scripts (data/ds003500/code/<TaskName>, plain-text .psc-style
+source with CR line endings -- not the events.json sidecars, which were
+the only source used for the previous confirmation pass). This closes
+GitHub issue #8. All twelve task scripts (six main + six Practice_*)
+were checked; Inh and Sel each show one shared instruction wording per
+family (bar the feature/conjunction target -- "red triangle" for Conj*,
+a colored-shape target for Feat*), consistent with the block_type
+labels below:
+    Inh  (e.g. Conj1Inh code, Direct1/Direct2 events):
+        "Go: Press index finger for all shapes."
+        "Stop: If a red triangle is present, do not press anything.
+         If no red triangle is present, press index finger."
+    Sel  (e.g. Conj19Sel code, Direct event; One/Many block names in the
+    script correspond to BIDS "single"/"array"):
+        "Press index finger if there is a red triangle.
+         Press middle finger if there is no red triangle."
+        (Single vs. array only changes the stimulus display -- One-Stim
+        is one picture, Many-Stim/Many-Mask is a 3x3-array display with
+        the target at one cell -- not the response rule.)
+No discrepancy from the events.json-derived mapping below was found;
+this is confirmation, not a revision.
+
 Six task files, two families with distinct manipulations (confirmed from
-task-<TASK>_bold.json TaskDescription/Instructions):
+task-<TASK>_bold.json TaskDescription/Instructions, and now from the
+PsyScope source directly per above):
     Conj1Inh, Conj9Inh, Feat1Inh, Feat9Inh
         Response inhibition. block_type is "go" or "no-go".
         Go blocks: press for every shape (no inhibition demand).
