@@ -1,0 +1,58 @@
+[
+  {
+    "task_family": "Inh",
+    "group": "adhd",
+    "preset": "adhd_typical",
+    "n_blocks": 550,
+    "real_rt_mean": 674.0,
+    "real_rt_std": 200.8,
+    "sim_rt_mean": 666.5,
+    "sim_rt_std": 295.0,
+    "rt_relative_deviation": -0.011,
+    "real_accuracy_mean": 0.931,
+    "sim_accuracy_mean": 0.673,
+    "accuracy_relative_deviation": -0.277
+  },
+  {
+    "task_family": "Sel",
+    "group": "adhd",
+    "preset": "adhd_typical",
+    "n_blocks": 284,
+    "real_rt_mean": 815.8,
+    "real_rt_std": 161.6,
+    "sim_rt_mean": 627.9,
+    "sim_rt_std": 266.7,
+    "rt_relative_deviation": -0.23,
+    "real_accuracy_mean": 0.899,
+    "sim_accuracy_mean": 0.616,
+    "accuracy_relative_deviation": -0.314
+  },
+  {
+    "task_family": "Inh",
+    "group": "control",
+    "preset": "neurotypical",
+    "n_blocks": 1235,
+    "real_rt_mean": 517.8,
+    "real_rt_std": 181.5,
+    "sim_rt_mean": 531.8,
+    "sim_rt_std": 110.1,
+    "rt_relative_deviation": 0.027,
+    "real_accuracy_mean": 0.969,
+    "sim_accuracy_mean": 0.734,
+    "accuracy_relative_deviation": -0.242
+  },
+  {
+    "task_family": "Sel",
+    "group": "control",
+    "preset": "neurotypical",
+    "n_blocks": 600,
+    "real_rt_mean": 649.2,
+    "real_rt_std": 147.6,
+    "sim_rt_mean": 534.3,
+    "sim_rt_std": 106.2,
+    "rt_relative_deviation": -0.177,
+    "real_accuracy_mean": 0.958,
+    "sim_accuracy_mean": 0.718,
+    "accuracy_relative_deviation": -0.25
+  }
+]

@@ -70,6 +70,23 @@ class DriftDiffusionModel:
     _MAX_TIME_MS = 5000.0
     # Physiological RT floor (ms)
     _RT_FLOOR_MS = 100.0
+    # Minimum non-decision time (encoding + motor response), seconds.
+    # Standard EZ-diffusion (Wagenmakers et al., 2007) attributes *all*
+    # trial-to-trial RT variance to decision-time noise, since it assumes
+    # no across-trial variability in drift rate or non-decision time. For
+    # presets with high target rt_variability (e.g. adhd_typical, CV=0.45,
+    # per Klein et al. 2006 / Kofler et al. 2013), the only way the
+    # closed-form solution can generate that much variance is by shrinking
+    # Ter toward zero -- a mathematical artifact of the recovery equations,
+    # not a real claim about non-decision time. 300 ms reflects typical
+    # encoding+motor estimates in two-choice RT tasks (Ratcliff & McKoon,
+    # 2008) and is applied uniformly across presets, since no preset's
+    # evidence base makes a specific claim about non-decision time itself
+    # (see GitHub issue #6). v and a are derived from Pc/VRT only and are
+    # unaffected by this floor; when it binds, simulated mean RT will run
+    # above the preset's literal base_rt target rather than silently
+    # producing an implausibly fast (or cross-preset-inverted) Ter.
+    _TER_FLOOR_S = 0.30
 
     def __init__(
         self,
@@ -137,7 +154,7 @@ class DriftDiffusionModel:
 
         # Mean decision time and non-decision time
         MDT = self._mean_decision_time(self.v, self.a, s)
-        self.Ter = float(max(0.001, MRT - MDT))  # Ter in seconds (≥ 1 ms)
+        self.Ter = float(max(self._TER_FLOOR_S, MRT - MDT))  # see _TER_FLOOR_S docstring
 
         # Derived simulation-loop parameters (1 ms = 0.001 s time steps)
         dt_s = self._DT_S
