@@ -145,3 +145,35 @@ class RPMEESimulation:
             if episode % 10 == 0:
                 print(f"Episode {episode} complete")
         print("Simulation complete.")
+
+    def step_trial(self, trial):
+        """Run one externally-supplied trial through the DDM only.
+
+        Unlike step(), this does not touch sensory/salience/memory/arbiter/
+        self_model -- those subsystems operate on synthetic multimodal event
+        streams with no defined semantics for a single two-alternative
+        decision trial from an external dataset. Empirical validation
+        compares real behavioral data against the one subsystem that has a
+        directly comparable output: the DDM's (rt, accuracy) prediction from
+        (evidence, load).
+
+        Args:
+            trial: an object with .evidence (float, [-1, 1]), .load
+                (float, [0, 1]), and .difficulty (float, [0, 1]) attributes
+                -- e.g. adapters.base.Trial. load and difficulty are
+                distinct axes (see ddm.py's predict_action docstring and
+                README.md "DDM load vs. difficulty") -- do not conflate them.
+
+        Returns:
+            The DDM's predict_action() dict: action, rt, accurate,
+            confidence, evidence, load, difficulty. Compare 'rt'/'accurate'
+            against trial.observed_rt_ms/observed_correct in the calling
+            harness.
+        """
+        if self.rpm.ddm is None:
+            msg = (
+                "RPM has no configured DDM -- call sim with a clinical "
+                "preset (configure_ddm runs automatically in __init__)."
+            )
+            raise RuntimeError(msg)
+        return self.rpm.ddm.predict_action(trial.evidence, trial.load, trial.difficulty)

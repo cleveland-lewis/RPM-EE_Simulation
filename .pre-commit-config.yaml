@@ -14,7 +14,7 @@ repos:
     hooks:
       - id: black
         name: black
-        language_version: python3.10
+        language_version: python3.12
         args: ["--line-length=100"]
         types: [python]
 
@@ -225,7 +225,7 @@ repos:
           - "not slow"
           - --maxfail=1
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
         # Uncomment to enable (disabled by default for speed)
         # always_run: true
 
@@ -238,10 +238,10 @@ repos:
     hooks:
       - id: check-no-todos
         name: check-no-todos (prevent TODO/FIXME)
-        entry: bash -c 'if grep -rn --include="*.py" -E "(TODO|FIXME|XXX|HACK|OPTIMIZE|REVIEW|REFACTOR|DEPRECATED|BUG|PERF):" .; then echo "❌ Found TODO/FIXME comments. Please create an issue instead."; exit 1; fi'
+        entry: bash -c 'if grep -nE "(TODO|FIXME|XXX|HACK|OPTIMIZE|REVIEW|REFACTOR|DEPRECATED|BUG|PERF):" "$@"; then echo "❌ Found TODO/FIXME comments. Please create an issue instead."; exit 1; fi' --
         language: system
         types: [python]
-        pass_filenames: false
+        pass_filenames: true
 
   # 7.1 Validate clinical presets configuration
   - repo: local
@@ -252,7 +252,7 @@ repos:
         language: system
         files: ^src/presets\.py$
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
 
   # 7.2 Validate experiment configuration files
   - repo: local
@@ -263,7 +263,7 @@ repos:
         language: system
         files: ^(config/.*\.(yaml|yml|json)|.*experiment.*\.(yaml|yml|json))$
         pass_filenames: true
-        stages: [commit]
+        stages: [pre-commit]
 
   # 7.3 Check for broken asset references in docs
   - repo: local
@@ -274,13 +274,13 @@ repos:
         language: system
         files: ^docs/.*\.md$
         pass_filenames: true
-        stages: [commit]
+        stages: [pre-commit]
 
 # =============================================================================
 # Configuration
 # =============================================================================
 
-default_stages: [commit]
+default_stages: [pre-commit]
 fail_fast: false
 minimum_pre_commit_version: '2.20.0'
 
