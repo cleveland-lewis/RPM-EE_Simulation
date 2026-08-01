@@ -58,14 +58,14 @@
 | wm_capacity | 4.0 | Steele et al. (2007) | 🔍 | Intact capacity | Need values | Same as NT | MODERATE |
 | wm_decay_rate | 0.015 | Steele et al. (2007) | 🔍 | Impaired manipulation | Need effect | Estimated | LOW |
 | switch_cost | 0.25 | Yerys et al. (2009); Geurts et al. (2009) | 🔍 | Set-shifting deficit | Need d | 2.5x NT | MODERATE |
-| stress_baseline | 0.50 | Corbett et al. (2009) | 🔍 | Elevated cortisol | Need values | Cortisol ~25 μg/dL | HIGH |
-| stress_reactivity | 0.60 | Corbett et al. (2009) | 🔍 | Higher response | Need effect | Elevated | MODERATE |
-| stress_recovery | 0.08 | Corbett et al. (2009) | 🔍 | Prolonged elevation | Need time | 4.5/60 = 0.075 | MODERATE |
+| stress_baseline | 0.50 | Corbett et al. (2009) | ✅ | No clean ASD>NT ordering at baseline (Fig 4) | n.s. (t(19)=0.54, P=0.60 vs. own home baseline) | Population simplification | MODERATE |
+| stress_reactivity | 0.60 | Corbett et al. (2009) | ✅ | Modest S1→S2 rise in ASD subgroups | Qualitative only | Directionally supported | MODERATE |
+| stress_recovery | 0.08 | Corbett et al. (2009) | ✅ | Older-ASD fails normal post-peak decline | Diagnosis×Age: β=0.238, SE=0.095 (model χ²(4)=22.76, P<0.0005) | Digitized Fig 4 (older-ASD ~flat S2→S4) | HIGH |
 | positive_affect | 0.50 | Robertson & Baron-Cohen (2017) | 🔍 | Indirect inference | N/A | Estimated | LOW |
 | negative_affect | 0.35 | Robertson & Baron-Cohen (2017) | 🔍 | Sensory reactivity | N/A | Estimated | LOW |
 
 **NEEDS Phase 2 Extraction:**
-- Corbett et al. (2009): Extract exact cortisol values (baseline, peak, recovery time)
+- ~~Corbett et al. (2009): Extract exact cortisol values~~ ✅ Done (see `extractions/corbett2009_EXTRACTED.md` — paper reports model coefficients + Figure 4 trajectories, not a raw mean/SD table; digitized and documented)
 - Yerys et al. (2009): Extract WCST or DCCS switch cost effect sizes
 - Steele et al. (2007): Extract WM span values and load manipulation effects
 - Geurts et al. (2009): Extract cognitive flexibility effect sizes
@@ -173,13 +173,17 @@
 
 ### MEDIUM PRIORITY (Single Studies with Key Data):
 
-#### 4. Corbett et al. (2009) - ASD Cortisol ⭐⭐
-**Extract:**
-- Baseline cortisol: ASD vs. control (μg/dL with SD)
-- Peak cortisol during stressor
-- Time to return to baseline (minutes)
+#### 4. Corbett et al. (2009) - ASD Cortisol ⭐⭐ ✅ DONE
+**Extracted (2026-08-01, see `extractions/corbett2009_EXTRACTED.md`):**
+- Paper has no raw mean/SD table; only Figure 4 (age×diagnosis trajectories) and
+  Table 3 (mixed-model coefficients on log-cortisol)
+- No clean baseline elevation for ASD overall — the real effect is age-moderated
+  recovery/decline failure in older ASD children (Diagnosis×Age interaction,
+  P<0.0005)
 
-**Expected outcome:** Validate ASD stress parameters (0.50, 0.60, 0.08)
+**Outcome:** stress_baseline confidence downgraded HIGH→MODERATE (values unchanged);
+stress_recovery confidence upgraded MODERATE→HIGH (values unchanged); stress_reactivity
+unchanged. See `src/presets.py` PARAMETER_CONFIDENCE comments for rationale.
 
 ---
 

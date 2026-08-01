@@ -75,7 +75,7 @@ __all__ = [
 #   • RT: 10-15% slower than NT [Happé & Frith, 2006]
 #   • Accuracy: Comparable mean but higher variability [Geurts et al., 2009]
 #   • Working memory: Intact capacity, impaired manipulation [Steele et al., 2007]
-#   • Stress: Elevated baseline, prolonged recovery [Corbett et al., 2009]
+#   • Stress: Prolonged recovery, esp. in older children (Diagnosis x Age interaction); baseline elevation not clearly supported [Corbett et al., 2009]
 #   • Attentional switching: Reduced flexibility [Yerys et al., 2009; Geurts et al., 2009]
 #   • Sensory reactivity: Heightened sensitivity [Robertson & Baron-Cohen, 2017]
 #
@@ -134,6 +134,17 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         # Prediction/learning
         'prediction_error_gain': 1.0,   # Learning from errors
         'exploration_rate': 0.20,       # Exploratory behavior
+
+        # Bayesian precision parameters (NEW - Phase 3)
+        'sensory_precision': 1.0,       # Balanced sensory weighting
+        'prior_precision': 1.0,         # Balanced prior weighting
+        'volatile_precision': 0.5,      # Moderate volatility tracking
+        'precision_learning_rate': 0.1, # Meta-learning rate
+
+        # TD learning parameters (NEW - Phase 4)
+        'td_alpha': 0.10,               # Learning rate (moderate)
+        'td_gamma': 0.90,               # Discount factor (value future rewards)
+        'td_initial_value': 0.0,        # Initial value bias (neutral)
     },
     
     # =========================================================================
@@ -158,10 +169,10 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         'switch_cost': 0.25,            # Higher switching cost
         'vigilance_decrement': 0.008,   # Better sustained attention
         
-        # Stress: elevated baseline, prolonged recovery
-        'stress_baseline': 0.50,        # Elevated baseline
-        'stress_reactivity': 0.60,      # Higher reactivity
-        'stress_recovery': 0.08,        # Slower recovery
+        # Stress: prolonged recovery (age-moderated), baseline elevation not clearly supported
+        'stress_baseline': 0.50,        # Population simplification; Corbett et al. Fig 4 shows no clean ASD>NT baseline ordering
+        'stress_reactivity': 0.60,      # Modest S1->S2 increase in ASD subgroups (Corbett et al.)
+        'stress_recovery': 0.08,        # Slower recovery - older-ASD fails normal decline (Corbett et al., Diagnosis x Age interaction, p<0.0005)
         
         # Emotional: heightened sensory reactivity
         'positive_affect': 0.50,        # Lower positive affect
@@ -171,6 +182,18 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         # Prediction: intact but less flexible
         'prediction_error_gain': 0.90,  # Slightly reduced
         'exploration_rate': 0.12,       # Less exploratory
+
+        # Bayesian precision parameters (NEW - Phase 3) - ABERRANT PRECISION
+        'sensory_precision': 1.8,       # ELEVATED sensory precision (over-weight PE)
+        'prior_precision': 0.4,         # REDUCED prior precision (under-weight predictions)
+        'volatile_precision': 0.3,      # Poor volatility tracking
+        'precision_learning_rate': 0.05, # Slower meta-learning
+        # Ratio: 1.8/0.4 = 4.5 (extreme sensory dominance - ASD marker)
+
+        # TD learning parameters (NEW - Phase 4)
+        'td_alpha': 0.10,               # Learning rate (normal)
+        'td_gamma': 0.85,               # Discount factor (slightly lower)
+        'td_initial_value': 0.0,        # Initial value bias (neutral)
     },
     
     # =========================================================================
@@ -208,6 +231,17 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         # Prediction: high exploration, impulsive
         'prediction_error_gain': 1.20,  # Over-reactive to errors
         'exploration_rate': 0.40,       # Highly exploratory/impulsive
+
+        # Bayesian precision parameters (NEW - Phase 3) - NOISY & VARIABLE
+        'sensory_precision': 0.6,       # Reduced sensory precision (noisy)
+        'prior_precision': 0.8,         # Moderate prior precision
+        'volatile_precision': 0.7,      # Over-estimate volatility (distractibility)
+        'precision_learning_rate': 0.15, # Faster but noisier learning
+
+        # TD learning parameters (NEW - Phase 4) - IMPULSIVE & DELAY AVERSION
+        'td_alpha': 0.20,               # HIGH learning rate (impulsive updating)
+        'td_gamma': 0.60,               # LOW discount factor (delay aversion - devalue future)
+        'td_initial_value': 0.2,        # Optimistic bias
     },
     
     # =========================================================================
@@ -245,6 +279,18 @@ CLINICAL_PRESETS: Dict[str, Dict[str, float]] = {
         # Prediction: rumination, reduced exploration
         'prediction_error_gain': 0.70,  # Blunted learning
         'exploration_rate': 0.08,       # Reduced exploration
+
+        # Bayesian precision parameters (NEW - Phase 3) - RIGID PRIORS
+        'sensory_precision': 0.7,       # Reduced sensory precision (anhedonia)
+        'prior_precision': 1.3,         # ELEVATED prior precision (rigid negative beliefs)
+        'volatile_precision': 0.4,      # Poor volatility tracking (rumination)
+        'precision_learning_rate': 0.06, # Slow belief updating
+        # Ratio: 0.7/1.3 = 0.54 (prior dominance → negative bias persists)
+
+        # TD learning parameters (NEW - Phase 4) - ANHEDONIC & PESSIMISTIC
+        'td_alpha': 0.05,               # LOW learning rate (blunted learning)
+        'td_gamma': 0.85,               # Discount factor (moderate)
+        'td_initial_value': -0.3,       # NEGATIVE bias (pessimism)
     },
 }
 
@@ -277,6 +323,13 @@ PARAMETER_CONFIDENCE: Dict[str, Dict[str, str]] = {
         'reward_sensitivity': 'LOW',    # Theoretical estimate from motivation literature
         'prediction_error_gain': 'LOW', # No direct measurement, theoretical value
         'exploration_rate': 'LOW',      # Theoretical estimate, no direct measurement
+        'sensory_precision': 'LOW',     # NEW: Theoretical, no direct measurement
+        'prior_precision': 'LOW',       # NEW: Theoretical, no direct measurement
+        'volatile_precision': 'LOW',    # NEW: Theoretical, no direct measurement
+        'precision_learning_rate': 'LOW', # NEW: Theoretical, no direct measurement
+        'td_alpha': 'LOW',              # NEW: Theoretical, no direct measurement
+        'td_gamma': 'LOW',              # NEW: Theoretical, no direct measurement
+        'td_initial_value': 'LOW',      # NEW: Theoretical, no direct measurement
     },
     'asd_typical': {
         'base_rt': 'MODERATE',          # Happé & Frith (2006) - qualitative claim
@@ -289,14 +342,21 @@ PARAMETER_CONFIDENCE: Dict[str, Dict[str, str]] = {
         'attention_stability': 'MODERATE', # Multiple studies show intact sustained attention
         'switch_cost': 'MODERATE',      # Yerys et al. (2009) + Geurts - direct evidence
         'vigilance_decrement': 'LOW',   # Rate not specified in sources
-        'stress_baseline': 'HIGH',      # Corbett et al. (2009) - direct cortisol measurement
-        'stress_reactivity': 'MODERATE',# Corbett et al. - elevated response observed
-        'stress_recovery': 'MODERATE',  # Corbett et al. - prolonged elevation noted
+        'stress_baseline': 'MODERATE',  # Corbett et al. (2009) - no clean ASD>NT ordering at baseline in Fig 4; downgraded from HIGH
+        'stress_reactivity': 'MODERATE',# Corbett et al. - modest S1->S2 increase in ASD subgroups, not the paper's significant result
+        'stress_recovery': 'HIGH',      # Corbett et al. - significant Diagnosis x Age interaction (p<0.0005); older-ASD fails to show normal decline
         'positive_affect': 'LOW',       # Indirect inference from sensory reactivity
         'negative_affect': 'LOW',       # Indirect inference from sensory reactivity
         'reward_sensitivity': 'LOW',    # Limited evidence, theoretical estimate
         'prediction_error_gain': 'LOW', # No direct measurement
         'exploration_rate': 'LOW',      # Theoretical inference from reduced flexibility
+        'sensory_precision': 'MODERATE', # NEW: Inferred from sensory reactivity literature (Robertson & Baron-Cohen 2017)
+        'prior_precision': 'MODERATE',  # NEW: Inferred from inflexibility/weak central coherence (Pellicano & Burr 2012)
+        'volatile_precision': 'LOW',    # NEW: Theoretical estimate
+        'precision_learning_rate': 'LOW', # NEW: Theoretical estimate
+        'td_alpha': 'LOW',              # NEW: Theoretical, no direct measurement
+        'td_gamma': 'LOW',              # NEW: Theoretical, no direct measurement
+        'td_initial_value': 'LOW',      # NEW: Theoretical, no direct measurement
     },
     'adhd_typical': {
         'base_rt': 'MODERATE',          # Klein et al. (2006) - slightly faster noted
@@ -317,6 +377,13 @@ PARAMETER_CONFIDENCE: Dict[str, Dict[str, str]] = {
         'reward_sensitivity': 'MODERATE', # Sonuga-Barke (2005) - delay aversion theory
         'prediction_error_gain': 'LOW', # Theoretical inference from impulsivity
         'exploration_rate': 'MODERATE', # Inferred from delay aversion + impulsivity
+        'sensory_precision': 'LOW',     # NEW: Inferred from attention deficits (noisy processing)
+        'prior_precision': 'LOW',       # NEW: Theoretical estimate
+        'volatile_precision': 'LOW',    # NEW: Inferred from distractibility
+        'precision_learning_rate': 'LOW', # NEW: Theoretical estimate
+        'td_alpha': 'MODERATE',         # NEW: Inferred from Sonuga-Barke (2005) delay aversion theory
+        'td_gamma': 'MODERATE',         # NEW: Inferred from Sonuga-Barke (2005) delay aversion theory
+        'td_initial_value': 'LOW',      # NEW: Theoretical estimate
     },
     'mdd_typical': {
         'base_rt': 'MODERATE',          # Tsourtos et al. (2002) - psychomotor slowing
@@ -337,6 +404,13 @@ PARAMETER_CONFIDENCE: Dict[str, Dict[str, str]] = {
         'reward_sensitivity': 'MODERATE', # Treadway & Zald - reduced reward processing
         'prediction_error_gain': 'LOW', # Theoretical inference from rumination
         'exploration_rate': 'LOW',      # Inferred from Nolen-Hoeksema rumination theory
+        'sensory_precision': 'LOW',     # NEW: Inferred from anhedonia (blunted sensory response)
+        'prior_precision': 'MODERATE',  # NEW: Inferred from rumination (rigid negative beliefs)
+        'volatile_precision': 'LOW',    # NEW: Theoretical estimate
+        'precision_learning_rate': 'LOW', # NEW: Theoretical estimate
+        'td_alpha': 'MODERATE',         # NEW: Inferred from Treadway & Zald (2011) blunted learning
+        'td_gamma': 'LOW',              # NEW: Theoretical estimate
+        'td_initial_value': 'MODERATE', # NEW: Inferred from Nolen-Hoeksema (2000) rumination (negative bias)
     },
 }
 
