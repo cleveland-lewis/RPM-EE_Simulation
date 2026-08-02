@@ -18,9 +18,9 @@ import pytest
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from emotion import EmotionalEncoder
-from presets import CLINICAL_PRESETS
-from td_learning import TemporalDifferenceLearner
+from emotion import EmotionalEncoder  # noqa: E402
+from presets import CLINICAL_PRESETS  # noqa: E402
+from td_learning import TemporalDifferenceLearner  # noqa: E402
 
 
 class TestTDLearningBasics:

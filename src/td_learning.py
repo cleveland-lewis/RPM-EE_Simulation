@@ -1,12 +1,13 @@
 """
-Temporal Difference Learning with Linear Function Approximation
+Temporal Difference Learning with Linear Function Approximation.
 
 Implements TD(0) with a continuous linear function approximator
 V(s) = w^T x(s), replacing the prior tabular implementation that
 induced severe state aliasing via coarse discretization of continuous
 affective states into 250 rigid bins.
 
-References:
+References
+----------
 - Sutton, R. S., & Barto, A. G. (2018). Reinforcement Learning: An Introduction.
   MIT Press. (TD(0) with function approximation, Chapter 9)
 - Montague, P. R., Dayan, P., & Sejnowski, T. J. (1996). A framework for
@@ -17,10 +18,10 @@ References:
 
 Linear Function Approximator:
     V(s) = w^T x(s)
-    w ← w + α δ x(s)
-    δ = r + γ V(s') − V(s)   (TD error)
+    w ← w + alpha δ x(s)
+    δ = r + gamma V(s') - V(s)   (TD error)
 
-Feature vector x(s) ∈ ℝ⁵:
+Feature vector x(s) ∈ R⁵:
     [emotion_intensity, plausibility, reward_distortion, emotional_prediction, bias]
 
     emotion_intensity: [0, 1]   — emotional salience of simulation
@@ -33,12 +34,10 @@ The bias weight is initialized to `initial_value`, so V(s) ≈ initial_value for
 any untrained state. All other weights start at zero.
 
 Clinical differentiation:
-    MDD:  Low α (blunted learning) + negative initial bias (pessimism).
-    ADHD: High α (impulsive) + low γ (delay aversion: devalue future rewards).
-    ASD:  Normal α but reward_sensitivity modulates the reward signal.
+    MDD:  Low alpha (blunted learning) + negative initial bias (pessimism).
+    ADHD: High alpha (impulsive) + low gamma (delay aversion: devalue future rewards).
+    ASD:  Normal alpha but reward_sensitivity modulates the reward signal.
 """
-
-from typing import Optional
 
 import numpy as np
 
@@ -49,6 +48,9 @@ _IDX_DISTORTION = 2
 _IDX_EMO_PRED = 3
 _IDX_BIAS = 4
 _N_FEATURES = 5
+
+# Threshold below which a feature weight is treated as inactive/untrained
+_ACTIVE_WEIGHT_THRESHOLD = 1e-10
 
 
 class TemporalDifferenceLearner:
@@ -61,9 +63,9 @@ class TemporalDifferenceLearner:
     continuous affective dimensions into 250 rigid bins.
 
     Clinical modulation:
-    - MDD: Low α (blunted learning), negative initial bias (pessimism).
-    - ADHD: High α (impulsive updating), low γ (delay aversion).
-    - ASD: Normal α; reward_sensitivity scales the reward signal.
+    - MDD: Low alpha (blunted learning), negative initial bias (pessimism).
+    - ADHD: High alpha (impulsive updating), low gamma (delay aversion).
+    - ASD: Normal alpha; reward_sensitivity scales the reward signal.
     """
 
     def __init__(
@@ -76,13 +78,14 @@ class TemporalDifferenceLearner:
         """
         Initialize TD learner with linear function approximator.
 
-        Args:
-            alpha: Learning rate (how fast the value function adapts).
-            gamma: Discount factor in [0, 1] (weight of future rewards).
-            reward_sensitivity: Multiplicative scaling of the reward signal.
-            initial_value: Starting value for all states; encoded as the
-                           initial bias weight so V(s) ≈ initial_value before
-                           any learning.
+        Args
+        ----
+        alpha: Learning rate (how fast the value function adapts).
+        gamma: Discount factor in [0, 1] (weight of future rewards).
+        reward_sensitivity: Multiplicative scaling of the reward signal.
+        initial_value: Starting value for all states; encoded as the
+                       initial bias weight so V(s) ≈ initial_value before
+                       any learning.
         """
         self.alpha = alpha
         self.gamma = gamma
@@ -109,7 +112,7 @@ class TemporalDifferenceLearner:
             [emotion_intensity, plausibility, reward_distortion,
              emotional_prediction (normalised), bias=1]
 
-        emotional_prediction lives in [−1, 1] and is linearly mapped to [0, 1]
+        emotional_prediction lives in [-1, 1] and is linearly mapped to [0, 1]
         before entering the feature vector.
         """
         emotion = float(sim.get("emotion_intensity", 0.0))
@@ -127,11 +130,13 @@ class TemporalDifferenceLearner:
         """
         Estimate V(s) = w^T x(s) for a simulation.
 
-        Args:
-            sim: Simulation dictionary.
+        Args
+        ----
+        sim: Simulation dictionary.
 
-        Returns:
-            Scalar value estimate.
+        Returns
+        -------
+        Scalar value estimate.
         """
         x = self._feature_vector(sim)
         return float(np.dot(self.weights, x))
@@ -141,37 +146,39 @@ class TemporalDifferenceLearner:
     # ------------------------------------------------------------------
 
     def update_value(
-        self, current_sim: dict, next_sim: Optional[dict] = None, terminal: bool = False
+        self, current_sim: dict, next_sim: dict | None = None, terminal: bool = False
     ) -> dict[str, float]:
         """
         Semi-gradient TD(0) weight update.
 
-        Update rule:  w ← w + α · δ · x(s)
-        where δ = r + γ · V(s') − V(s)  (TD error).
+        Update rule:  w ← w + alpha · δ · x(s)
+        where δ = r + gamma · V(s') - V(s)  (TD error).
 
-        Args:
-            current_sim: Current simulation dictionary.
-            next_sim: Next simulation (None or terminal → V(s') = 0).
-            terminal: If True, treat as terminal transition (V(s') = 0).
+        Args
+        ----
+        current_sim: Current simulation dictionary.
+        next_sim: Next simulation (None or terminal → V(s') = 0).
+        terminal: If True, treat as terminal transition (V(s') = 0).
 
-        Returns:
-            Dictionary with 'value', 'td_error', 'reward', 'alpha', 'gamma'.
+        Returns
+        -------
+        Dictionary with 'value', 'td_error', 'reward', 'alpha', 'gamma'.
         """
         x = self._feature_vector(current_sim)
-        V_current = float(np.dot(self.weights, x))
+        v_current = float(np.dot(self.weights, x))
 
         reward = self._compute_reward(current_sim)
 
         if terminal or next_sim is None:
-            V_next = 0.0
+            v_next = 0.0
         else:
             x_next = self._feature_vector(next_sim)
-            V_next = float(np.dot(self.weights, x_next))
+            v_next = float(np.dot(self.weights, x_next))
 
-        # TD error δ
-        td_error = reward + self.gamma * V_next - V_current
+        # TD error delta
+        td_error = reward + self.gamma * v_next - v_current
 
-        # Semi-gradient weight update: w ← w + α δ x
+        # Semi-gradient weight update: w ← w + alpha δ x
         self.weights += self.alpha * td_error * x
 
         self.td_errors.append(td_error)
@@ -213,21 +220,23 @@ class TemporalDifferenceLearner:
 
     def get_affect_feedback(self, sim: dict) -> float:
         """
-        Return learned affect feedback from V(s), scaled to [−0.5, 1.0].
+        Return learned affect feedback from V(s), scaled to [-0.5, 1.0].
 
         High value (strongly rewarding simulation) → positive feedback.
         Low value (aversive/neutral simulation) → negative or zero feedback.
 
-        Args:
-            sim: Simulation dictionary.
+        Args
+        ----
+        sim: Simulation dictionary.
 
-        Returns:
-            Affect feedback clipped to [−0.5, 1.0].
+        Returns
+        -------
+        Affect feedback clipped to [-0.5, 1.0].
         """
         value = self.compute_value(sim)
-        feedback = np.tanh(value)  # Squash ℝ → [−1, 1]
+        feedback = np.tanh(value)  # Squash R → [-1, 1]
         feedback = (feedback + 1.0) / 2.0  # → [0, 1]
-        feedback = feedback * 1.5 - 0.5  # → [−0.5, 1.0]
+        feedback = feedback * 1.5 - 0.5  # → [-0.5, 1.0]
         return float(np.clip(feedback, -0.5, 1.0))
 
     # ------------------------------------------------------------------
@@ -259,7 +268,7 @@ class TemporalDifferenceLearner:
                 "n_unique_states": 0,
             }
 
-        n_active = int(np.sum(np.abs(self.weights[:_IDX_BIAS]) > 1e-10))
+        n_active = int(np.sum(np.abs(self.weights[:_IDX_BIAS]) > _ACTIVE_WEIGHT_THRESHOLD))
         return {
             "mean_td_error": float(np.mean(self.td_errors)),
             "mean_abs_td_error": float(np.mean(np.abs(self.td_errors))),

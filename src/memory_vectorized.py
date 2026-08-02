@@ -1,9 +1,9 @@
 """
-Vectorized Memory Store with Interference-Based Decay
+Vectorized Memory Store with Interference-Based Decay.
 
 Drop-in replacement for MemoryStore using NumPy + optional Numba JIT for
 similarity computation. Replaces the prior uniform exponential decay
-  prio *= (1 − decay_rate)
+  prio *= (1 - decay_rate)
 with an interference-based decay model in which incoming stimuli
 selectively suppress memory traces according to their cosine similarity,
 implementing retroactive interference (Bower, 1981; Anderson & Neely, 1996).
@@ -12,14 +12,15 @@ Interference-based decay:
     For each stored event i and each incoming event j:
         cosine_ij = (x_i · x_j) / (‖x_i‖ · ‖x_j‖)
         interference_i = max_j { (cosine_ij + 1) / 2 }   ∈ [0, 1]
-        decay_factor_i = max(0, 1 − decay_rate · (1 + interference_i))
+        decay_factor_i = max(0, 1 - decay_rate · (1 + interference_i))
 
     Highly similar incoming events (interference → 1) suppress existing traces
     more strongly than dissimilar events (interference → 0), which experience
     only base-rate decay.  This produces the localized, asynchronous trace
     competition characteristic of proactive and retroactive interference.
 
-References:
+References
+----------
 - Bower, G. H. (1981). Mood and memory. American Psychologist, 36(2), 129-148.
 - Anderson, M. C., & Neely, J. H. (1996). Interference and inhibition in
   memory retrieval. In Memory. Academic Press.
@@ -40,6 +41,12 @@ except ImportError:
     _NUMBA_AVAILABLE = False
 
 
+# Feature-vector indices that are on a raw (non-[0,1]) scale and need
+# normalizing before they can contribute to a [0,1] similarity score.
+_IDX_DURATION = 1
+_IDX_PRIORITIZATION = 5
+_NORMALIZE_BY = 10.0
+
 # ---------------------------------------------------------------------------
 # Numba-accelerated similarity kernel
 # ---------------------------------------------------------------------------
@@ -53,21 +60,15 @@ if _NUMBA_AVAILABLE:
         weights: np.ndarray,  # shape (6,) float32
     ) -> np.ndarray:
         """Weighted cosine-like similarity between query and all memory rows."""
-        N = memory.shape[0]
-        scores = np.empty(N, dtype=np.float32)
-        for i in range(N):
+        n_rows = memory.shape[0]
+        scores = np.empty(n_rows, dtype=np.float32)
+        for i in range(n_rows):
             s = 0.0
             for j in range(6):
                 diff = abs(query[j] - memory[i, j])
-                if j == 1:  # duration: normalise by 10
-                    diff = diff / 10.0
-                elif j == 5:  # prioritization: normalise by 10
-                    diff = diff / 10.0
-                feat_sim = 1.0 - diff
-                if feat_sim < 0.0:
-                    feat_sim = 0.0
-                if feat_sim > 1.0:
-                    feat_sim = 1.0
+                if j in (_IDX_DURATION, _IDX_PRIORITIZATION):
+                    diff = diff / _NORMALIZE_BY
+                feat_sim = min(1.0, max(0.0, 1.0 - diff))
                 s += weights[j] * feat_sim
             scores[i] = s
         return scores
@@ -75,16 +76,22 @@ if _NUMBA_AVAILABLE:
 else:
 
     def _batch_similarity_numba(query, memory, weights):
-        """NumPy fallback when Numba is unavailable."""
+        """Compute batch similarity via plain NumPy when Numba is unavailable."""
         diffs = np.abs(query - memory)
-        diffs[:, 1] /= 10.0
-        diffs[:, 5] /= 10.0
+        diffs[:, _IDX_DURATION] /= _NORMALIZE_BY
+        diffs[:, _IDX_PRIORITIZATION] /= _NORMALIZE_BY
         feat_sims = np.clip(1.0 - diffs, 0.0, 1.0)
         return (feat_sims * weights).sum(axis=1).astype(np.float32)
 
 
 # Feature weights matching MemoryStore._event_similarity
 _WEIGHTS = np.array([0.1, 0.1, 0.1, 0.3, 0.2, 0.2], dtype=np.float32)
+
+# Thresholds matching MemoryStore's semantics (see get_working_memory_load,
+# match_patterns, prune_old_memory there)
+_ACTIVE_PRIORITY_THRESHOLD = 0.5
+_MATCH_SIMILARITY_THRESHOLD = 0.8
+_PRUNE_PRIORITY_THRESHOLD = 0.3
 
 # Modality encoding for vectorization
 _MODALITY_MAP = {
@@ -101,11 +108,11 @@ def _event_to_vector(event: dict) -> np.ndarray:
     Convert an event dict to a float32 feature vector.
 
     Feature layout:
-        [0] modality     (encoded 0–1)
+        [0] modality     (encoded 0-1)
         [1] duration     (raw, normalised by 10 in similarity kernel)
-        [2] intensity    (0–1)
-        [3] valence      (emotion valence, −1 to 1)
-        [4] timing       (0–1)
+        [2] intensity    (0-1)
+        [3] valence      (emotion valence, -1 to 1)
+        [4] timing       (0-1)
         [5] prioritization_score (raw, normalised by 10 in similarity kernel)
     """
     modality_val = _MODALITY_MAP.get(event.get("modality", "other"), 1.0)
@@ -173,13 +180,11 @@ class VectorizedMemoryStore:
         """Calculate working memory load based on capacity."""
         if self._n == 0:
             return 0.0
-        active = int(np.sum(self._prio_scores[: self._n] > 0.5))
+        active = int(np.sum(self._prio_scores[: self._n] > _ACTIVE_PRIORITY_THRESHOLD))
         return min(1.0, active / self.capacity) if self.capacity > 0 else 0.0
 
     def match_patterns(self, new_events: list[dict]) -> tuple[list[dict], list[dict]]:
-        """
-        Classify events as matched (weighted similarity > 0.8) or unmatched.
-        """
+        """Classify events as matched (weighted similarity > 0.8) or unmatched."""
         matched, unmatched = [], []
         if self._n == 0:
             return matched, list(new_events)
@@ -188,7 +193,7 @@ class VectorizedMemoryStore:
         for event in new_events:
             query = _event_to_vector(event)
             scores = _batch_similarity_numba(query, memory_slice, _WEIGHTS)
-            if float(scores.max()) > 0.8:
+            if float(scores.max()) > _MATCH_SIMILARITY_THRESHOLD:
                 matched.append(event)
                 event["recurrence"] = 1
             else:
@@ -199,7 +204,7 @@ class VectorizedMemoryStore:
         """Remove events with prioritization_score ≤ 0.3."""
         if self._n == 0:
             return
-        keep = self._prio_scores[: self._n] > 0.3
+        keep = self._prio_scores[: self._n] > _PRUNE_PRIORITY_THRESHOLD
         n_keep = int(keep.sum())
         self._vectors[:n_keep] = self._vectors[: self._n][keep]
         self._prio_scores[:n_keep] = self._prio_scores[: self._n][keep]
@@ -207,7 +212,7 @@ class VectorizedMemoryStore:
 
         surviving: deque = deque(maxlen=self.short_term.maxlen)
         for event in self.short_term:
-            if event.get("prioritization_score", 0) > 0.3:
+            if event.get("prioritization_score", 0) > _PRUNE_PRIORITY_THRESHOLD:
                 surviving.append(event)
         self.short_term = surviving
 
@@ -235,19 +240,20 @@ class VectorizedMemoryStore:
 
         Algorithm:
           1. Compute cosine similarity between each stored event and each
-             incoming event: cosine ∈ [−1, 1].
+             incoming event: cosine ∈ [-1, 1].
           2. Rescale to [0, 1]: interference = (cosine + 1) / 2.
           3. Take the maximum interference from any incoming event per stored item.
-          4. Decay factor per item: max(0, 1 − decay_rate · (1 + interference))
+          4. Decay factor per item: max(0, 1 - decay_rate · (1 + interference))
              → high similarity ⟹ faster decay (retroactive interference).
              → low similarity ⟹ near-base-rate decay.
 
         When called without arguments (e.g., for direct timing tests),
         falls back to uniform base-rate decay for backward compatibility.
 
-        Args:
-            incoming: float32 array of shape (M, 6) — feature vectors of
-                      newly stored events (the interference sources).
+        Args
+        ----
+        incoming: float32 array of shape (M, 6) — feature vectors of
+                  newly stored events (the interference sources).
         """
         if self._n == 0:
             return
@@ -269,7 +275,7 @@ class VectorizedMemoryStore:
 
             # Maximum interference per stored item across all incoming events
             max_cos = cosines.max(axis=1)  # (N,)
-            interference = (max_cos + 1.0) / 2.0  # rescale [−1,1] → [0,1]
+            interference = (max_cos + 1.0) / 2.0  # rescale [-1,1] → [0,1]
 
             # Per-item decay: base rate amplified by interference
             decay_factors = np.maximum(0.0, 1.0 - self.decay_rate * (1.0 + interference))

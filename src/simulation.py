@@ -31,18 +31,24 @@ except ImportError:
     from selfmodel import SelfModel
     from sensory import SensoryInputSystem
 
+# Prediction-error magnitude above which stress reactivity kicks in
+_STRESS_REACTIVITY_PE_THRESHOLD = 0.5
+
 
 class RPMEESimulation:
+    """Orchestrates one clinically-parameterized RPM-EE simulation run."""
+
     def __init__(self, preset="neurotypical", use_vectorized_memory=False):
         """
         Initialize simulation with clinical preset.
 
-        Args:
-            preset: Clinical preset name (default: 'neurotypical')
-                   Options: 'neurotypical', 'asd_typical', 'adhd_typical', 'mdd_typical'
-            use_vectorized_memory: Use NumPy+Numba VectorizedMemoryStore instead of
-                                   MemoryStore (default: False). Produces identical
-                                   results with better performance for large memory sizes.
+        Args
+        ----
+        preset: Clinical preset name (default: 'neurotypical')
+               Options: 'neurotypical', 'asd_typical', 'adhd_typical', 'mdd_typical'
+        use_vectorized_memory: Use NumPy+Numba VectorizedMemoryStore instead of
+                               MemoryStore (default: False). Produces identical
+                               results with better performance for large memory sizes.
         """
         self.clock = 0
         self.logs = []
@@ -123,6 +129,7 @@ class RPMEESimulation:
         )
 
     def step(self):
+        """Advance the simulation by one clock tick and log resulting metrics."""
         self.clock += 1
         self.sensory.update_clock()
         input_packet = self.sensory.generate_input()
@@ -181,10 +188,7 @@ class RPMEESimulation:
             rt_mean = None
             rt_std = None
 
-        if accuracy_values:
-            accuracy = np.mean(accuracy_values)
-        else:
-            accuracy = None
+        accuracy = np.mean(accuracy_values) if accuracy_values else None
 
         # Calculate precision metrics (NEW - Phase 3)
         if evaluated and any("precision_ratio" in s for s in evaluated):
@@ -229,7 +233,7 @@ class RPMEESimulation:
 
         # 2. Reactivity Spikes: Increase stress based on prediction errors
         pe = system_state["prediction_error"]
-        if pe > 0.5:
+        if pe > _STRESS_REACTIVITY_PE_THRESHOLD:
             self.self_model.schema_stress += self.stress_reactivity * pe * 0.1
 
         # 3. Boundary Clamp: Keep stress within [0, 1]
@@ -242,6 +246,7 @@ class RPMEESimulation:
         self.self_model.schema_stress = max(0.0, min(1.0, self.self_model.schema_stress))
 
     def run(self, episodes=100):
+        """Run the simulation for the given number of episodes, calling step() each time."""
         for episode in range(episodes):
             self.step()
             if episode % 10 == 0:
@@ -259,18 +264,20 @@ class RPMEESimulation:
         directly comparable output: the DDM's (rt, accuracy) prediction from
         (evidence, load).
 
-        Args:
-            trial: an object with .evidence (float, [-1, 1]), .load
-                (float, [0, 1]), and .difficulty (float, [0, 1]) attributes
-                -- e.g. adapters.base.Trial. load and difficulty are
-                distinct axes (see ddm.py's predict_action docstring and
-                README.md "DDM load vs. difficulty") -- do not conflate them.
+        Args
+        ----
+        trial: an object with .evidence (float, [-1, 1]), .load
+            (float, [0, 1]), and .difficulty (float, [0, 1]) attributes
+            -- e.g. adapters.base.Trial. load and difficulty are
+            distinct axes (see ddm.py's predict_action docstring and
+            README.md "DDM load vs. difficulty") -- do not conflate them.
 
-        Returns:
-            The DDM's predict_action() dict: action, rt, accurate,
-            confidence, evidence, load, difficulty. Compare 'rt'/'accurate'
-            against trial.observed_rt_ms/observed_correct in the calling
-            harness.
+        Returns
+        -------
+        The DDM's predict_action() dict: action, rt, accurate,
+        confidence, evidence, load, difficulty. Compare 'rt'/'accurate'
+        against trial.observed_rt_ms/observed_correct in the calling
+        harness.
         """
         if self.rpm.ddm is None:
             msg = (

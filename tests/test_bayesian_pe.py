@@ -16,8 +16,8 @@ import pytest
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from bayesian_pe import BayesianPredictiveModeler, PrecisionWeights
-from presets import CLINICAL_PRESETS
+from bayesian_pe import BayesianPredictiveModeler, PrecisionWeights  # noqa: E402
+from presets import CLINICAL_PRESETS  # noqa: E402
 
 
 class TestBayesianPEBasicFunctionality:

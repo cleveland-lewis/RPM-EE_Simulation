@@ -1,10 +1,11 @@
 """
-Bayesian Precision-Weighted Prediction Error Framework
+Bayesian Precision-Weighted Prediction Error Framework.
 
 Implements hierarchical Bayesian updating with precision parameters
 to model predictive coding and enable ASD aberrant precision account.
 
-References:
+References
+----------
 - Friston, K. (2010). The free-energy principle: a unified brain theory?
   Nature Reviews Neuroscience, 11(2), 127-138.
 - Mathys, C., Daunizeau, J., Friston, K. J., & Stephan, K. E. (2011).
@@ -33,7 +34,7 @@ Volatility update (HGF Level 3):
 
   This is dimensionally consistent: both pe² and σ²_hat are variance-scale
   quantities; their ratio is dimensionless. Contrast with the invalid
-  'pe² − μ_vol' subtraction (mixed units) used in prior versions.
+  'pe² - μ_vol' subtraction (mixed units) used in prior versions.
 """
 
 from dataclasses import dataclass
@@ -41,7 +42,7 @@ from dataclasses import dataclass
 import numpy as np
 
 # Reference variance scale for the volatility level.
-# Observations are in approximately [−1, 1]; typical squared PEs are O(0.01–0.1).
+# Observations are in approximately [-1, 1]; typical squared PEs are O(0.01-0.1).
 # This sets the neutral operating point of the log-volatility tracker.
 _BASE_VAR = 0.01
 
@@ -68,7 +69,7 @@ class BayesianPredictiveModeler:
     Volatility update is performed in LOG-VARIANCE space to preserve
     dimensional consistency. The predictive variance at level 3 is
     σ²_hat = BASE_VAR * exp(log_v), and the volatility prediction error
-    is VOPE = pe² / σ²_hat − 1 (dimensionless). This avoids the invalid
+    is VOPE = pe² / σ²_hat - 1 (dimensionless). This avoids the invalid
     arithmetic subtraction of a raw squared error from a scalar [0,1] estimate.
 
     This enables modeling of aberrant precision in ASD:
@@ -81,8 +82,9 @@ class BayesianPredictiveModeler:
         """
         Initialize Bayesian PE system with precision parameters.
 
-        Args:
-            precision_weights: PrecisionWeights object with clinical parameters
+        Args
+        ----
+        precision_weights: PrecisionWeights object with clinical parameters
         """
         self.precision = precision_weights
 
@@ -113,12 +115,14 @@ class BayesianPredictiveModeler:
             log_v ← log_v + (κ/2) * VOPE
         ensuring dimensional consistency (pe² and σ²_hat share units).
 
-        Args:
-            observation: Actual sensory value (e.g., emotional valence)
-            observation_precision: Confidence in observation (from DDM confidence)
+        Args
+        ----
+        observation: Actual sensory value (e.g., emotional valence)
+        observation_precision: Confidence in observation (from DDM confidence)
 
-        Returns:
-            Dictionary with:
+        Returns
+        -------
+        Dictionary with:
                 'pe_sensory': Precision-weighted sensory PE
                 'pe_state': State-level PE
                 'mu_sensory': Updated sensory belief
@@ -153,7 +157,7 @@ class BayesianPredictiveModeler:
         #
         # Dimensionless variance prediction error (VOPE):
         #   pe_state_raw² is empirical variance; σ²_hat is predicted variance.
-        #   VOPE = (empirical − predicted) / predicted, analogous to a chi-sq residual.
+        #   VOPE = (empirical - predicted) / predicted, analogous to a chi-sq residual.
         vope = (pe_state_raw**2) / sigma2_hat - 1.0
         #
         # Log-variance update (κ = learning_rate, halved for chi-sq scaling):
@@ -214,11 +218,13 @@ class BayesianPredictiveModeler:
         """
         Calculate precision-weighted PE across multiple simulations.
 
-        Args:
-            simulations: List of simulation dicts with 'emotional_prediction' and 'confidence'
+        Args
+        ----
+        simulations: List of simulation dicts with 'emotional_prediction' and 'confidence'
 
-        Returns:
-            Precision-weighted mean PE
+        Returns
+        -------
+        Precision-weighted mean PE
         """
         if not simulations:
             return 0.0

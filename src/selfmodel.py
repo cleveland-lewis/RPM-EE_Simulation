@@ -3,8 +3,13 @@ try:
 except ImportError:
     from bayesian_pe import BayesianPredictiveModeler, PrecisionWeights
 
+# Schema-mismatch magnitude above which stress ramps up rather than decays
+_STRESS_TRIGGER_MISMATCH = 0.5
+
 
 class SelfModel:
+    """Tracks traits, emotion baseline, and schema stress across simulations."""
+
     def __init__(self):
         self.traits = {
             "adaptive": 0.6,
@@ -29,6 +34,7 @@ class SelfModel:
         self.bayesian_pe = BayesianPredictiveModeler(precision)
 
     def evaluate_simulations(self, simulations):
+        """Score prediction-error/schema mismatch and update stress for each simulation."""
         for sim in simulations:
             expected_valence = self.emotion_baseline
             actual_valence = sim.get("emotional_prediction", 0.0)
@@ -55,7 +61,7 @@ class SelfModel:
                 sim["schema_mismatch"] = mismatch
 
             # Update schema stress (with precision weighting)
-            if mismatch > 0.5:
+            if mismatch > _STRESS_TRIGGER_MISMATCH:
                 self.schema_stress += 0.1
             else:
                 self.schema_stress *= 0.95  # decay
@@ -69,4 +75,5 @@ class SelfModel:
         return simulations
 
     def update_emotion_baseline(self, new_valence):
+        """Update the running emotion baseline with an exponential moving average."""
         self.emotion_baseline = 0.8 * self.emotion_baseline + 0.2 * new_valence

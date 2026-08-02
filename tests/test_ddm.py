@@ -17,8 +17,8 @@ import pytest
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from ddm import DriftDiffusionModel
-from presets import CLINICAL_PRESETS
+from ddm import DriftDiffusionModel  # noqa: E402
+from presets import CLINICAL_PRESETS  # noqa: E402
 
 
 class TestDDMBasicFunctionality:
@@ -89,7 +89,8 @@ class TestDDMRTDistributions:
             400 < mean_rt < 600
         ), f"NT mean RT {mean_rt:.1f}ms outside expected range [400, 600]ms"
 
-        # Check CV within reasonable range (target 0.15, allow 0.08-0.25 for DDM calibration challenges)
+        # Check CV within reasonable range (target 0.15, allow 0.08-0.25 for
+        # DDM calibration challenges)
         assert 0.08 < cv < 0.25, f"NT RT CV {cv:.3f} outside expected range [0.08, 0.25]"
 
     def test_mdd_psychomotor_slowing(self):
@@ -279,9 +280,10 @@ class TestDDMConfidence:
     def test_confidence_range(self):
         """Verify confidence is in [0, 1] range."""
         ddm = DriftDiffusionModel(random_seed=42)
+        rng = np.random.default_rng(42)
 
         for _ in range(100):
-            result = ddm.predict_action(evidence=np.random.uniform(-1, 1), load=0.0)
+            result = ddm.predict_action(evidence=rng.uniform(-1, 1), load=0.0)
             assert 0.0 <= result["confidence"] <= 1.0, "Confidence should be in [0, 1]"
 
     @pytest.mark.xfail(

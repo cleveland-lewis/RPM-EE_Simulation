@@ -1,14 +1,19 @@
 import uuid
-from typing import Optional
 
 try:
     from .ddm import DriftDiffusionModel
 except ImportError:
     from ddm import DriftDiffusionModel
 
+# Valence thresholds for the legacy (non-DDM) outcome classifier
+_POSITIVE_OUTCOME_VALENCE = 0.5
+_NEGATIVE_OUTCOME_VALENCE = -0.5
+
 
 class RecursivePredictiveModeler:
-    def __init__(self, ddm_params: Optional[dict] = None):
+    """Generates and scores predictive simulations, optionally DDM-backed."""
+
+    def __init__(self, ddm_params: dict | None = None):
         self.simulation_history = []
         self.slot_structure = ["agent", "emotion", "action", "result"]
         self.simulations = []
@@ -29,6 +34,7 @@ class RecursivePredictiveModeler:
         )
 
     def generate_simulations(self, matched_events):
+        """Create, record, and return a simulation for each matched event."""
         simulations = []
         for event in matched_events:
             sim = self._create_simulation(event)
@@ -75,15 +81,16 @@ class RecursivePredictiveModeler:
         # Placeholder logic — replace with real mapping from emotion or modality
         if event["modality"] == "vision":
             return "approach" if event["emotion"]["valence"] > 0 else "withdraw"
-        elif event["modality"] == "touch":
+        if event["modality"] == "touch":
             return "recoil" if event["emotion"]["valence"] < 0 else "explore"
         return "observe"
 
     def _predict_result(self, event):
         # Result is simplified as binary — success/failure or positive/negative
-        if event["emotion"]["valence"] > 0.5:
+        valence = event["emotion"]["valence"]
+        if valence > _POSITIVE_OUTCOME_VALENCE:
             return "positive outcome"
-        elif event["emotion"]["valence"] < -0.5:
+        if valence < _NEGATIVE_OUTCOME_VALENCE:
             return "negative outcome"
         return "neutral outcome"
 
@@ -104,4 +111,5 @@ class RecursivePredictiveModeler:
         return round(distortion, 3)
 
     def get_simulations(self):
+        """Return the most recently generated batch of simulations."""
         return self.simulations

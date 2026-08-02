@@ -18,8 +18,8 @@ import pytest
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from presets import list_presets
-from simulation import RPMEESimulation
+from presets import list_presets  # noqa: E402
+from simulation import RPMEESimulation  # noqa: E402
 
 
 class TestFullPipelineIntegration:

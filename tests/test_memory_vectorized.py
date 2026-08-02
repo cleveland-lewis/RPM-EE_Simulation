@@ -17,15 +17,15 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from memory import MemoryStore
-from memory_vectorized import VectorizedMemoryStore, _event_to_vector
+from memory import MemoryStore  # noqa: E402
+from memory_vectorized import VectorizedMemoryStore, _event_to_vector  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
 
 
-def _make_event(
+def _make_event(  # noqa: PLR0913
     modality="vision", duration=2.0, intensity=0.5, valence=0.3, timing=0.5, prio=5.0
 ) -> dict:
     return {
