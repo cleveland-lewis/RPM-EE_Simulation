@@ -7,7 +7,7 @@ repos:
   # ==========================================================================
   # 1. Language and Formatting Consistency
   # ==========================================================================
-  
+
   # 1.1 Black - Python code formatter
   - repo: https://github.com/psf/black
     rev: 23.12.1
@@ -34,12 +34,12 @@ repos:
       # Ruff linter
       - id: ruff
         name: ruff (linting)
-        args: 
+        args:
           - --fix
           - --exit-non-zero-on-fix
           - --select=E,W,F,I,N,UP,B,A,C4,DTZ,T10,DJ,EM,EXE,ISC,PIE,PYI,RSE,RET,SIM,TID,ARG,PTH,PD,PGH,PL,TRY,NPY,RUF,FIX
         types: [python]
-      
+
       # Ruff formatter (as backup to black)
       - id: ruff-format
         name: ruff (formatting)
@@ -55,7 +55,7 @@ repos:
     hooks:
       - id: mypy
         name: mypy (type checking)
-        args: 
+        args:
           - --ignore-missing-imports
           - --no-strict-optional
           - --warn-redundant-casts
@@ -79,13 +79,15 @@ repos:
     hooks:
       - id: detect-secrets
         name: detect-secrets
-        args: 
+        args:
           - --baseline
           - .secrets.baseline
           - --exclude-files
           - '.*\.ipynb$'
           - --exclude-files
           - 'package-lock.json'
+          - --exclude-files
+          - '.*_cacache/.*'
         exclude: package-lock.json
 
   # 3.2 Bandit - Security issue scanner
@@ -94,7 +96,7 @@ repos:
     hooks:
       - id: bandit
         name: bandit (security scan)
-        args: 
+        args:
           - -c
           - pyproject.toml
           - -r
@@ -111,7 +113,7 @@ repos:
     hooks:
       - id: yamllint
         name: yamllint
-        args: 
+        args:
           - --config-file=.yamllint.yaml
         files: \.(yaml|yml)$
 
@@ -164,7 +166,7 @@ repos:
         name: check-symlinks
       - id: destroyed-symlinks
         name: destroyed-symlinks
-      
+
       # File format checks
       - id: check-yaml
         name: check-yaml
@@ -173,13 +175,13 @@ repos:
         name: check-toml
       - id: check-xml
         name: check-xml
-      
+
       # Merge conflict and syntax checks
       - id: check-merge-conflict
         name: check-merge-conflict
       - id: check-ast
         name: check-ast (Python syntax)
-      
+
       # Whitespace and line ending fixes
       - id: trailing-whitespace
         name: trailing-whitespace
@@ -189,7 +191,7 @@ repos:
       - id: mixed-line-ending
         name: mixed-line-ending
         args: ['--fix=lf']
-      
+
       # Python-specific checks
       - id: check-docstring-first
         name: check-docstring-first
@@ -199,7 +201,7 @@ repos:
         name: name-tests-test
         args: ['--pytest-test-first']
         files: ^tests/.*\.py$
-      
+
       # Executable and shebang checks
       - id: check-executables-have-shebangs
         name: check-executables-have-shebangs
@@ -218,7 +220,7 @@ repos:
         entry: pytest
         language: system
         types: [python]
-        args: 
+        args:
           - -v
           - --tb=short
           - -m
