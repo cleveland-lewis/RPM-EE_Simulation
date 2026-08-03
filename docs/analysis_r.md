@@ -79,10 +79,13 @@ python -m analysis.export_results_for_r \
 
 ## Step 2: Analyze in R
 
-Requires `tidyverse` (`readr`, `dplyr`, `ggplot2`, `tidyr`):
+Requires `readr`, `dplyr`, `tidyr`, and `ggplot2` (installed individually
+rather than the full `tidyverse` meta-package, since `tidyverse` also pulls
+in `rvest`/`xml2`, which need system `libxml2` headers this workflow doesn't
+otherwise need):
 
 ```bash
-Rscript -e 'install.packages(c("tidyverse"))'   # one-time setup
+Rscript -e 'install.packages(c("readr", "dplyr", "tidyr", "ggplot2"))'   # one-time setup
 Rscript scripts/analysis_r.R results/export/rpm_ee_results.csv results/r_analysis
 ```
 

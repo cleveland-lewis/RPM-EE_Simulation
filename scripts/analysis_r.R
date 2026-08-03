@@ -17,7 +17,10 @@
 # src/ddm.py's predict_action docstring) are dropped before summarizing.
 
 suppressMessages({
-  library(tidyverse)
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(ggplot2)
 })
 
 args <- commandArgs(trailingOnly = TRUE)

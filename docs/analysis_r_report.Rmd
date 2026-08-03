@@ -9,12 +9,15 @@ output:
   pdf_document:
     toc: true
 params:
-  data_path: "results/export/rpm_ee_results.csv"
+  data_path: "../results/export/rpm_ee_results.csv"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
-library(tidyverse)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 ```
 
 ## Methods
