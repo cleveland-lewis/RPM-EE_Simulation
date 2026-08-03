@@ -9,7 +9,9 @@
 
 ## Session Summary
 
-Successfully transitioned from Phase 2 (Evidence Strengthening) to Phase 3 (Validation & Testing). Created comprehensive sensitivity analysis framework to identify critical parameters requiring strongest validation.
+Successfully transitioned from Phase 2 (Evidence Strengthening) to Phase 3
+(Validation & Testing). Created comprehensive sensitivity analysis framework
+to identify critical parameters requiring strongest validation.
 
 ---
 
@@ -18,12 +20,14 @@ Successfully transitioned from Phase 2 (Evidence Strengthening) to Phase 3 (Vali
 ### ✅ Phase 2 Progress (87% Complete)
 
 **Paper Acquisition:**
+
 - Downloaded 2/6 papers (1 verified correct, 1 wrong paper)
 - corbett2009.pdf ✅ - ASD cortisol study (1.3MB, 25 pages)
 - Created author request templates for remaining 5 papers
 - Documented manual download instructions
 
 **Data Extraction:**
+
 - Created automated PDF extraction tool (extract_paper_data.py)
 - Extracted preliminary data from corbett2009:
   - N=45 (21 ASD, 24 NT), ages 8-12
@@ -34,6 +38,7 @@ Successfully transitioned from Phase 2 (Evidence Strengthening) to Phase 3 (Vali
 - GitHub Issue #4 created for manual value extraction
 
 **Infrastructure:**
+
 - 3 automation scripts (25KB code total)
 - 14 documentation files
 - Extraction framework ready to scale
@@ -41,6 +46,7 @@ Successfully transitioned from Phase 2 (Evidence Strengthening) to Phase 3 (Vali
 ### ✅ Phase 3 Progress (50% Complete)
 
 **Sensitivity Analysis (100% ✅):**
+
 - Created sensitivity_analysis.py (15KB)
 - Analyzed all 4 presets (NT, ASD, ADHD, MDD)
 - Generated 8 reports (4 markdown + 4 JSON, ~480KB)
@@ -49,13 +55,15 @@ Successfully transitioned from Phase 2 (Evidence Strengthening) to Phase 3 (Vali
 - Identified 7 HIGH-impact parameters requiring strongest evidence
 
 **Face Validation (100% ✅):**
-- Created face_validation.py (13KB) 
+
+- Created face_validation.py (13KB)
 - Validated all 4 presets against expected clinical patterns
 - Results: 2/4 passing (NT 100%, ADHD 100%), 2 needing review (ASD 67%, MDD 75%)
 - Identified 2 specific parameter issues requiring adjustment
 - Created comprehensive validation reports
 
 **Parameter Scale Documentation (100% ✅):**
+
 - Created PARAMETER_SCALES.md (9KB)
 - Documented all 18 parameter scales with ranges and conversions
 - Clarified switch_cost is proportional (0-1), not milliseconds
@@ -65,6 +73,7 @@ Successfully transitioned from Phase 2 (Evidence Strengthening) to Phase 3 (Vali
 **Key Findings:**
 
 HIGH-IMPACT Parameters (Sensitivity Index > 1.0):
+
 1. `reward_sensitivity` → reward_learning
 2. `rt_variability` → rt_cv
 3. `attention_stability` → sustained_attention
@@ -74,17 +83,20 @@ HIGH-IMPACT Parameters (Sensitivity Index > 1.0):
 7. `prediction_error_gain` → reward_learning
 
 **Validation Priority Established:**
+
 - HIGH-impact parameters → Need meta-analyses (strong evidence)
 - MODERATE-impact → Need empirical studies
 - LOW-impact → Estimates/theoretical OK
 
 **Face Validation Results:**
+
 - ✅ Neurotypical: 100% pass (3/3 patterns matched)
 - ✅ ADHD: 100% pass (4/4 patterns matched)
 - ⚠️ ASD: 67% pass (2/3 patterns - attention_stability slightly low)
 - ⚠️ MDD: 75% pass (3/4 patterns - reward_sensitivity too high)
 
 **Critical Finding - Scale Ambiguity Resolved:**
+
 - Discovered switch_cost scale was unclear in validation
 - Created comprehensive scale reference (PARAMETER_SCALES.md)
 - All parameters now have documented scales, ranges, and conversion formulas
@@ -102,7 +114,8 @@ HIGH-IMPACT Parameters (Sensitivity Index > 1.0):
 | Phase 4: Documentation | ⏳ Pending | 0% | 0 hours |
 | **TOTAL** | **⚡ In Progress** | **59%** | **~17 hours** |
 
-### Phase 2 Breakdown:
+### Phase 2 Breakdown
+
 - Documentation: 100% ✅
 - Automation tools: 100% ✅
 - Paper downloads: 17% (1/6) ⚡
@@ -110,20 +123,63 @@ HIGH-IMPACT Parameters (Sensitivity Index > 1.0):
 - Value updates: 0% ⏳
 - Expert consultation: 0% ⏳
 
-### Phase 3 Breakdown:
+### Phase 3 Breakdown
+
 - Sensitivity analysis: 100% ✅
 - Parameter scale documentation: 100% ✅
 - Face validation: 100% ✅
 - Predictive validation: 0% ⏳
-- Confidence quantification: 0% ⏳
+- Confidence quantification: 100% ✅ (2026-08-03, see below)
 - Documentation: 0% ⏳
+
+---
+
+## Confidence Quantification (Complete — 2026-08-03)
+
+Closes Issue #19. Implemented in `scripts/confidence_quantification.py`, reports
+in `results/confidence_quantification/`.
+
+**What it does:**
+
+1. **Bayesian credible intervals** — every parameter gets a prior
+   `Normal(preset value, sd)` where `sd` scales with its existing
+   `PARAMETER_CONFIDENCE` rating (HIGH/MODERATE/LOW). Where a cited
+   meta-analysis reports a mean/SD or explicit 95% CI on a mappable scale
+   (currently: `rt_variability` for ADHD via Kofler et al. 2013, and
+   `stress_baseline` for MDD via Burke et al. 2005), that's combined with the
+   prior via conjugate normal-normal Bayesian updating into a genuine
+   data-informed posterior. Everything else is reported as a prior-only
+   interval, explicitly labeled as such — no fabricated precision.
+2. **Confidence-weighted sensitivity** — combines each parameter's max
+   sensitivity index (from `scripts/sensitivity_analysis.py`) with a
+   confidence weight (HIGH=1.0, MODERATE=0.6, LOW=0.25).
+3. **Risk matrix** — flags parameters that are both high-sensitivity and
+   low-confidence (CRITICAL/WATCH/MONITOR/WELL-SUPPORTED/LOW-RISK).
+
+**Result:** Recomputing the risk matrix from actual data (rather than the
+manual review in `docs/PHASE3_VALIDATION_FINDINGS.md`) confirms
+`reward_sensitivity` and `prediction_error_gain` as CRITICAL or WATCH across
+all four presets — the same parameters flagged previously, now with a
+reproducible score. It also surfaces a few more (e.g. `wm_capacity` in ASD/MDD,
+`attention_stability`, `base_accuracy`) as WATCH-tier. Full tables per preset
+in `results/confidence_quantification/confidence_quantification_<preset>.md`
+and cross-preset summary in `confidence_quantification_summary.md`.
+
+**Side finding:** the script surfaced additional parameter/range mismatches
+between `docs/PARAMETER_SCALES.md` and `src/presets.py` beyond the
+already-documented `switch_cost` ambiguity — `rt_slowing` is stored as a
+multiplier (~1.0-1.2) but documented as a 0-0.25 proportional rate, and
+`accuracy_decline`, `reward_sensitivity`, `prediction_error_gain` exceed their
+documented max in several presets. Not fixed here (out of scope for this
+issue); worth a follow-up scale-documentation pass.
 
 ---
 
 ## Files Created This Session
 
 **Scripts (5 files, 58KB):**
-```
+
+```text
 scripts/
 ├── paper_finder.py (4KB)
 ├── aggressive_downloader.py (11KB)
@@ -133,14 +189,16 @@ scripts/
 ```
 
 **Papers (2 files, 2MB):**
-```
+
+```text
 papers/
 ├── corbett2009.pdf (1.3MB) ✅
 └── huang-pollock2012.pdf (704KB) ❌ wrong paper
 ```
 
 **Extractions (7 files, 110KB):**
-```
+
+```text
 extractions/
 ├── corbett2009_EXTRACTED.md
 ├── corbett2009_extraction.md
@@ -152,7 +210,8 @@ extractions/
 ```
 
 **Author Requests (6 files, 12KB):**
-```
+
+```text
 author_requests/
 ├── kofler2013_request.md
 ├── burke2005_request.md
@@ -163,7 +222,8 @@ author_requests/
 ```
 
 **Sensitivity Results (8 files, ~480KB):**
-```
+
+```text
 results/sensitivity_analysis/
 ├── sensitivity_analysis_neurotypical.md
 ├── sensitivity_analysis_asd_typical.md
@@ -176,14 +236,16 @@ results/sensitivity_analysis/
 ```
 
 **Validation Results (2 files, ~5KB):**
-```
+
+```text
 results/validation/
 ├── face_validation_report.md (3KB)
 └── face_validation_data.json (2KB)
 ```
 
 **Documentation (3 files, 29KB):**
-```
+
+```text
 docs/
 ├── EXTRACTION_GUIDE.md
 ├── PARAMETER_SCALES.md (9KB) ⭐ NEW
@@ -207,7 +269,8 @@ docs/
 - Status: Clean working directory
 
 **Recent Commits:**
-```
+
+```text
 fe055ac Phase 3: Complete face validation with parameter scale documentation
 353b2bd Add Phase 3 progress report
 7f2b726 Phase 3: Initial sensitivity analysis framework
@@ -220,23 +283,27 @@ fe055ac Phase 3: Complete face validation with parameter scale documentation
 ## Key Insights
 
 ### 1. Sensitivity Analysis Validates Priorities
+
 - 7 parameters have HIGH impact on simulation outcomes
 - Aligns with Phase 2 focus (RT variability, WM capacity, attention)
 - Provides empirical justification for validation priorities
 
 ### 2. Face Validation Catches Real Issues
+
 - 2/4 presets need minor adjustments (not critical failures)
 - ASD attention_stability: 0.80 vs expected >0.85 (minor)
 - MDD reward_sensitivity: 0.35 vs expected <0.20 (needs adjustment)
 - Both issues have clear literature support for fixes
 
 ### 3. Scale Documentation Critical
+
 - Face validation revealed switch_cost scale ambiguity
 - Created comprehensive PARAMETER_SCALES.md
 - Prevents future validation errors
 - Provides clear literature-to-parameter conversion formulas
 
 ### 4. Two-Stage Validation Works Well
+
 - **Sensitivity** identifies which parameters matter most
 - **Face validation** checks if values match clinical expectations
 - Together: prioritize validation efforts efficiently
@@ -247,6 +314,7 @@ fe055ac Phase 3: Complete face validation with parameter scale documentation
 ## Immediate Next Steps
 
 ### This Session (1 hour) - Optional Parameter Fixes
+
 1. ⏳ **Fix ASD attention_stability** (5 min)
    - Change from 0.80 → 0.87
    - Minor adjustment, well-supported
@@ -258,6 +326,7 @@ fe055ac Phase 3: Complete face validation with parameter scale documentation
    - Should achieve 4/4 passing (100%)
 
 ### Next Session (3-5 hours) - Predictive Validation
+
 1. **Run simulations** with all 4 presets
 2. **Extract behavioral outputs** (RT distributions, accuracy, WM, etc.)
 3. **Compare to literature patterns**
@@ -268,6 +337,7 @@ fe055ac Phase 3: Complete face validation with parameter scale documentation
 5. **Complete Phase 3 to 75%**
 
 ### Following Session (2-3 hours) - Confidence Quantification  
+
 1. **Bayesian credible intervals** for parameters
 2. **Confidence-weighted sensitivity** analysis
 3. **Risk assessment** (high sensitivity + low confidence)
@@ -278,22 +348,24 @@ fe055ac Phase 3: Complete face validation with parameter scale documentation
 ## Expected Outcomes
 
 ### Parameter Confidence Distribution (After Completion)
+
 - **HIGH confidence:** 12-15 parameters (40-50%)
   - Meta-analytic support or large N studies
   - Direct empirical measures
   - Clear scale mappings
-  
+
 - **MODERATE confidence:** 10-12 parameters (35-40%)
   - Published studies, adequate samples
   - Indirect measures or theoretical justification
   - Reasonable scale mappings
-  
+
 - **LOW confidence:** 3-6 parameters (10-20%)
   - Estimates pending validation
   - Theoretical parameters
   - Requires future empirical work
 
 ### Overall Assessment
+
 **Status:** Defensible for research and educational use  
 **Limitations:** Clearly documented  
 **Validation:** Empirically supported where critical  
@@ -316,28 +388,33 @@ Based on sensitivity analysis + Phase 2 targets:
 ## Value Delivered
 
 ✨ **Complete validation infrastructure**
+
 - Sensitivity analysis framework
 - Face validation framework
 - Parameter scale reference
 - Clear methodology for all validation types
 
 ✨ **Strong empirical foundation**
+
 - 7 HIGH-impact parameters identified
 - Scale ambiguities resolved
 - Literature conversion formulas documented
 - Validation priorities clear
 
 ✨ **Two validation stages complete**
+
 - Sensitivity: Which parameters matter most
 - Face: Do values match clinical expectations
 - Next: Predictive (do outputs match empirical patterns)
 
 ✨ **Minor issues identified and documented**
+
 - 2 parameters need adjustment (clear fixes)
 - Both have strong literature support
 - Can be resolved in <15 minutes
 
 ✨ **Clear path to completion**
+
 - 50% done, 50% remaining
 - ~6-8 hours to complete Phase 3
 - Methodology proven and working
@@ -348,21 +425,24 @@ Based on sensitivity analysis + Phase 2 targets:
 
 ### Path to 100% Validation (Fastest Route: ~8 hours remaining)
 
-**Session 1: Parameter Fixes (1 hour)**
+#### Session 1: Parameter Fixes (1 hour)
+
 1. Fix 2 parameter values (15 min)
 2. Re-run face validation → 100% pass (5 min)
 3. Update PHASE3_PROGRESS.md (10 min)
 4. Commit + document (10 min)
 5. **Milestone:** All presets pass face validation
 
-**Session 2: Predictive Validation (4 hours)**
+#### Session 2: Predictive Validation (4 hours)
+
 1. Run simulations for all 4 presets (30 min)
 2. Extract behavioral metrics (RT, accuracy, WM, etc.) (1 hour)
 3. Compare to literature patterns (2 hours)
 4. Generate validation report (30 min)
 5. **Milestone:** Simulation outputs match clinical expectations
 
-**Session 3: Confidence Quantification (3 hours)**
+#### Session 3: Confidence Quantification (3 hours)
+
 1. Implement Bayesian credible intervals (1.5 hours)
 2. Confidence-weighted sensitivity analysis (1 hour)
 3. Risk matrix (high sensitivity + low confidence) (30 min)
@@ -375,6 +455,7 @@ Based on sensitivity analysis + Phase 2 targets:
 ### Alternative: Comprehensive Validation (~12 hours remaining)
 
 Add to above:
+
 - External dataset validation (ABIDE, ADHD-200)
 - Cross-validation analysis
 - Expert review panel
@@ -387,16 +468,19 @@ Add to above:
 ## Risk Assessment
 
 **Low Risk:**
+
 - Tools are working well
 - First paper extraction successful
 - Clear methodology established
 
 **Medium Risk:**
+
 - Paper access may take time (ILL = 3-7 days)
 - Manual extraction requires domain knowledge
 - Some conversions are approximate
 
 **Mitigation:**
+
 - Start with library access (fastest)
 - Use extraction templates (reduce errors)
 - Document conversion assumptions clearly
@@ -406,7 +490,9 @@ Add to above:
 
 ## Conclusion
 
-Excellent progress on Phase 3. Completed sensitivity analysis and face validation, establishing a rigorous validation framework. Identified 7 HIGH-impact parameters and 2 minor parameter adjustments needed.
+Excellent progress on Phase 3. Completed sensitivity analysis and face
+validation, establishing a rigorous validation framework. Identified 7
+HIGH-impact parameters and 2 minor parameter adjustments needed.
 
 **Status:** On track for completion  
 **Phase 3 Progress:** 50% (sensitivity + face validation + scale documentation)  
@@ -414,6 +500,7 @@ Excellent progress on Phase 3. Completed sensitivity analysis and face validatio
 **Confidence:** HIGH - methodology proven effective
 
 **Key Achievement:** Created reusable validation infrastructure that can:
+
 - Systematically evaluate any clinical preset
 - Identify high-risk parameters (high sensitivity + low confidence)
 - Document evidence quality transparently

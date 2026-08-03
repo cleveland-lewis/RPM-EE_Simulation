@@ -7,13 +7,18 @@
 
 ## Summary
 
-Completed sensitivity analysis and face validation. Identified 4 parameter issues requiring attention before proceeding to predictive validation.
+Completed sensitivity analysis and face validation. Identified 4 parameter
+issues requiring attention before proceeding to predictive validation.
 
 **Validation Progress:**
+
 - ✅ Sensitivity analysis (100%) - 8 reports generated
 - ✅ Face validation (100%) - 4 presets validated
 - ⏳ Predictive validation (0%) - Pending parameter fixes
-- ⏳ Confidence quantification (0%) - Pending
+- ✅ Confidence quantification (100%) - 2026-08-03, see `scripts/confidence_quantification.py`
+  and `results/confidence_quantification/`. Recomputes the risk matrix below from actual
+  sensitivity + confidence data rather than manual review; see
+  `confidence_quantification_summary.md` for the current source of truth.
 
 ---
 
@@ -32,6 +37,7 @@ These parameters have the strongest influence on simulation outcomes and require
 7. **prediction_error_gain** → reward_learning (SI: ~1.0-1.2)
 
 **Implication:** These 7 parameters need meta-analytic or large-N support. Currently:
+
 - ✅ HIGH confidence: rt_variability (ADHD), base_rt (MDD)
 - ⚠️ MODERATE: wm_capacity, attention_stability, base_accuracy
 - ❌ LOW: reward_sensitivity, prediction_error_gain
@@ -67,6 +73,7 @@ These parameters have the strongest influence on simulation outcomes and require
 **Evidence:** Literature supports high stability (see v1.1 doc Section 2.2.2)
 
 **Recommended Fix:**
+
 ```python
 'asd_typical': {
     'attention_stability': 0.87,  # Changed from 0.80
@@ -90,6 +97,7 @@ These parameters have the strongest influence on simulation outcomes and require
 **Problem:** Unclear what scale this parameter uses!
 
 **Investigation Required:**
+
 1. Check `src/` code for switch_cost usage
 2. Determine if scale is:
    - Milliseconds (typical in RT literature)
@@ -98,6 +106,7 @@ These parameters have the strongest influence on simulation outcomes and require
 3. Check v1.1 doc for scale specification
 
 **Temporary Fix (if milliseconds):**
+
 ```python
 'asd_typical': {
     'switch_cost': 150,  # ms, elevated relative to NT ~80-100ms
@@ -120,11 +129,13 @@ These parameters have the strongest influence on simulation outcomes and require
 **Problem:** Parameter doesn't exist in current preset!
 
 **Investigation Required:**
+
 1. Check if sensory processing is implemented in simulation
 2. If yes: Add parameter to ASD preset
 3. If no: Document as limitation
 
 **Recommended Fix (if implemented):**
+
 ```python
 'asd_typical': {
     'sensory_threshold': 0.35,  # Low threshold → hyper-reactivity
@@ -147,11 +158,13 @@ These parameters have the strongest influence on simulation outcomes and require
 **Evidence:** Treadway & Zald (2011) review shows marked reward deficits
 
 **Analysis:**
+
 - Current value suggests mild-moderate blunting
 - Depression typically shows severe anhedonia
 - May reflect mild vs. severe MDD distinction
 
 **Recommended Fix:**
+
 ```python
 'mdd_typical': {
     'reward_sensitivity': 0.12,  # Changed from 0.35
@@ -161,6 +174,7 @@ These parameters have the strongest influence on simulation outcomes and require
 ```
 
 **Alternative:** Create two MDD presets:
+
 - `mdd_mild`: reward_sensitivity = 0.35
 - `mdd_severe`: reward_sensitivity = 0.12
 
@@ -170,17 +184,20 @@ These parameters have the strongest influence on simulation outcomes and require
 
 ## Critical Blocker: Scale Ambiguity
 
-**Problem:** Face validation revealed that `switch_cost` scale is unclear. This suggests potential broader issue with parameter scale documentation.
+**Problem:** Face validation revealed that `switch_cost` scale is unclear.
+This suggests potential broader issue with parameter scale documentation.
 
 **Risk:** Other parameters may have ambiguous scales, leading to validation failures.
 
 **Action Required:**
+
 1. **Audit all parameters** for scale documentation
 2. **Create scale reference** (docs/PARAMETER_SCALES.md)
 3. **Update presets.py** with inline scale comments
 4. **Validate scales** against literature
 
 **Example:**
+
 ```python
 # BAD - Ambiguous
 'switch_cost': 0.25,
@@ -207,13 +224,13 @@ These parameters have the strongest influence on simulation outcomes and require
 
 **HIGH sensitivity + Validation concerns:**
 
-2. **attention_stability** (ASD)
+1. **attention_stability** (ASD)
    - Sensitivity: HIGH (SI ~1.2-1.5)
    - Confidence: MODERATE (Huang-Pollock 2012)
    - Face validation: FAIL (slightly low)
    - Action: Adjust to 0.87
 
-3. **switch_cost** (ASD)
+2. **switch_cost** (ASD)
    - Sensitivity: MODERATE
    - Confidence: MODERATE
    - Face validation: FAIL (scale unclear)
@@ -234,16 +251,16 @@ These parameters have the strongest influence on simulation outcomes and require
 
 ### Short-term (Next Session)
 
-7. **Predictive validation** - Compare simulation outputs to clinical data
-8. **Confidence quantification** - Add Bayesian credible intervals
-9. **Create validation summary** - Comprehensive report
-10. **Complete Phase 3** - All validation tasks done
+1. **Predictive validation** - Compare simulation outputs to clinical data
+2. **Confidence quantification** - Add Bayesian credible intervals
+3. **Create validation summary** - Comprehensive report
+4. **Complete Phase 3** - All validation tasks done
 
 ### Medium-term (Phase 4)
 
-11. **Update documentation** - All findings integrated
-12. **Expert review** - Get clinical validation
-13. **Prepare v1.2 release** - Publication-ready
+1. **Update documentation** - All findings integrated
+2. **Expert review** - Get clinical validation
+3. **Prepare v1.2 release** - Publication-ready
 
 ---
 
@@ -277,11 +294,13 @@ These parameters have the strongest influence on simulation outcomes and require
 **Original Phase 3 Estimate:** 4-6 weeks (100-150 hours)
 
 **Current Progress:**
+
 - Week 1: ✅ Sensitivity analysis complete
 - Week 1: ✅ Face validation complete
 - Week 1: ⏳ Parameter fixes in progress
 
 **Revised Timeline:**
+
 - Week 1: Complete parameter scale audit + fixes (2-3 hours)
 - Week 2: Predictive validation (8-10 hours)
 - Week 3: Confidence quantification (6-8 hours)
@@ -296,11 +315,13 @@ These parameters have the strongest influence on simulation outcomes and require
 ### Decision 1: MDD Preset Scope
 
 **Question:** Should `mdd_typical` represent:
+
 - A) Mild-moderate depression (current values)
 - B) Moderate-severe depression (more clinical)
 - C) Create two presets: `mdd_mild` and `mdd_severe`
 
 **Recommendation:** Option C - Create two presets
+
 - Better captures heterogeneity
 - Allows validation against different severity studies
 - More useful for research
@@ -312,11 +333,13 @@ These parameters have the strongest influence on simulation outcomes and require
 ### Decision 2: Missing Features
 
 **Question:** If sensory_threshold is not implemented, should we:
+
 - A) Add sensory processing to simulation (major feature)
 - B) Document as limitation and defer to v1.3
 - C) Remove from validation criteria
 
 **Recommendation:** Option B - Document as limitation
+
 - Adding feature is out of scope for Phase 3
 - Can validate other ASD parameters
 - Note in limitations section
@@ -330,11 +353,13 @@ These parameters have the strongest influence on simulation outcomes and require
 **Question:** How detailed should parameter scale documentation be?
 
 **Options:**
+
 - A) Brief inline comments in presets.py
 - B) Comprehensive docs/PARAMETER_SCALES.md
 - C) Both A + B
 
 **Recommendation:** Option C - Both
+
 - Inline comments for quick reference
 - Full documentation for deep understanding
 - Supports reproducibility
@@ -346,11 +371,13 @@ These parameters have the strongest influence on simulation outcomes and require
 ## Validation Confidence
 
 **Current State:**
+
 - Sensitivity analysis: HIGH confidence (robust methodology)
 - Face validation: MODERATE confidence (caught real issues, but some criteria subjective)
 - Parameter values: MODERATE confidence (pending fixes)
 
 **After Fixes:**
+
 - Expect: HIGH confidence for NT, ADHD
 - Expect: MODERATE-HIGH for MDD (after reward_sensitivity fix)
 - Expect: MODERATE for ASD (pending sensory features)
@@ -373,6 +400,7 @@ These parameters have the strongest influence on simulation outcomes and require
 ## Summary for Next Session
 
 **Start Here:**
+
 1. Run: `git status` to see current work
 2. Read: This document for context
 3. Check: `results/validation/face_validation_report.md` for specific issues
