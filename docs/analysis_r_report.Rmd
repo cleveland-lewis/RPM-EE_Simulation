@@ -1,0 +1,148 @@
+---
+title: "RPM-EE Simulation Results Report"
+author: "RPM-EE R analysis workflow"
+date: "`r format(Sys.Date())`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+  pdf_document:
+    toc: true
+params:
+  data_path: "results/export/rpm_ee_results.csv"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+```
+
+## Methods
+
+This report summarizes RPM-EE clinical preset simulation results. Simulation
+episodes are run in Python (`src/simulation.py`'s `RPMEESimulation`), logged
+per-episode with fields including `preset`, `rt_mean`, `rt_std`, and
+`accuracy`, and exported to CSV/JSON by
+`src/analysis/export_results_for_r.py` (see `docs/analysis_r.md` for the full
+schema and export instructions). This document performs no simulation itself
+-- it only reads the already-exported data below.
+
+Episodes with `NA` `rt_mean`/`accuracy` (neutral-evidence trials, where the
+DDM has no correct answer to score -- see `src/ddm.py`'s `predict_action`
+docstring) are excluded from all summaries and plots below.
+
+## Data
+
+```{r load-data}
+data_path <- params$data_path
+if (!file.exists(data_path)) {
+  stop(sprintf(
+    "Data file not found: %s\nExport it first with:\n  python -m analysis.export_results_for_r --input <run.json> --output_csv %s",
+    data_path, data_path
+  ))
+}
+
+data <- read_csv(data_path, show_col_types = FALSE) %>%
+  filter(!is.na(rt_mean), !is.na(accuracy))
+
+glimpse(data)
+```
+
+## Results
+
+### Summary statistics by preset
+
+```{r summary-table}
+summary_by_preset <- data %>%
+  group_by(preset) %>%
+  summarise(
+    n = n(),
+    rt_mean_avg = mean(rt_mean),
+    rt_mean_sd = sd(rt_mean),
+    accuracy_avg = mean(accuracy),
+    accuracy_sd = sd(accuracy),
+    .groups = "drop"
+  )
+
+knitr::kable(summary_by_preset, digits = 3)
+```
+
+## Plots
+
+### RT distribution by preset
+
+```{r rt-distribution, fig.width=8, fig.height=5}
+ggplot(data, aes(x = rt_mean, fill = preset)) +
+  geom_histogram(alpha = 0.6, position = "identity", bins = 30) +
+  labs(
+    title = "RT distribution by clinical preset",
+    x = "Mean RT per episode (ms)", y = "Count"
+  ) +
+  theme_minimal()
+```
+
+### Accuracy distribution by preset
+
+```{r accuracy-distribution, fig.width=8, fig.height=5}
+ggplot(data, aes(x = preset, y = accuracy, fill = preset)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(
+    title = "Accuracy distribution by clinical preset",
+    x = "Preset", y = "Accuracy"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+### Effect size vs. neurotypical baseline
+
+Cohen's d for each non-baseline preset's `rt_mean` and `accuracy`, relative
+to the `neurotypical` preset in the same dataset.
+
+```{r calibration-plot, fig.width=8, fig.height=5}
+BASELINE_PRESET <- "neurotypical"
+
+cohens_d <- function(x, y) {
+  nx <- length(x)
+  ny <- length(y)
+  pooled_sd <- sqrt(((nx - 1) * var(x) + (ny - 1) * var(y)) / (nx + ny - 2))
+  if (pooled_sd == 0 || is.na(pooled_sd)) {
+    return(NA_real_)
+  }
+  (mean(x) - mean(y)) / pooled_sd
+}
+
+if (BASELINE_PRESET %in% unique(data$preset)) {
+  baseline_rows <- data %>% filter(preset == BASELINE_PRESET)
+
+  effect_sizes <- data %>%
+    filter(preset != BASELINE_PRESET) %>%
+    group_by(preset) %>%
+    summarise(
+      rt_mean_d = cohens_d(rt_mean, baseline_rows$rt_mean),
+      accuracy_d = cohens_d(accuracy, baseline_rows$accuracy),
+      .groups = "drop"
+    ) %>%
+    pivot_longer(cols = c(rt_mean_d, accuracy_d), names_to = "metric", values_to = "cohens_d")
+
+  ggplot(effect_sizes, aes(x = preset, y = cohens_d, fill = metric)) +
+    geom_col(position = "dodge") +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    labs(
+      title = sprintf("Effect size vs. %s baseline (Cohen's d)", BASELINE_PRESET),
+      x = "Preset", y = "Cohen's d", fill = "Metric"
+    ) +
+    theme_minimal()
+} else {
+  message(sprintf("Baseline preset '%s' not present in data.", BASELINE_PRESET))
+}
+```
+
+## Conclusions
+
+_Fill in after reviewing the summary table and plots above: does each
+clinical preset's simulated RT/accuracy differentiate from `neurotypical` in
+the direction expected from the literature (see
+`scripts/predictive_validation.py`'s `EXPECTED_PATTERNS` for the specific,
+citation-backed expectations per preset)? Note any preset whose effect size
+is near zero or in the unexpected direction for follow-up._
