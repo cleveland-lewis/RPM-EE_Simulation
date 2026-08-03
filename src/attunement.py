@@ -7,8 +7,9 @@ class SocialAttunementSystem:
         self.history = []
 
     def _generate_truth(self):
-        # Simulates a dynamic external 'social norm' value between 0 and 1
-        return round(random.uniform(0.0, 1.0), 2)
+        # Simulates a dynamic external 'social norm' value between 0 and 1.
+        # Non-cryptographic use (behavioral simulation input) -- random is fine here.
+        return round(random.uniform(0.0, 1.0), 2)  # nosec B311
 
     def evaluate_predictions(self, simulations, reward_sensitivity=1.0, negative_bias=0.0):
         # Pick one simulation or average multiple, applying clinical biases

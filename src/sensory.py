@@ -1,5 +1,6 @@
 import random
 
+
 class SensoryInputSystem:
     def __init__(self):
         self.clock = 0
@@ -32,28 +33,69 @@ class SensoryInputSystem:
             "hearing": self._simulate_hearing(),
             "touch": self._simulate_touch(),
             "smell": self._simulate_smell(),
-            "taste": self._simulate_taste()
+            "taste": self._simulate_taste(),
         }
         return input_packet
 
+    # Non-cryptographic use throughout this class (simulated sensory input).
     def _simulate_vision(self):
         if self.state == "asleep":
             return []
-        return [{"modality": "vision", "intensity": random.uniform(0.1, 1.0), "duration": random.randint(1, 10)} for _ in range(random.randint(0, 3))]
+        return [
+            {
+                "modality": "vision",
+                "intensity": random.uniform(0.1, 1.0),  # nosec B311
+                "duration": random.randint(1, 10),  # nosec B311
+            }
+            for _ in range(random.randint(0, 3))  # nosec B311
+        ]
 
     def _simulate_hearing(self):
         if self.state == "asleep":
-            return [{"modality": "hearing", "intensity": random.uniform(0.0, 0.3), "duration": random.randint(1, 5)}]
-        return [{"modality": "hearing", "intensity": random.uniform(0.2, 1.0), "duration": random.randint(1, 10)} for _ in range(random.randint(0, 2))]
+            return [
+                {
+                    "modality": "hearing",
+                    "intensity": random.uniform(0.0, 0.3),  # nosec B311
+                    "duration": random.randint(1, 5),  # nosec B311
+                }
+            ]
+        return [
+            {
+                "modality": "hearing",
+                "intensity": random.uniform(0.2, 1.0),  # nosec B311
+                "duration": random.randint(1, 10),  # nosec B311
+            }
+            for _ in range(random.randint(0, 2))  # nosec B311
+        ]
 
     def _simulate_touch(self):
         if self.state == "asleep":
-            return [{"modality": "touch", "intensity": random.uniform(0.0, 0.2), "duration": 1}]
-        return [{"modality": "touch", "intensity": random.uniform(0.3, 1.0), "duration": random.randint(1, 4)} for _ in range(random.randint(1, 2))]
+            return [
+                {
+                    "modality": "touch",
+                    "intensity": random.uniform(0.0, 0.2),  # nosec B311
+                    "duration": 1,
+                }
+            ]
+        return [
+            {
+                "modality": "touch",
+                "intensity": random.uniform(0.3, 1.0),  # nosec B311
+                "duration": random.randint(1, 4),  # nosec B311
+            }
+            for _ in range(random.randint(1, 2))  # nosec B311
+        ]
 
     def _simulate_smell(self):
-        return [{"modality": "smell", "intensity": random.uniform(0.0, 0.6), "duration": 3}] if random.random() < 0.3 else []
+        return (
+            [{"modality": "smell", "intensity": random.uniform(0.0, 0.6), "duration": 3}]  # nosec B311
+            if random.random() < 0.3  # nosec B311
+            else []
+        )
 
     def _simulate_taste(self):
-        return [{"modality": "taste", "intensity": random.uniform(0.1, 0.7), "duration": 2}] if random.random() < 0.1 else []
-
+        return (
+            [{"modality": "taste", "intensity": random.uniform(0.1, 0.7), "duration": 2}]  # nosec B311
+            if random.random() < 0.1  # nosec B311
+            else []
+        )

@@ -208,9 +208,9 @@ class TemporalDifferenceLearner:
         - MDD: low sensitivity → blunted reward processing
         - ADHD: high sensitivity → reward-seeking
         """
-        emotion_reward = sim.get("emotion_intensity", 0.0)
-        plausibility_reward = sim.get("plausibility", 0.0) * 0.3
-        distortion_penalty = -sim.get("reward_distortion", 0.0) * 0.5
+        emotion_reward = float(sim.get("emotion_intensity", 0.0))
+        plausibility_reward = float(sim.get("plausibility", 0.0)) * 0.3
+        distortion_penalty = -float(sim.get("reward_distortion", 0.0)) * 0.5
         raw_reward = emotion_reward + plausibility_reward + distortion_penalty
         return raw_reward * self.reward_sensitivity
 

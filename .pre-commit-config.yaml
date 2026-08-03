@@ -63,7 +63,12 @@ repos:
         additional_dependencies:
           - types-PyYAML
           - types-requests
-          - numpy
+          # Pinned <2: numpy 2.x's bundled stubs use the PEP 695 `type`
+          # statement, which mypy 1.8.0 (this hook's pinned rev) can't
+          # parse -- fails every run with a stub syntax error before any
+          # real type checking happens. Matches the numpy actually
+          # installed in dev (requirements-dev.txt / numpy==1.26.4).
+          - numpy<2
         types: [python]
         # Only check src/ and test files, skip generated code
         files: ^(src/|test.*\.py)

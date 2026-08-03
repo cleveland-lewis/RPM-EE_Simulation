@@ -1,7 +1,8 @@
-import uuid
-import random
 import math
+import random
+import uuid
 from datetime import datetime
+
 
 class SalienceTagger:
     def __init__(self):
@@ -11,12 +12,15 @@ class SalienceTagger:
         tagged_events = []
         for modality in ["vision", "hearing", "touch", "smell", "taste"]:
             for event in input_packet[modality]:
-                tagged = self._tag_event(event, modality, input_packet["clock"], input_packet["state"])
+                tagged = self._tag_event(
+                    event, modality, input_packet["clock"], input_packet["state"]
+                )
                 tagged_events.append(tagged)
         return tagged_events
 
     def _tag_event(self, event, modality, clock, state):
-        novelty = random.uniform(0.2, 1.0)  # Placeholder: will later compare to memory store
+        # Non-cryptographic use (simulation input); placeholder pending memory-store comparison.
+        novelty = random.uniform(0.2, 1.0)  # nosec B311
         emotion = self._simulate_emotion(modality, event["intensity"])
         recurrence = 0  # Placeholder for future schema integration
         timing = 1.0 / (1.0 + math.exp(-0.1 * (clock - 300)))  # Soft curve for recency
@@ -24,12 +28,12 @@ class SalienceTagger:
         intensity = event["intensity"]
 
         prioritization_score = (
-            0.25 * novelty +
-            0.25 * emotion["valence"] +
-            0.1 * recurrence +
-            0.15 * timing +
-            0.15 * duration +
-            0.1 * intensity
+            0.25 * novelty
+            + 0.25 * emotion["valence"]
+            + 0.1 * recurrence
+            + 0.15 * timing
+            + 0.15 * duration
+            + 0.1 * intensity
         )
 
         return {
@@ -43,7 +47,7 @@ class SalienceTagger:
             "timing": timing,
             "duration": duration,
             "intensity": intensity,
-            "prioritization_score": round(prioritization_score, 4)
+            "prioritization_score": round(prioritization_score, 4),
         }
 
     def _simulate_emotion(self, modality, intensity):

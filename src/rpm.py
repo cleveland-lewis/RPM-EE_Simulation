@@ -14,9 +14,9 @@ class RecursivePredictiveModeler:
     """Generates and scores predictive simulations, optionally DDM-backed."""
 
     def __init__(self, ddm_params: dict | None = None):
-        self.simulation_history = []
+        self.simulation_history: list[dict] = []
         self.slot_structure = ["agent", "emotion", "action", "result"]
-        self.simulations = []
+        self.simulations: list[dict] = []
 
         # Initialize DDM (if params provided)
         self.ddm = None

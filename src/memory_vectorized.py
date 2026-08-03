@@ -185,7 +185,8 @@ class VectorizedMemoryStore:
 
     def match_patterns(self, new_events: list[dict]) -> tuple[list[dict], list[dict]]:
         """Classify events as matched (weighted similarity > 0.8) or unmatched."""
-        matched, unmatched = [], []
+        matched: list[dict] = []
+        unmatched: list[dict] = []
         if self._n == 0:
             return matched, list(new_events)
 

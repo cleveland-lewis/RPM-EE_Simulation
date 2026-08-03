@@ -102,7 +102,7 @@ class BayesianPredictiveModeler:
         self.pi_volatility = self.precision.volatile_precision
 
         # Prediction error history
-        self.pe_history = []
+        self.pe_history: list[dict] = []
 
     def update_beliefs(
         self, observation: float, observation_precision: float = 1.0
