@@ -68,7 +68,7 @@ class TestVectorizedMemoryInterface:
 
     def test_default_attributes(self):
         vm = VectorizedMemoryStore()
-        assert vm.capacity == 7
+        assert vm.capacity == 4  # Cowan 2001 default -- see src/presets.py
         assert vm.decay_rate == 0.01
 
     def test_capacity_assignment(self):

@@ -1,15 +1,24 @@
 from collections import deque
 
+# Prioritization score above which a short-term item counts as "active" for
+# working-memory load, and above which a candidate match counts as recurrent.
+_ACTIVE_ITEM_THRESHOLD = 0.5
+_MATCH_SIMILARITY_THRESHOLD = 0.8
+_PRUNE_PRIORITIZATION_THRESHOLD = 0.3
+
 
 class MemoryStore:
+    """Short-term/long-term event store with clinical preset-driven decay and capacity."""
+
     def __init__(self, max_short_term=1000):
         self.short_term: deque = deque(maxlen=max_short_term)
         self.long_term = {}
         # Clinical preset parameters (can be updated)
-        self.capacity = 7  # Default WM capacity (7±2)
+        self.capacity = 4  # Default WM capacity (Cowan 2001, 4±1 -- see src/presets.py)
         self.decay_rate = 0.01  # Default decay rate
 
     def store_events(self, tagged_events):
+        """Append tagged events to short-term memory and apply decay."""
         for event in tagged_events:
             self.short_term.append(event)
         # Apply memory decay based on clinical preset
@@ -23,15 +32,18 @@ class MemoryStore:
 
     def get_working_memory_load(self):
         """Calculate working memory load based on capacity."""
-        active_items = sum(1 for e in self.short_term if e.get("prioritization_score", 0) > 0.5)
+        active_items = sum(
+            1 for e in self.short_term if e.get("prioritization_score", 0) > _ACTIVE_ITEM_THRESHOLD
+        )
         return min(1.0, active_items / self.capacity) if self.capacity > 0 else 0.0
 
     def match_patterns(self, new_events):
+        """Split new_events into those matching existing memory and those that don't."""
         matched = []
         unmatched = []
         for event in new_events:
             similarity_score = self._compare_to_memory(event)
-            if similarity_score > 0.8:
+            if similarity_score > _MATCH_SIMILARITY_THRESHOLD:
                 matched.append(event)
                 event["recurrence"] = 1  # simple bump, could be a running average
             else:
@@ -72,7 +84,12 @@ class MemoryStore:
         return max(0.0, min(1.0, sim))  # clamp between 0 and 1
 
     def prune_old_memory(self):
+        """Drop short-term items whose prioritization score has decayed too low."""
         self.short_term = deque(
-            [e for e in self.short_term if e["prioritization_score"] > 0.3],
+            [
+                e
+                for e in self.short_term
+                if e["prioritization_score"] > _PRUNE_PRIORITIZATION_THRESHOLD
+            ],
             maxlen=self.short_term.maxlen,
         )

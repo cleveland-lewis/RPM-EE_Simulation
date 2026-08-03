@@ -151,7 +151,7 @@ class VectorizedMemoryStore:
         self._n = 0
 
         # Clinical preset parameters (matches MemoryStore API)
-        self.capacity = 7
+        self.capacity = 4  # Default WM capacity (Cowan 2001, 4±1 -- see src/presets.py)
         self.decay_rate = 0.01
 
     # ------------------------------------------------------------------
