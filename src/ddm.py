@@ -36,8 +36,9 @@ ad-hoc constants:
     ASD  → moderate v, slight reduction from rt_slowing
 """
 
+from typing import Optional
+
 import numpy as np
-from typing import Dict, Optional
 
 
 class DriftDiffusionModel:
@@ -95,7 +96,7 @@ class DriftDiffusionModel:
         rt_slowing: float = 1.0,
         base_accuracy: float = 0.90,
         accuracy_decline: float = 0.05,
-        random_seed: Optional[int] = None
+        random_seed: Optional[int] = None,
     ):
         self.rng = np.random.default_rng(random_seed)
 
@@ -129,8 +130,8 @@ class DriftDiffusionModel:
         s = self._S
 
         # Target statistics
-        MRT = self.base_rt * self.rt_slowing / 1000.0   # seconds
-        VRT = (MRT * self.rt_variability) ** 2           # seconds²
+        MRT = self.base_rt * self.rt_slowing / 1000.0  # seconds
+        VRT = (MRT * self.rt_variability) ** 2  # seconds²
         # Clip Pc away from singularities at 0 and 1
         Pc = float(np.clip(self.base_accuracy, 0.501, 0.999))
 
@@ -141,7 +142,7 @@ class DriftDiffusionModel:
         # Argument under the 4th-root must be non-negative.
         inner = L * (Pc**2 * L - Pc * L + Pc - 0.5) / VRT
         inner = max(inner, 1e-12)
-        self.v = float(np.sign(Pc - 0.5) * s * (inner ** 0.25))
+        self.v = float(np.sign(Pc - 0.5) * s * (inner**0.25))
 
         # Boundary separation (full width in Wagenmakers' notation)
         # Guard against v ≈ 0 to prevent division by zero.
@@ -158,9 +159,9 @@ class DriftDiffusionModel:
 
         # Derived simulation-loop parameters (1 ms = 0.001 s time steps)
         dt_s = self._DT_S
-        self.v_per_step = self.v * dt_s             # drift per 1 ms step
-        self.s_per_step = s * np.sqrt(dt_s)         # noise std per 1 ms step
-        self.boundary = self.a / 2.0                # symmetric ±boundary
+        self.v_per_step = self.v * dt_s  # drift per 1 ms step
+        self.s_per_step = s * np.sqrt(dt_s)  # noise std per 1 ms step
+        self.boundary = self.a / 2.0  # symmetric ±boundary
 
         # Store fixed noise for get_parameters() compatibility
         self.s = s
@@ -188,14 +189,38 @@ class DriftDiffusionModel:
     # Fraction by which drift is attenuated at difficulty=1.0. Kept < 1 so
     # accumulation never fully stalls (avoids pathological RT at the
     # timeout ceiling for maximally-difficult trials).
-    _MAX_DIFFICULTY_DRIFT_ATTENUATION = 0.7
+    #
+    # GitHub issue #37: this was 0.7, which -- stacked with sub-maximal
+    # `evidence` magnitudes (see _EVIDENCE_DRIFT_EXPONENT below) -- attenuated
+    # drift so far below what a_eff was calibrated for that simulated
+    # accuracy fell ~24-28 points below ds003500's real block-level accuracy
+    # in every group/task-family combination (flat, preset-independent gap).
+    # Boundary compensation (raising a_eff to offset the weaker drift) was
+    # tried and rejected: under this DDM's math, mean decision time scales
+    # roughly as 1/k^2 in the attenuation factor k, so recovering even a
+    # few points of accuracy this way costs 2-3x in RT inflation -- far more
+    # than ds003500's real RT gap justifies. 0.10 was tuned instead by
+    # sweeping against real ds003500 blocks (scripts/validate_ds003500.py):
+    # it substantially closes the accuracy gap (to roughly 9-18 points)
+    # while leaving RT deviation roughly where it already was, and it keeps
+    # `difficulty` a live driver of slower/less-accurate responses (0.0
+    # would make it inert, undoing the load-vs-difficulty distinction from
+    # issue #6).
+    _MAX_DIFFICULTY_DRIFT_ATTENUATION = 0.10
 
-    def predict_action(
-        self,
-        evidence: float,
-        load: float = 0.0,
-        difficulty: float = 0.0
-    ) -> Dict:
+    # Evidence magnitude below 1.0 (e.g. ds003500's 0.3/0.9 evidence-strength
+    # coding) directly and linearly scaled the drift, which -- combined with
+    # how sensitive single-boundary DDM accuracy is to the drift -- meant
+    # even "easy" (evidence=0.9) trials fell noticeably short of
+    # base_accuracy (see issue #37). Raising |evidence| to this exponent
+    # (< 1) compresses sub-maximal evidence toward full strength (e.g.
+    # 0.3**0.2 ≈ 0.79, 0.9**0.2 ≈ 0.98) while preserving evidence's sign and
+    # its ordering (weaker evidence still yields weaker drift). Tuned
+    # jointly with _MAX_DIFFICULTY_DRIFT_ATTENUATION above against real
+    # ds003500 blocks.
+    _EVIDENCE_DRIFT_EXPONENT = 0.20
+
+    def predict_action(self, evidence: float, load: float = 0.0, difficulty: float = 0.0) -> dict:
         """
         Run a single DDM trial.
 
@@ -232,9 +257,9 @@ class DriftDiffusionModel:
                 'difficulty': original difficulty
         """
         # Load reduces the effective accuracy target → smaller boundary
-        effective_Pc = float(np.clip(
-            self.base_accuracy - load * self.accuracy_decline, 0.501, 0.999
-        ))
+        effective_Pc = float(
+            np.clip(self.base_accuracy - load * self.accuracy_decline, 0.501, 0.999)
+        )
         # Recompute boundary for effective accuracy
         if abs(self.v) > 1e-6:
             L_eff = np.log(effective_Pc / (1.0 - effective_Pc))
@@ -242,11 +267,17 @@ class DriftDiffusionModel:
         else:
             a_eff = self.boundary  # fallback
 
-        # Evidence scales the drift rate (direction + magnitude)
+        # Evidence scales the drift rate (direction + magnitude). Magnitude
+        # is compressed toward full strength via _EVIDENCE_DRIFT_EXPONENT
+        # (see its docstring / issue #37) so sub-maximal evidence doesn't
+        # collapse accuracy far below base_accuracy.
         if abs(evidence) <= 0.01:
             evidence_scaled = 0.01 * np.sign(evidence) if evidence != 0 else 0.01
         else:
             evidence_scaled = evidence
+        evidence_scaled = float(
+            np.sign(evidence_scaled) * abs(evidence_scaled) ** self._EVIDENCE_DRIFT_EXPONENT
+        )
 
         # Difficulty attenuates drift directly (weaker/noisier evidence
         # accumulation), independent of the boundary/load mechanism above.
@@ -273,7 +304,7 @@ class DriftDiffusionModel:
             # Confidence: fractional overshoot (small for weak signal, ~1 for strong)
             confidence = float(min(1.0, abs(x) / a_eff))
 
-        action = 'approach' if choice_upper else 'withdraw'
+        action = "approach" if choice_upper else "withdraw"
 
         # Accuracy: None for neutral evidence (no correct answer defined)
         if abs(evidence) <= 0.01:
@@ -286,32 +317,32 @@ class DriftDiffusionModel:
         rt = max(self._RT_FLOOR_MS, rt)
 
         return {
-            'action': action,
-            'rt': round(rt, 2),
-            'accurate': correct,
-            'confidence': round(confidence, 3),
-            'evidence': round(evidence, 3),
-            'load': round(load, 3),
-            'difficulty': round(difficulty_clamped, 3)
+            "action": action,
+            "rt": round(rt, 2),
+            "accurate": correct,
+            "confidence": round(confidence, 3),
+            "evidence": round(evidence, 3),
+            "load": round(load, 3),
+            "difficulty": round(difficulty_clamped, 3),
         }
 
     # ------------------------------------------------------------------
     # Inspection
     # ------------------------------------------------------------------
 
-    def get_parameters(self) -> Dict[str, float]:
+    def get_parameters(self) -> dict[str, float]:
         """Return clinical inputs and EZ-recovered DDM parameters."""
         return {
             # Clinical inputs
-            'base_rt': self.base_rt,
-            'rt_variability': self.rt_variability,
-            'rt_slowing': self.rt_slowing,
-            'base_accuracy': self.base_accuracy,
-            'accuracy_decline': self.accuracy_decline,
+            "base_rt": self.base_rt,
+            "rt_variability": self.rt_variability,
+            "rt_slowing": self.rt_slowing,
+            "base_accuracy": self.base_accuracy,
+            "accuracy_decline": self.accuracy_decline,
             # EZ-recovered DDM parameters
-            'v': round(self.v, 4),
-            'a': round(self.a, 4),
-            'Ter': round(self.Ter * 1000.0, 2),  # display in ms
-            's': round(self.s, 4),
-            'boundary': round(self.boundary, 4),
+            "v": round(self.v, 4),
+            "a": round(self.a, 4),
+            "Ter": round(self.Ter * 1000.0, 2),  # display in ms
+            "s": round(self.s, 4),
+            "boundary": round(self.boundary, 4),
         }
