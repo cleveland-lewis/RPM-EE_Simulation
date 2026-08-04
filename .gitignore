@@ -3,3 +3,7 @@ __pycache__/
 *.pyo
 *.nbc
 *.nbi
+
+# Downloaded OpenNeuro datasets (large, re-downloadable via scripts/ -- see
+# VALIDATION_ACTION_PLAN.md / README.md "Empirical Validation Against Real Data")
+data/
