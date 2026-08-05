@@ -1,5 +1,5 @@
 """
-Clinical Presets for RPM-EE v1.1
+Clinical Presets for RPM-EE v1.1.
 
 VALIDATION STATUS: PRELIMINARY
 
@@ -53,11 +53,11 @@ from typing import Any
 __all__ = [
     "CLINICAL_PRESETS",
     "PARAMETER_CONFIDENCE",
-    "get_preset",
-    "list_presets",
-    "get_preset_description",
     "get_parameter_confidence",
+    "get_preset",
+    "get_preset_description",
     "get_preset_summary",
+    "list_presets",
 ]
 
 # =============================================================================
@@ -75,13 +75,14 @@ __all__ = [
 #   • RT: 10-15% slower than NT [Happé & Frith, 2006]
 #   • Accuracy: Comparable mean but higher variability [Geurts et al., 2009]
 #   • Working memory: Intact capacity, impaired manipulation [Steele et al., 2007]
-#   • Stress: Prolonged recovery, esp. in older children (Diagnosis x Age interaction); baseline elevation not clearly supported [Corbett et al., 2009]
+#   • Stress: Prolonged recovery, esp. in older children (Diagnosis x Age
+#     interaction); baseline elevation not clearly supported [Corbett et al., 2009]
 #   • Attentional switching: Reduced flexibility [Yerys et al., 2009; Geurts et al., 2009]
 #   • Sensory reactivity: Heightened sensitivity [Robertson & Baron-Cohen, 2017]
 #
 # ADHD (ATTENTION-DEFICIT/HYPERACTIVITY DISORDER):
 #   • RT variability: 35-50% higher (IIV) [Klein et al., 2006; Kofler et al., 2013]
-#   • Omission errors: 2-3x higher [Kofler et al., 2013]
+#   • Omission errors: 2-3x higher [Huang-Pollock et al., 2012]
 #   • Working memory: Reduced by ~1 item relative to NT [Kasper et al., 2012]
 #   • Sustained attention: Vigilance decrements over time [Huang-Pollock et al., 2012]
 #   • Stress: Impaired regulation, faster reactivity [Lackschewitz et al., 2008]
@@ -157,9 +158,11 @@ CLINICAL_PRESETS: dict[str, dict[str, float]] = {
         "switch_cost": 0.25,  # Higher switching cost
         "vigilance_decrement": 0.008,  # Better sustained attention
         # Stress: prolonged recovery (age-moderated), baseline elevation not clearly supported
-        "stress_baseline": 0.50,  # Population simplification; Corbett et al. Fig 4 shows no clean ASD>NT baseline ordering
+        "stress_baseline": 0.50,  # Population simplification; Corbett et al. Fig 4 shows
+        # no clean ASD>NT baseline ordering
         "stress_reactivity": 0.60,  # Modest S1->S2 increase in ASD subgroups (Corbett et al.)
-        "stress_recovery": 0.08,  # Slower recovery - older-ASD fails normal decline (Corbett et al., Diagnosis x Age interaction, p<0.0005)
+        "stress_recovery": 0.08,  # Slower recovery - older-ASD fails normal decline
+        # (Corbett et al., Diagnosis x Age interaction, p<0.0005)
         # Emotional: heightened sensory reactivity
         "positive_affect": 0.50,  # Lower positive affect
         "negative_affect": 0.35,  # Higher negative affect
@@ -283,8 +286,10 @@ PARAMETER_CONFIDENCE: dict[str, dict[str, str]] = {
         "stress_baseline": "LOW",  # Scale mapping (cortisol → 0-1) unclear
         "stress_reactivity": "LOW",  # Scale mapping unclear, theoretical estimate
         "stress_recovery": "LOW",  # No time-course data for recovery rates
-        "positive_affect": "LOW",  # Theoretical estimate, no direct mapping
-        "negative_affect": "LOW",  # Theoretical estimate, no direct mapping
+        "positive_affect": "MODERATE",  # Crawford & Henry (2004) PANAS PA=31.3(7.7);
+        # mapped 0.53 vs preset 0.60 - upgraded from LOW (extractions/crawford2004_EXTRACTED.md)
+        "negative_affect": "MODERATE",  # Crawford & Henry (2004) PANAS NA=16.0(5.9);
+        # mapped 0.15 vs preset 0.20 - upgraded from LOW (extractions/crawford2004_EXTRACTED.md)
         "reward_sensitivity": "LOW",  # Theoretical estimate from motivation literature
         "prediction_error_gain": "LOW",  # No direct measurement, theoretical value
         "exploration_rate": "LOW",  # Theoretical estimate, no direct measurement
@@ -307,16 +312,21 @@ PARAMETER_CONFIDENCE: dict[str, dict[str, str]] = {
         "attention_stability": "MODERATE",  # Multiple studies show intact sustained attention
         "switch_cost": "MODERATE",  # Yerys et al. (2009) + Geurts - direct evidence
         "vigilance_decrement": "LOW",  # Rate not specified in sources
-        "stress_baseline": "MODERATE",  # Corbett et al. (2009) - no clean ASD>NT ordering at baseline in Fig 4; downgraded from HIGH
-        "stress_reactivity": "MODERATE",  # Corbett et al. - modest S1->S2 increase in ASD subgroups, not the paper's significant result
-        "stress_recovery": "HIGH",  # Corbett et al. - significant Diagnosis x Age interaction (p<0.0005); older-ASD fails to show normal decline
+        "stress_baseline": "MODERATE",  # Corbett et al. (2009) - no clean ASD>NT
+        # ordering at baseline in Fig 4; downgraded from HIGH
+        "stress_reactivity": "MODERATE",  # Corbett et al. - modest S1->S2 increase in
+        # ASD subgroups, not the paper's significant result
+        "stress_recovery": "HIGH",  # Corbett et al. - significant Diagnosis x Age
+        # interaction (p<0.0005); older-ASD fails to show normal decline
         "positive_affect": "LOW",  # Indirect inference from sensory reactivity
         "negative_affect": "LOW",  # Indirect inference from sensory reactivity
         "reward_sensitivity": "LOW",  # Limited evidence, theoretical estimate
         "prediction_error_gain": "LOW",  # No direct measurement
         "exploration_rate": "LOW",  # Theoretical inference from reduced flexibility
-        "sensory_precision": "MODERATE",  # NEW: Inferred from sensory reactivity literature (Robertson & Baron-Cohen 2017)
-        "prior_precision": "MODERATE",  # NEW: Inferred from inflexibility/weak central coherence (Pellicano & Burr 2012)
+        "sensory_precision": "MODERATE",  # NEW: Inferred from sensory reactivity
+        # literature (Robertson & Baron-Cohen 2017)
+        "prior_precision": "MODERATE",  # NEW: Inferred from inflexibility/weak central
+        # coherence (Pellicano & Burr 2012)
         "volatile_precision": "LOW",  # NEW: Theoretical estimate
         "precision_learning_rate": "LOW",  # NEW: Theoretical estimate
         "td_alpha": "LOW",  # NEW: Theoretical, no direct measurement
@@ -325,15 +335,21 @@ PARAMETER_CONFIDENCE: dict[str, dict[str, str]] = {
     },
     "adhd_typical": {
         "base_rt": "MODERATE",  # Klein et al. (2006) - slightly faster noted
-        "rt_variability": "HIGH",  # Kofler et al. (2013) META-ANALYSIS (319 studies!)
+        "rt_variability": "HIGH",  # Kofler et al. (2013) meta-analysis, 319 studies;
+        # g=0.76 [0.68, 0.84] children/adolescents (extractions/kofler2013_EXTRACTED.md)
         "rt_slowing": "MODERATE",  # Multiple studies show slight slowing
-        "base_accuracy": "HIGH",  # Kofler meta-analysis - omission errors quantified
+        "base_accuracy": "HIGH",  # Huang-Pollock et al. (2012) - hit rate 0.79 vs 0.89;
+        # was misattributed to Kofler, corrected (extractions/huang-pollock2012_EXTRACTED.md)
         "accuracy_decline": "MODERATE",  # Multiple studies show load effects
-        "wm_capacity": "HIGH",  # Kasper et al. (2012) - meta-analysis
+        "wm_capacity": "MODERATE",  # Kasper et al. (2012) meta-analysis, but paper is
+        # paywalled/unverified as of 2026-08-04, d≈1.0 unconfirmed
         "wm_decay_rate": "LOW",  # Estimated from capacity deficit
-        "attention_stability": "HIGH",  # Huang-Pollock et al. (2012) - direct measurement
+        "attention_stability": "MODERATE",  # Huang-Pollock et al. (2012) POT-omissions
+        # effect (d=0.54, k=7, no CI) - downgraded from HIGH; strongest evidence in this
+        # paper supports base_accuracy, not this parameter
         "switch_cost": "MODERATE",  # Lower cost from multiple studies (hyper-switching)
-        "vigilance_decrement": "MODERATE",  # Huang-Pollock - strong evidence for steep decline
+        "vigilance_decrement": "MODERATE",  # Huang-Pollock et al. (2012) POT effects
+        # d=0.22-0.54 (standardized, not a raw slope) - confirmed 2026-08-04
         "stress_baseline": "MODERATE",  # Lackschewitz et al. (2008) - physiological data
         "stress_reactivity": "MODERATE",  # Lackschewitz et al. - high reactivity measured
         "stress_recovery": "LOW",  # Impaired regulation noted, not quantified
@@ -375,7 +391,8 @@ PARAMETER_CONFIDENCE: dict[str, dict[str, str]] = {
         "precision_learning_rate": "LOW",  # NEW: Theoretical estimate
         "td_alpha": "MODERATE",  # NEW: Inferred from Treadway & Zald (2011) blunted learning
         "td_gamma": "LOW",  # NEW: Theoretical estimate
-        "td_initial_value": "MODERATE",  # NEW: Inferred from Nolen-Hoeksema (2000) rumination (negative bias)
+        "td_initial_value": "MODERATE",  # NEW: Inferred from Nolen-Hoeksema (2000)
+        # rumination (negative bias)
     },
 }
 
@@ -384,18 +401,25 @@ def get_preset(name: str) -> dict[str, float]:
     """
     Get a clinical preset by name.
 
-    Args:
-        name: Preset name (e.g., 'neurotypical', 'asd_typical', 'adhd_typical', 'mdd_typical')
+    Parameters
+    ----------
+    name : str
+        Preset name (e.g., 'neurotypical', 'asd_typical', 'adhd_typical', 'mdd_typical')
 
-    Returns:
+    Returns
+    -------
+    dict[str, float]
         Dictionary of preset parameters
 
-    Raises:
-        KeyError: If preset name not found
+    Raises
+    ------
+    KeyError
+        If preset name not found
     """
     if name not in CLINICAL_PRESETS:
         available = ", ".join(list_presets())
-        raise KeyError(f"Unknown preset '{name}'. Available: {available}")
+        msg = f"Unknown preset '{name}'. Available: {available}"
+        raise KeyError(msg)
     return CLINICAL_PRESETS[name].copy()
 
 
@@ -408,10 +432,14 @@ def get_preset_description(name: str) -> str:
     """
     Get a human-readable description of a clinical preset.
 
-    Args:
-        name: Preset name
+    Parameters
+    ----------
+    name : str
+        Preset name
 
-    Returns:
+    Returns
+    -------
+    str
         Description string
     """
     descriptions = {
@@ -424,12 +452,14 @@ def get_preset_description(name: str) -> str:
             "reduced attentional flexibility, elevated baseline stress, prolonged recovery."
         ),
         "adhd_typical": (
-            "ADHD: 35-50% higher RT variability, 2-3x omission errors, reduced working memory (~3 items), "
-            "poor sustained attention, impaired stress regulation, high impulsivity."
+            "ADHD: 35-50% higher RT variability, 2-3x omission errors, "
+            "reduced working memory (~3 items), poor sustained attention, "
+            "impaired stress regulation, high impulsivity."
         ),
         "mdd_typical": (
-            "Major Depressive Disorder: 20% psychomotor slowing, anhedonia (blunted positive affect), "
-            "elevated stress/cortisol, impaired cognitive control, rumination."
+            "Major Depressive Disorder: 20% psychomotor slowing, "
+            "anhedonia (blunted positive affect), elevated stress/cortisol, "
+            "impaired cognitive control, rumination."
         ),
     }
     return descriptions.get(name, f"No description available for '{name}'")
@@ -440,8 +470,10 @@ def get_preset_description(name: str) -> str:
 # =============================================================================
 #
 # Neurotypical:
-# 1. Ratcliff & McKoon (2008). The diffusion decision model: Theory and data for two-choice decision tasks
-# 2. Cowan (2001). The magical number 4 in short-term memory: A reconsideration of mental storage capacity
+# 1. Ratcliff & McKoon (2008). The diffusion decision model: Theory and data for
+#    two-choice decision tasks
+# 2. Cowan (2001). The magical number 4 in short-term memory: A reconsideration of
+#    mental storage capacity
 # 3. McEwen (1998). Stress, adaptation, and disease: Allostasis and allostatic load
 # 4. Posner & Petersen (1990). The attention system of the human brain
 # 5. Luce, R. D. (1986). Response Times: Their Role in Inferring Elementary Mental Organization.
@@ -449,11 +481,12 @@ def get_preset_description(name: str) -> str:
 #
 # ASD:
 # 6. Happé & Frith (2006). The weak coherence account: Detail-focused cognitive style in autism
-# 7. Geurts, H. M., Corbett, B., & Solomon, M. (2009). The paradox of cognitive flexibility in autism.
-#    Trends in Cognitive Sciences, 13(2), 74-82. (Set-shifting and flexibility deficits)
-# 8. Steele, S. D., Minshew, N. J., Luna, B., & Sweeney, J. A. (2007). Spatial working memory deficits in autism.
-#    Journal of Autism and Developmental Disorders, 37(4), 605-612.
-# 9. Corbett, B. A., et al. (2009). Elevated cortisol during play is associated with stress in children with ASD
+# 7. Geurts, H. M., Corbett, B., & Solomon, M. (2009). The paradox of cognitive flexibility
+#    in autism. Trends in Cognitive Sciences, 13(2), 74-82. (Set-shifting and flexibility deficits)
+# 8. Steele, S. D., Minshew, N. J., Luna, B., & Sweeney, J. A. (2007). Spatial working
+#    memory deficits in autism. Journal of Autism and Developmental Disorders, 37(4), 605-612.
+# 9. Corbett, B. A., et al. (2009). Elevated cortisol during play is associated with
+#    stress in children with ASD
 # 10. Yerys, B. E., et al. (2009). Set-shifting in children with ASD
 # 11. Robertson & Baron-Cohen (2017). Sensory perception in autism
 #
@@ -470,8 +503,10 @@ def get_preset_description(name: str) -> str:
 # 19. Porter et al. (2003). Neurocognitive impairment in drug-free depression
 # 20. Christopher & MacDonald (2005). The impact of clinical depression on working memory
 # 21. Treadway & Zald (2011). Reconsidering anhedonia in depression
-# 22. Burke et al. (2005). Depression and cortisol: A meta-analysis
-# 23. Snyder (2013). Major depressive disorder is associated with broad impairments in executive function
+# 22. Burke et al. (2005). Depression and cortisol responses to psychological stress:
+#     A meta-analysis
+# 23. Snyder (2013). Major depressive disorder is associated with broad impairments
+#     in executive function
 # 24. Nolen-Hoeksema (2000). The role of rumination in depressive disorders
 #
 # =============================================================================
@@ -481,18 +516,24 @@ def get_parameter_confidence(preset: str, param: str) -> str:
     """
     Get confidence level for a specific parameter.
 
-    Args:
-        preset: Preset name (e.g., 'neurotypical', 'asd_typical')
-        param: Parameter name (e.g., 'wm_capacity', 'stress_baseline')
+    Parameters
+    ----------
+    preset : str
+        Preset name (e.g., 'neurotypical', 'asd_typical')
+    param : str
+        Parameter name (e.g., 'wm_capacity', 'stress_baseline')
 
-    Returns:
+    Returns
+    -------
+    str
         Confidence level: 'HIGH', 'MODERATE', 'LOW', or 'UNKNOWN'
 
-    Examples:
-        >>> get_parameter_confidence('adhd_typical', 'rt_variability')
-        'HIGH'
-        >>> get_parameter_confidence('neurotypical', 'exploration_rate')
-        'LOW'
+    Examples
+    --------
+    >>> get_parameter_confidence('adhd_typical', 'rt_variability')
+    'HIGH'
+    >>> get_parameter_confidence('neurotypical', 'exploration_rate')
+    'LOW'
     """
     if preset not in PARAMETER_CONFIDENCE:
         return "UNKNOWN"
@@ -503,16 +544,21 @@ def get_preset_summary(preset: str) -> dict[str, dict[str, Any]]:
     """
     Get preset parameters with confidence levels.
 
-    Args:
-        preset: Preset name
+    Parameters
+    ----------
+    preset : str
+        Preset name
 
-    Returns:
+    Returns
+    -------
+    dict[str, dict[str, Any]]
         Dictionary mapping parameter names to dicts with 'value' and 'confidence'
 
-    Example:
-        >>> summary = get_preset_summary('adhd_typical')
-        >>> summary['wm_capacity']
-        {'value': 3.0, 'confidence': 'HIGH'}
+    Examples
+    --------
+    >>> summary = get_preset_summary('adhd_typical')
+    >>> summary['wm_capacity']
+    {'value': 3.0, 'confidence': 'HIGH'}
     """
     params = get_preset(preset)
     confidence = PARAMETER_CONFIDENCE.get(preset, {})
