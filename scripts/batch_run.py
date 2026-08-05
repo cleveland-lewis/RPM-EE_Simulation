@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Run src/main.py's simulation repeatedly and stop once the batch-level
-distribution of run outcomes is plausibly normal (Shapiro-Wilk), so
-downstream analyses that assume normality (e.g. parametric CIs) have a
-justified sample rather than an arbitrary fixed batch count.
+Run src/main.py's simulation repeatedly, once per clinical preset, and stop
+each preset's batch loop once the batch-level distribution of run outcomes
+is plausibly normal (Shapiro-Wilk), so downstream analyses that assume
+normality (e.g. parametric CIs) have a justified sample rather than an
+arbitrary fixed batch count.
 
 Each batch is one full RPMEESimulation run (same as `python src/main.py`);
 the per-batch summary statistic is that run's mean episode accuracy
@@ -12,6 +13,11 @@ p > ALPHA on the accumulated batch means, subject to MIN_BATCHES (the
 user-requested floor) and MAX_BATCHES (standard large-sample cutoff,
 beyond which the Central Limit Theorem makes the sampling distribution
 of the mean normal regardless of Shapiro's verdict on the raw batches).
+
+Presets stop independently -- one preset's data may look normal sooner
+than another's, so different presets can end up contributing different
+total episode counts by the time the script finishes. That imbalance is
+exactly what the "diagnosis breakdown" terminal plot is for.
 """
 
 import csv
@@ -26,6 +32,7 @@ from scipy.stats import shapiro
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
+from presets import list_presets  # noqa: E402
 from simulation import RPMEESimulation  # noqa: E402
 
 EPISODES_PER_BATCH = 1000
@@ -37,8 +44,8 @@ REPO_ROOT = Path(__file__).parent.parent
 TERMINAL_PLOTS_SCRIPT = REPO_ROOT / "scripts" / "terminal_plots.R"
 
 
-def run_batch(episodes: int, batch_num: int, episode_rows: list[dict]) -> float:
-    sim = RPMEESimulation()
+def run_batch(preset: str, episodes: int, batch_num: int, episode_rows: list[dict]) -> float:
+    sim = RPMEESimulation(preset=preset)
     for episode in range(episodes):
         sim.step()
         if episode % 100 == 0:
@@ -47,6 +54,7 @@ def run_batch(episodes: int, batch_num: int, episode_rows: list[dict]) -> float:
         if log["accuracy"] is not None and log["rt_mean"] is not None:
             episode_rows.append(
                 {
+                    "preset": preset,
                     "batch": batch_num,
                     "episode": log.get("clock"),
                     "accuracy": log["accuracy"],
@@ -55,6 +63,35 @@ def run_batch(episodes: int, batch_num: int, episode_rows: list[dict]) -> float:
             )
     accuracies = [log["accuracy"] for log in sim.logs if log["accuracy"] is not None]
     return float(np.mean(accuracies)) if accuracies else float("nan")
+
+
+def run_preset(preset: str, episode_rows: list[dict]) -> list[float]:
+    """Run batches for one preset until Shapiro-Wilk says the batch means look normal."""
+    batch_means: list[float] = []
+    for i in range(1, MAX_BATCHES + 1):
+        print(f"[{preset}] [batch {i}] running {EPISODES_PER_BATCH} episodes...")
+        batch_means.append(run_batch(preset, EPISODES_PER_BATCH, i, episode_rows))
+
+        if i < MIN_BATCHES:
+            continue
+
+        stat, p = shapiro(batch_means)
+        print(f"[{preset}] [batch {i}] Shapiro-Wilk on {i} batch means: W={stat:.3f} p={p:.3f}")
+        if p > ALPHA:
+            print(
+                f"[{preset}] Stopping at {i} batches -- batch means not distinguishable "
+                f"from normal."
+            )
+            break
+    else:
+        print(
+            f"[{preset}] Reached MAX_BATCHES={MAX_BATCHES} without a clean normality "
+            f"verdict; stopping anyway (n={MAX_BATCHES} is large enough for CLT to apply)."
+        )
+
+    print(f"[{preset}] {len(batch_means)} batch means: {[round(m, 3) for m in batch_means]}")
+    print(f"[{preset}] mean={np.mean(batch_means):.3f}  std={np.std(batch_means):.3f}\n")
+    return batch_means
 
 
 def render_terminal_plots(episode_rows: list[dict]) -> None:
@@ -67,8 +104,9 @@ def render_terminal_plots(episode_rows: list[dict]) -> None:
         print("\n(no episode data collected -- skipping terminal plots.)")
         return
 
+    fieldnames = ["preset", "batch", "episode", "accuracy", "rt_mean"]
     with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["batch", "episode", "accuracy", "rt_mean"])
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(episode_rows)
         csv_path = f.name
@@ -80,28 +118,18 @@ def render_terminal_plots(episode_rows: list[dict]) -> None:
 
 
 def main() -> int:
-    batch_means = []
     episode_rows: list[dict] = []
-    for i in range(1, MAX_BATCHES + 1):
-        print(f"[batch {i}] running {EPISODES_PER_BATCH} episodes...")
-        batch_means.append(run_batch(EPISODES_PER_BATCH, i, episode_rows))
+    presets = list_presets()
 
-        if i < MIN_BATCHES:
-            continue
+    for preset in presets:
+        run_preset(preset, episode_rows)
 
-        stat, p = shapiro(batch_means)
-        print(f"[batch {i}] Shapiro-Wilk on {i} batch means: W={stat:.3f} p={p:.3f}")
-        if p > ALPHA:
-            print(f"Stopping at {i} batches -- batch means not distinguishable from normal.")
-            break
-    else:
-        print(
-            f"Reached MAX_BATCHES={MAX_BATCHES} without a clean normality verdict; "
-            f"stopping anyway (n={MAX_BATCHES} is large enough for CLT to apply)."
-        )
-
-    print(f"\n{len(batch_means)} batch means: {[round(m, 3) for m in batch_means]}")
-    print(f"mean={np.mean(batch_means):.3f}  std={np.std(batch_means):.3f}")
+    print("=" * 70)
+    print("Diagnosis breakdown (episodes actually run, per preset):")
+    for preset in presets:
+        n = sum(1 for row in episode_rows if row["preset"] == preset)
+        print(f"  {preset:15s} {n:6d} episodes")
+    print("=" * 70)
 
     render_terminal_plots(episode_rows)
     return 0
