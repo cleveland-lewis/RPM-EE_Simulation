@@ -148,7 +148,12 @@ class RPMEESimulation:
         scored = self.arbiter.score_simulations(fatigued)
         ranked = self.arbiter.sort_simulations(scored)
         evaluated = self.self_model.evaluate_simulations(ranked)
-        attunement_score = self.attuner.evaluate_predictions(evaluated)
+        relative_negative_bias = max(0.0, self.params.get("negative_affect", 0.20) - 0.20)
+        attunement_score = self.attuner.evaluate_predictions(
+            evaluated,
+            reward_sensitivity=self.params.get("reward_sensitivity", 1.0),
+            negative_bias=relative_negative_bias,
+        )
 
         # Use precision-weighted PE if Bayesian PE available (NEW - Phase 3)
         if self.self_model.bayesian_pe:
@@ -237,12 +242,6 @@ class RPMEESimulation:
             self.self_model.schema_stress += self.stress_reactivity * pe * 0.1
 
         # 3. Boundary Clamp: Keep stress within [0, 1]
-        self.self_model.schema_stress = max(0.0, min(1.0, self.self_model.schema_stress))
-
-        # Stress recovery (decay) based on preset
-        self.self_model.schema_stress *= 1.0 - self.stress_recovery
-
-        # Clamp stress to [0, 1]
         self.self_model.schema_stress = max(0.0, min(1.0, self.self_model.schema_stress))
 
     def run(self, episodes=100):
