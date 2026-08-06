@@ -30,5 +30,19 @@ class SimulationClusterArbiter:
         return simulations
 
     def sort_simulations(self, simulations):
-        """Return simulations sorted by final_score, descending, stable on ties."""
-        return sorted(simulations, key=lambda x: x.get("final_score", 0.0), reverse=True)
+        """Return simulations sorted by final_score, descending.
+
+        Ties on final_score are broken by higher plausibility, then higher
+        emotional_prediction, so ordering is deterministic regardless of input
+        order -- relying on sort stability alone only preserves *input* order on
+        ties, which isn't deterministic if upstream ordering varies.
+        """
+        return sorted(
+            simulations,
+            key=lambda x: (
+                x.get("final_score", 0.0),
+                x.get("plausibility", 0.0),
+                x.get("emotional_prediction", 0.0),
+            ),
+            reverse=True,
+        )

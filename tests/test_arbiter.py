@@ -220,6 +220,62 @@ class TestSortSimulations:
 
         assert [s["id"] for s in result] == ["c", "a", "b"]
 
+    def test_equal_final_score_broken_by_higher_plausibility(self):
+        arbiter = SimulationClusterArbiter()
+        sims = [
+            {"id": "low_plausibility", "final_score": 0.5, "plausibility": 0.2},
+            {"id": "high_plausibility", "final_score": 0.5, "plausibility": 0.8},
+        ]
+
+        result = arbiter.sort_simulations(sims)
+
+        assert [s["id"] for s in result] == ["high_plausibility", "low_plausibility"]
+
+    def test_equal_final_score_and_plausibility_broken_by_emotional_prediction(self):
+        arbiter = SimulationClusterArbiter()
+        sims = [
+            {
+                "id": "low_emotion",
+                "final_score": 0.5,
+                "plausibility": 0.5,
+                "emotional_prediction": 0.1,
+            },
+            {
+                "id": "high_emotion",
+                "final_score": 0.5,
+                "plausibility": 0.5,
+                "emotional_prediction": 0.9,
+            },
+        ]
+
+        result = arbiter.sort_simulations(sims)
+
+        assert [s["id"] for s in result] == ["high_emotion", "low_emotion"]
+
+    def test_tie_break_order_is_independent_of_input_order(self):
+        # Same simulations, reversed input order -- output must match, proving
+        # the ordering doesn't depend on upstream/input ordering.
+        arbiter = SimulationClusterArbiter()
+        low = {"id": "low_plausibility", "final_score": 0.5, "plausibility": 0.2}
+        high = {"id": "high_plausibility", "final_score": 0.5, "plausibility": 0.8}
+
+        result_forward = arbiter.sort_simulations([dict(low), dict(high)])
+        result_reversed = arbiter.sort_simulations([dict(high), dict(low)])
+
+        assert [s["id"] for s in result_forward] == ["high_plausibility", "low_plausibility"]
+        assert [s["id"] for s in result_reversed] == ["high_plausibility", "low_plausibility"]
+
+    def test_fully_tied_simulations_still_preserve_input_order(self):
+        arbiter = SimulationClusterArbiter()
+        sims = [
+            {"id": "a", "final_score": 0.5, "plausibility": 0.3, "emotional_prediction": 0.1},
+            {"id": "b", "final_score": 0.5, "plausibility": 0.3, "emotional_prediction": 0.1},
+        ]
+
+        result = arbiter.sort_simulations(sims)
+
+        assert [s["id"] for s in result] == ["a", "b"]
+
     def test_missing_final_score_defaults_to_zero_and_sorts_last(self):
         arbiter = SimulationClusterArbiter()
         sims = [{"id": "has_score", "final_score": 0.1}, {"id": "no_score"}]
