@@ -319,3 +319,83 @@ class TestMissingKeyDefaults:
         result = arbiter.score_simulations(sims)
 
         assert result[0]["final_score"] == pytest.approx(0.0)
+
+
+class TestNormalizeInputs:
+    """normalize_inputs min-max scales t1/t2/t3 to [0, 1] across the batch (issue #38)."""
+
+    def test_off_by_default_uses_raw_values(self):
+        arbiter = SimulationClusterArbiter()
+        sims = [{"plausibility": 0.6, "emotional_prediction": -0.4, "reward_distortion": 2.0}]
+
+        result = arbiter.score_simulations(sims)
+
+        expected = 0.5 * 0.6 + 0.3 * -0.4 + 0.2 * 2.0
+        assert result[0]["final_score"] == pytest.approx(round(expected, 3))
+
+    def test_scales_min_to_zero_and_max_to_one_within_batch(self):
+        arbiter = SimulationClusterArbiter(normalize_inputs=True, alpha=1.0, beta=0.0, gamma=0.0)
+        sims = [
+            {"plausibility": 0.5},
+            {"plausibility": 1.0},
+            {"plausibility": 0.75},
+        ]
+
+        result = arbiter.score_simulations(sims)
+
+        assert result[0]["final_score"] == pytest.approx(0.0)
+        assert result[1]["final_score"] == pytest.approx(1.0)
+        assert result[2]["final_score"] == pytest.approx(0.5)
+
+    def test_all_equal_values_map_to_neutral_midpoint_without_division_by_zero(self):
+        arbiter = SimulationClusterArbiter(normalize_inputs=True, alpha=1.0, beta=0.0, gamma=0.0)
+        sims = [{"plausibility": 0.7}, {"plausibility": 0.7}]
+
+        result = arbiter.score_simulations(sims)
+
+        assert result[0]["final_score"] == pytest.approx(0.5)
+        assert result[1]["final_score"] == pytest.approx(0.5)
+
+    def test_empty_simulation_list_does_not_raise(self):
+        arbiter = SimulationClusterArbiter(normalize_inputs=True)
+
+        result = arbiter.score_simulations([])
+
+        assert result == []
+
+    def test_different_input_scales_yield_comparable_scores_for_same_relative_pattern(self):
+        # Same relative pattern (lowest/middle/highest), very different absolute
+        # scales -- normalized final_scores should match despite that.
+        small_scale = SimulationClusterArbiter(normalize_inputs=True, alpha=1.0, beta=0, gamma=0)
+        large_scale = SimulationClusterArbiter(normalize_inputs=True, alpha=1.0, beta=0, gamma=0)
+        small_sims = [
+            {"plausibility": 0.1},
+            {"plausibility": 0.2},
+            {"plausibility": 0.3},
+        ]
+        large_sims = [
+            {"plausibility": 100.0},
+            {"plausibility": 200.0},
+            {"plausibility": 300.0},
+        ]
+
+        small_result = small_scale.score_simulations(small_sims)
+        large_result = large_scale.score_simulations(large_sims)
+
+        small_scores = [s["final_score"] for s in small_result]
+        large_scores = [s["final_score"] for s in large_result]
+        assert small_scores == pytest.approx(large_scores)
+
+    def test_fatigue_suppression_still_applies_after_normalization(self):
+        arbiter = SimulationClusterArbiter(normalize_inputs=True, alpha=0, beta=0, gamma=1.0)
+        sims = [
+            {"reward_distortion": 0.0, "fatigue_flag": True},
+            {"reward_distortion": 10.0, "fatigue_flag": True},
+        ]
+
+        result = arbiter.score_simulations(sims)
+
+        # normalized: sim 0 -> t3=0.0 (below threshold, kept); sim 1 -> t3=1.0
+        # (above threshold, suppressed to 0.0)
+        assert result[0]["final_score"] == pytest.approx(0.0)
+        assert result[1]["final_score"] == pytest.approx(0.0)
