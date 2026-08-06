@@ -15,6 +15,7 @@ class SimulationClusterArbiter:
         normalize_inputs=False,
         validate_keys=False,
         on_missing_keys="warn",
+        verbose=False,
     ):
         self.alpha = alpha  # weight for physical plausibility
         self.beta = beta  # weight for emotional prediction
@@ -46,6 +47,14 @@ class SimulationClusterArbiter:
         # legitimate "not fatigued" state, not a data-quality problem.
         self.validate_keys = validate_keys
         self.on_missing_keys = on_missing_keys
+        # When True, score_simulations attaches an "arbiter_score_debug" payload
+        # to each sim (t1/t2/t3 as actually used in the weighted sum, whether
+        # fatigue suppression fired, and final_score) so scoring can be audited
+        # without recomputing it by hand. Off by default -- the dict is only
+        # built when verbose=True, so default-mode scoring pays no extra cost.
+        # Named "arbiter_score_debug" (not "arbiter_debug") to avoid colliding
+        # with SelfModel's own "arbiter_debug" payload (see simulation.py).
+        self.verbose = verbose
 
     @staticmethod
     def _minmax_normalize(values):
@@ -91,11 +100,23 @@ class SimulationClusterArbiter:
                 t3 = sim.get("reward_distortion", 0.0)
 
             # Inhibit distortion if it consistently fails (flagged previously)
-            if sim.get("fatigue_flag") and t3 > self.fatigue_distortion_suppress_threshold:
+            fatigue_suppressed = (
+                bool(sim.get("fatigue_flag")) and t3 > self.fatigue_distortion_suppress_threshold
+            )
+            if fatigue_suppressed:
                 t3 = 0.0  # suppress reward distortion influence
 
             final_score = self.alpha * t1 + self.beta * t2 + self.gamma * t3
             sim["final_score"] = round(final_score, 3)
+
+            if self.verbose:
+                sim["arbiter_score_debug"] = {
+                    "t1": t1,
+                    "t2": t2,
+                    "t3": t3,
+                    "fatigue_suppressed": fatigue_suppressed,
+                    "final_score": sim["final_score"],
+                }
         return simulations
 
     def sort_simulations(self, simulations):

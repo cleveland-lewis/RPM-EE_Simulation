@@ -468,3 +468,70 @@ class TestValidateKeys:
 
         with pytest.warns(UserWarning, match="index 1"):
             arbiter.score_simulations(sims)
+
+
+class TestVerboseArbiterScoreDebug:
+    """verbose attaches an arbiter_score_debug payload per sim (issue #42)."""
+
+    def test_off_by_default_no_debug_payload(self):
+        arbiter = SimulationClusterArbiter()
+        sims = [{"plausibility": 0.5, "emotional_prediction": 0.1, "reward_distortion": 0.2}]
+
+        result = arbiter.score_simulations(sims)
+
+        assert "arbiter_score_debug" not in result[0]
+
+    def test_verbose_attaches_component_values_and_final_score(self):
+        arbiter = SimulationClusterArbiter(verbose=True)
+        sims = [{"plausibility": 0.5, "emotional_prediction": 0.1, "reward_distortion": 0.2}]
+
+        result = arbiter.score_simulations(sims)
+
+        debug = result[0]["arbiter_score_debug"]
+        assert debug["t1"] == pytest.approx(0.5)
+        assert debug["t2"] == pytest.approx(0.1)
+        assert debug["t3"] == pytest.approx(0.2)
+        assert debug["fatigue_suppressed"] is False
+        assert debug["final_score"] == result[0]["final_score"]
+
+    def test_verbose_debug_reflects_fatigue_suppression(self):
+        arbiter = SimulationClusterArbiter(verbose=True)
+        sims = [
+            {
+                "plausibility": 0.0,
+                "emotional_prediction": 0.0,
+                "reward_distortion": 0.9,
+                "fatigue_flag": True,
+            }
+        ]
+
+        result = arbiter.score_simulations(sims)
+
+        debug = result[0]["arbiter_score_debug"]
+        assert debug["fatigue_suppressed"] is True
+        assert debug["t3"] == pytest.approx(0.0)
+
+    def test_verbose_debug_reflects_normalized_values(self):
+        arbiter = SimulationClusterArbiter(verbose=True, normalize_inputs=True, alpha=1.0)
+        sims = [{"plausibility": 0.5}, {"plausibility": 1.0}]
+
+        result = arbiter.score_simulations(sims)
+
+        assert result[0]["arbiter_score_debug"]["t1"] == pytest.approx(0.0)
+        assert result[1]["arbiter_score_debug"]["t1"] == pytest.approx(1.0)
+
+    def test_arbiter_score_debug_does_not_collide_with_selfmodel_arbiter_debug_key(self):
+        arbiter = SimulationClusterArbiter(verbose=True)
+        sims = [
+            {
+                "plausibility": 0.5,
+                "emotional_prediction": 0.1,
+                "reward_distortion": 0.2,
+                "arbiter_debug": {"unrelated": "selfmodel payload"},
+            }
+        ]
+
+        result = arbiter.score_simulations(sims)
+
+        assert result[0]["arbiter_debug"] == {"unrelated": "selfmodel payload"}
+        assert "arbiter_score_debug" in result[0]
