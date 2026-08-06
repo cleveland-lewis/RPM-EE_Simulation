@@ -18,7 +18,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arbiter import SimulationClusterArbiter  # noqa: E402
+from arbiter import ARBITER_WEIGHT_PRESETS, SimulationClusterArbiter  # noqa: E402
 
 
 class TestScoreSimulationsBasic:
@@ -535,3 +535,79 @@ class TestVerboseArbiterScoreDebug:
 
         assert result[0]["arbiter_debug"] == {"unrelated": "selfmodel payload"}
         assert "arbiter_score_debug" in result[0]
+
+
+class TestConfigureFromPreset:
+    """configure_from_preset builds an arbiter from a named weight combo (issue #39)."""
+
+    def test_neutral_preset_matches_default_constructor_weights(self):
+        default = SimulationClusterArbiter()
+        preset = SimulationClusterArbiter.configure_from_preset("neutral")
+
+        assert (preset.alpha, preset.beta, preset.gamma) == (
+            default.alpha,
+            default.beta,
+            default.gamma,
+        )
+
+    def test_each_preset_weights_sum_to_one(self):
+        for name in ARBITER_WEIGHT_PRESETS:
+            arbiter = SimulationClusterArbiter.configure_from_preset(name)
+            assert arbiter.alpha + arbiter.beta + arbiter.gamma == pytest.approx(1.0)
+
+    def test_emotion_biased_preset_weights_emotional_prediction_most(self):
+        arbiter = SimulationClusterArbiter.configure_from_preset("emotion_biased")
+
+        assert arbiter.beta > arbiter.alpha
+        assert arbiter.beta > arbiter.gamma
+
+    def test_distortion_averse_preset_weights_reward_distortion_most(self):
+        arbiter = SimulationClusterArbiter.configure_from_preset("distortion_averse")
+
+        assert arbiter.gamma > arbiter.alpha
+        assert arbiter.gamma > arbiter.beta
+
+    def test_preset_produces_expected_final_score(self):
+        arbiter = SimulationClusterArbiter.configure_from_preset("emotion_biased")
+        sims = [{"plausibility": 1.0, "emotional_prediction": 1.0, "reward_distortion": 1.0}]
+
+        result = arbiter.score_simulations(sims)
+
+        weights = ARBITER_WEIGHT_PRESETS["emotion_biased"]
+        expected = weights["alpha"] + weights["beta"] + weights["gamma"]
+        assert result[0]["final_score"] == pytest.approx(round(expected, 3))
+
+    def test_unknown_preset_raises_key_error(self):
+        with pytest.raises(KeyError, match="not_a_real_preset"):
+            SimulationClusterArbiter.configure_from_preset("not_a_real_preset")
+
+    def test_overrides_take_precedence_over_preset_weights(self):
+        arbiter = SimulationClusterArbiter.configure_from_preset("neutral", alpha=0.9)
+
+        assert arbiter.alpha == pytest.approx(0.9)
+        # untouched preset values still applied
+        assert arbiter.beta == pytest.approx(ARBITER_WEIGHT_PRESETS["neutral"]["beta"])
+
+    def test_non_weight_overrides_are_applied_too(self):
+        arbiter = SimulationClusterArbiter.configure_from_preset(
+            "distortion_averse", normalize_inputs=True, verbose=True
+        )
+
+        assert arbiter.normalize_inputs is True
+        assert arbiter.verbose is True
+
+    def test_presets_apply_consistently_across_multiple_simulations(self):
+        arbiter = SimulationClusterArbiter.configure_from_preset("distortion_averse")
+        sims = [
+            {"plausibility": 0.5, "emotional_prediction": 0.5, "reward_distortion": 0.2},
+            {"plausibility": 0.5, "emotional_prediction": 0.5, "reward_distortion": 0.8},
+        ]
+
+        result = arbiter.score_simulations(sims)
+
+        weights = ARBITER_WEIGHT_PRESETS["distortion_averse"]
+        for sim, expected_t3 in zip(result, [0.2, 0.8], strict=True):
+            expected = (
+                weights["alpha"] * 0.5 + weights["beta"] * 0.5 + weights["gamma"] * expected_t3
+            )
+            assert sim["final_score"] == pytest.approx(round(expected, 3))

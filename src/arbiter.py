@@ -2,6 +2,25 @@ import warnings
 
 _REQUIRED_SIM_KEYS = ("plausibility", "emotional_prediction", "reward_distortion")
 
+# Named (alpha, beta, gamma) weight combinations for SimulationClusterArbiter,
+# each summing to 1.0 so scores stay comparable across presets. Applied via
+# SimulationClusterArbiter.configure_from_preset(), not automatically -- the
+# constructor's own defaults (== "neutral") are unaffected, preserving
+# backward compatibility for existing callers.
+ARBITER_WEIGHT_PRESETS = {
+    # Balanced default: plausibility leads, matching the original hard-coded
+    # weights this arbiter shipped with.
+    "neutral": {"alpha": 0.5, "beta": 0.3, "gamma": 0.2},
+    # Weights emotional_prediction most heavily, for validation scenarios
+    # emphasizing affective realism over physical plausibility (e.g. MDD/ASD
+    # presets where emotional response is the primary clinical signal).
+    "emotion_biased": {"alpha": 0.3, "beta": 0.5, "gamma": 0.2},
+    # Weights reward_distortion most heavily, for scenarios where detecting
+    # cognitive distortion is the priority (e.g. validating ADHD/MDD presets'
+    # distortion-suppression behavior against literature).
+    "distortion_averse": {"alpha": 0.3, "beta": 0.2, "gamma": 0.5},
+}
+
 
 class SimulationClusterArbiter:
     """Score and rank candidate simulations by a weighted blend of their signals."""
@@ -55,6 +74,37 @@ class SimulationClusterArbiter:
         # Named "arbiter_score_debug" (not "arbiter_debug") to avoid colliding
         # with SelfModel's own "arbiter_debug" payload (see simulation.py).
         self.verbose = verbose
+
+    @classmethod
+    def configure_from_preset(cls, preset_name, **overrides):
+        """Build an arbiter from a named entry in ARBITER_WEIGHT_PRESETS.
+
+        Parameters
+        ----------
+        preset_name : str
+            One of ARBITER_WEIGHT_PRESETS' keys (e.g. "neutral",
+            "emotion_biased", "distortion_averse").
+        **overrides
+            Any other SimulationClusterArbiter constructor argument (e.g.
+            normalize_inputs, verbose) to set alongside the preset's weights.
+            Passing alpha/beta/gamma here overrides the preset's values for
+            that component.
+
+        Returns
+        -------
+        SimulationClusterArbiter
+
+        Raises
+        ------
+        KeyError
+            If preset_name isn't in ARBITER_WEIGHT_PRESETS.
+        """
+        if preset_name not in ARBITER_WEIGHT_PRESETS:
+            available = ", ".join(sorted(ARBITER_WEIGHT_PRESETS))
+            msg = f"Unknown arbiter weight preset '{preset_name}'. Available: {available}"
+            raise KeyError(msg)
+        weights = {**ARBITER_WEIGHT_PRESETS[preset_name], **overrides}
+        return cls(**weights)
 
     @staticmethod
     def _minmax_normalize(values):
