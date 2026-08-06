@@ -7,6 +7,17 @@ Tests cover:
 3. Schema stress ramp/decay based on mismatch magnitude
 4. Schema filtering penalty applied to final_score
 5. Verbose arbiter_debug payload (issue #58)
+
+Issue #59 asked for three specifically-named tests; here's where each
+lives (added under more granular names as part of the classes above,
+except the mocked-propagation one which was a genuine gap):
+- test_evaluate_simulations_bayesian_path -> TestBayesianPEMismatchScoring
+  (same name, added below with a FakeBayesianPE stub for deterministic
+  field-propagation verification, decoupled from real PE math)
+- test_evaluate_simulations_fallback_path -> covered by
+  TestFallbackMismatchScoring.test_mismatch_is_abs_difference_from_baseline
+- test_stress_update_effect -> covered by TestSchemaStressUpdate (ramp/
+  decay/accumulation) and TestUpdateStressFromMismatchHelper (boundary)
 """
 
 import sys
@@ -96,6 +107,34 @@ class TestBayesianPEMismatchScoring:
         result = model.evaluate_simulations(sims)
 
         assert "schema_mismatch" in result[0]
+
+    def test_evaluate_simulations_bayesian_path(self):
+        """issue #59: mock bayesian_pe to a deterministic result and verify
+        evaluate_simulations propagates each field verbatim, decoupled from
+        BayesianPredictiveModeler's actual math (covered separately above)."""
+
+        class FakeBayesianPE:
+            def update_beliefs(self, observation, observation_precision):
+                del observation, observation_precision  # unused by the fake
+                return {
+                    "pe_total": -0.42,
+                    "pe_sensory": 0.11,
+                    "pe_state": 0.22,
+                    "volatility": 0.33,
+                    "precision_ratio": 0.44,
+                }
+
+        model = SelfModel()
+        model.bayesian_pe = FakeBayesianPE()
+        sims = [{"emotional_prediction": 0.5, "confidence": 0.8}]
+
+        result = model.evaluate_simulations(sims)
+
+        assert result[0]["schema_mismatch"] == pytest.approx(0.42)  # abs(pe_total)
+        assert result[0]["pe_sensory"] == pytest.approx(0.11)
+        assert result[0]["pe_state"] == pytest.approx(0.22)
+        assert result[0]["volatility"] == pytest.approx(0.33)
+        assert result[0]["precision_ratio"] == pytest.approx(0.44)
 
 
 class TestSchemaStressUpdate:
