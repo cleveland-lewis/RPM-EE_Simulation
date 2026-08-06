@@ -122,6 +122,79 @@ class TestFatigueSuppression:
         assert result[0]["final_score"] == pytest.approx(round(0.9 * 0.2, 3))
 
 
+class TestFatigueDistortionSuppressThreshold:
+    """fatigue_distortion_suppress_threshold is configurable (issue #48)."""
+
+    def test_default_threshold_is_one_half(self):
+        arbiter = SimulationClusterArbiter()
+
+        assert arbiter.fatigue_distortion_suppress_threshold == 0.5
+
+    def test_custom_threshold_suppresses_just_above_it(self):
+        arbiter = SimulationClusterArbiter(fatigue_distortion_suppress_threshold=0.3)
+        sims = [
+            {
+                "plausibility": 0.0,
+                "emotional_prediction": 0.0,
+                "reward_distortion": 0.31,
+                "fatigue_flag": True,
+            }
+        ]
+
+        result = arbiter.score_simulations(sims)
+
+        assert result[0]["final_score"] == pytest.approx(0.0)
+
+    def test_custom_threshold_does_not_suppress_just_below_it(self):
+        arbiter = SimulationClusterArbiter(fatigue_distortion_suppress_threshold=0.3)
+        sims = [
+            {
+                "plausibility": 0.0,
+                "emotional_prediction": 0.0,
+                "reward_distortion": 0.29,
+                "fatigue_flag": True,
+            }
+        ]
+
+        result = arbiter.score_simulations(sims)
+
+        assert result[0]["final_score"] == pytest.approx(round(0.2 * 0.29, 3))
+
+    def test_custom_threshold_does_not_suppress_exactly_at_it(self):
+        arbiter = SimulationClusterArbiter(fatigue_distortion_suppress_threshold=0.3)
+        sims = [
+            {
+                "plausibility": 0.0,
+                "emotional_prediction": 0.0,
+                "reward_distortion": 0.3,
+                "fatigue_flag": True,
+            }
+        ]
+
+        result = arbiter.score_simulations(sims)
+
+        assert result[0]["final_score"] == pytest.approx(round(0.2 * 0.3, 3))
+
+    def test_lower_threshold_suppresses_a_value_the_default_would_not(self):
+        # reward_distortion=0.4 is below the default 0.5 threshold (not suppressed)
+        # but above a custom 0.3 threshold (suppressed) -- demonstrates the
+        # threshold actually changes final_score, not just internal state.
+        default_arbiter = SimulationClusterArbiter()
+        custom_arbiter = SimulationClusterArbiter(fatigue_distortion_suppress_threshold=0.3)
+        sim = {
+            "plausibility": 0.0,
+            "emotional_prediction": 0.0,
+            "reward_distortion": 0.4,
+            "fatigue_flag": True,
+        }
+
+        default_result = default_arbiter.score_simulations([dict(sim)])
+        custom_result = custom_arbiter.score_simulations([dict(sim)])
+
+        assert default_result[0]["final_score"] == pytest.approx(round(0.2 * 0.4, 3))
+        assert custom_result[0]["final_score"] == pytest.approx(0.0)
+
+
 class TestSortSimulations:
     def test_sorts_descending_by_final_score(self):
         arbiter = SimulationClusterArbiter()
