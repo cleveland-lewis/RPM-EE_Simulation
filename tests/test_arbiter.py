@@ -10,6 +10,7 @@ Tests cover:
 """
 
 import sys
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -399,3 +400,71 @@ class TestNormalizeInputs:
         # (above threshold, suppressed to 0.0)
         assert result[0]["final_score"] == pytest.approx(0.0)
         assert result[1]["final_score"] == pytest.approx(0.0)
+
+
+class TestValidateKeys:
+    """validate_keys surfaces missing required sim keys instead of silent 0.0s (issue #41)."""
+
+    def test_off_by_default_no_warning_on_missing_keys(self):
+        arbiter = SimulationClusterArbiter()
+        sims: list[dict[str, Any]] = [{}]
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            result = arbiter.score_simulations(sims)  # must not raise
+
+        assert result[0]["final_score"] == pytest.approx(0.0)
+
+    def test_validate_keys_warns_on_missing_key_by_default(self):
+        arbiter = SimulationClusterArbiter(validate_keys=True)
+        sims = [{"plausibility": 0.5, "emotional_prediction": 0.1}]  # missing reward_distortion
+
+        with pytest.warns(UserWarning, match="reward_distortion"):
+            result = arbiter.score_simulations(sims)
+
+        # still falls back to 0.0 and scores normally after warning
+        assert result[0]["final_score"] == pytest.approx(round(0.5 * 0.5 + 0.3 * 0.1, 3))
+
+    def test_validate_keys_warning_lists_all_missing_keys(self):
+        arbiter = SimulationClusterArbiter(validate_keys=True)
+        sims: list[dict[str, Any]] = [{}]
+
+        with pytest.warns(UserWarning) as record:
+            arbiter.score_simulations(sims)
+
+        message = str(record[0].message)
+        for key in ("plausibility", "emotional_prediction", "reward_distortion"):
+            assert key in message
+
+    def test_validate_keys_does_not_warn_about_missing_fatigue_flag(self):
+        arbiter = SimulationClusterArbiter(validate_keys=True)
+        sims = [
+            {"plausibility": 0.5, "emotional_prediction": 0.1, "reward_distortion": 0.2}
+        ]  # no fatigue_flag -- legitimate, not a data-quality issue
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            result = arbiter.score_simulations(sims)  # must not raise
+
+        assert result[0]["final_score"] == pytest.approx(
+            round(0.5 * 0.5 + 0.3 * 0.1 + 0.2 * 0.2, 3)
+        )
+
+    def test_on_missing_keys_raise_stops_scoring(self):
+        arbiter = SimulationClusterArbiter(validate_keys=True, on_missing_keys="raise")
+        sims: list[dict[str, Any]] = [{"plausibility": 0.5}]
+
+        with pytest.raises(ValueError, match="emotional_prediction"):
+            arbiter.score_simulations(sims)
+
+        assert "final_score" not in sims[0]
+
+    def test_validate_keys_checks_every_simulation_in_the_batch(self):
+        arbiter = SimulationClusterArbiter(validate_keys=True)
+        sims = [
+            {"plausibility": 0.5, "emotional_prediction": 0.1, "reward_distortion": 0.2},
+            {"plausibility": 0.5, "emotional_prediction": 0.1},  # missing reward_distortion
+        ]
+
+        with pytest.warns(UserWarning, match="index 1"):
+            arbiter.score_simulations(sims)

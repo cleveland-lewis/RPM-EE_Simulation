@@ -1,3 +1,8 @@
+import warnings
+
+_REQUIRED_SIM_KEYS = ("plausibility", "emotional_prediction", "reward_distortion")
+
+
 class SimulationClusterArbiter:
     """Score and rank candidate simulations by a weighted blend of their signals."""
 
@@ -8,6 +13,8 @@ class SimulationClusterArbiter:
         gamma=0.2,
         fatigue_distortion_suppress_threshold=0.5,
         normalize_inputs=False,
+        validate_keys=False,
+        on_missing_keys="warn",
     ):
         self.alpha = alpha  # weight for physical plausibility
         self.beta = beta  # weight for emotional prediction
@@ -29,6 +36,16 @@ class SimulationClusterArbiter:
         # enabled, each component is min-max scaled to [0, 1] across the batch
         # passed to score_simulations before weights are applied.
         self.normalize_inputs = normalize_inputs
+        # Missing plausibility/emotional_prediction/reward_distortion silently
+        # default to 0.0 (see below), which can mask upstream data issues.
+        # validate_keys=False preserves that silent-default behavior for
+        # existing callers; when True, score_simulations checks every sim for
+        # the required keys before scoring and either warns (on_missing_keys=
+        # "warn", the default) or raises ValueError (on_missing_keys="raise").
+        # fatigue_flag is intentionally not required here: its absence is a
+        # legitimate "not fatigued" state, not a data-quality problem.
+        self.validate_keys = validate_keys
+        self.on_missing_keys = on_missing_keys
 
     @staticmethod
     def _minmax_normalize(values):
@@ -38,8 +55,24 @@ class SimulationClusterArbiter:
             return [0.5] * len(values)
         return [(v - lo) / (hi - lo) for v in values]
 
+    def _check_required_keys(self, simulations):
+        for i, sim in enumerate(simulations):
+            missing = [key for key in _REQUIRED_SIM_KEYS if key not in sim]
+            if not missing:
+                continue
+            message = (
+                f"Simulation at index {i} is missing required key(s) {missing}; "
+                f"will default to 0.0 for scoring."
+            )
+            if self.on_missing_keys == "raise":
+                raise ValueError(message)
+            warnings.warn(message, stacklevel=3)
+
     def score_simulations(self, simulations):
         """Compute final_score for each simulation in place and return the list."""
+        if self.validate_keys:
+            self._check_required_keys(simulations)
+
         if self.normalize_inputs and simulations:
             t1_norm = self._minmax_normalize([sim.get("plausibility", 0.0) for sim in simulations])
             t2_norm = self._minmax_normalize(
