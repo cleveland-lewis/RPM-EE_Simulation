@@ -79,45 +79,66 @@ class SelfModel:
         else:
             self.schema_stress *= 0.95  # decay
 
+    @staticmethod
+    def _score_bayesian_pe(
+        sim: dict[str, Any], bayesian_pe: BayesianPredictiveModeler, actual_valence: float
+    ) -> float:
+        """Update Bayesian beliefs, store the weighted PE components on sim, return mismatch."""
+        observation_precision = sim.get("confidence", 0.5)
+        pe_result = bayesian_pe.update_beliefs(
+            observation=actual_valence, observation_precision=observation_precision
+        )
+        mismatch = float(abs(pe_result["pe_total"]))
+        sim["schema_mismatch"] = mismatch
+        sim["pe_sensory"] = pe_result["pe_sensory"]
+        sim["pe_state"] = pe_result["pe_state"]
+        sim["volatility"] = pe_result["volatility"]
+        sim["precision_ratio"] = pe_result["precision_ratio"]
+        return mismatch
+
+    @staticmethod
+    def _score_fallback(
+        sim: dict[str, Any], actual_valence: float, expected_valence: float
+    ) -> float:
+        """Plain |actual - expected| mismatch (DEPRECATED path, no Bayesian PE configured)."""
+        mismatch = abs(actual_valence - expected_valence)
+        sim["schema_mismatch"] = mismatch
+        return mismatch
+
     def evaluate_simulations(self, simulations: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Score prediction-error/schema mismatch and update stress for each simulation."""
-        for sim in simulations:
-            self._validate_sim_keys(sim)
+        # Bind loop-invariant attributes to locals once, rather than
+        # re-resolving `self.x` on every simulation in the loop below --
+        # none of these change mid-call (bayesian_pe/traits only change via
+        # configure_bayesian_pe(), emotion_baseline only via
+        # update_emotion_baseline(), neither called from within this loop).
+        bayesian_pe = self.bayesian_pe
+        emotion_baseline = self.emotion_baseline
+        realism_bias = self.traits["realism_bias"]
+        verbose = self.verbose
+        validate_keys = self.on_missing_keys != "ignore"
 
-            expected_valence = self.emotion_baseline
+        for sim in simulations:
+            if validate_keys:
+                self._validate_sim_keys(sim)
+
             actual_valence = sim.get("emotional_prediction", 0.0)
 
             # Use Bayesian PE if available (NEW - Phase 3)
-            if self.bayesian_pe:
-                # Update beliefs with observation (use DDM confidence as observation precision)
-                observation_precision = sim.get("confidence", 0.5)
-                pe_result = self.bayesian_pe.update_beliefs(
-                    observation=actual_valence, observation_precision=observation_precision
-                )
-
-                # Store weighted PE components
-                sim["schema_mismatch"] = abs(pe_result["pe_total"])
-                sim["pe_sensory"] = pe_result["pe_sensory"]
-                sim["pe_state"] = pe_result["pe_state"]
-                sim["volatility"] = pe_result["volatility"]
-                sim["precision_ratio"] = pe_result["precision_ratio"]
-
-                mismatch = abs(pe_result["pe_total"])
+            if bayesian_pe:
+                mismatch = self._score_bayesian_pe(sim, bayesian_pe, actual_valence)
             else:
-                # Fallback to old logic (DEPRECATED)
-                mismatch = abs(actual_valence - expected_valence)
-                sim["schema_mismatch"] = mismatch
+                mismatch = self._score_fallback(sim, actual_valence, emotion_baseline)
 
             # Update schema stress (with precision weighting)
             self._update_stress_from_mismatch(mismatch)
 
             # Apply schema filtering penalty
             realism = sim.get("plausibility", 0.0)
-            realism_bias = self.traits["realism_bias"]
             penalty = (1.0 - realism) * realism_bias
             sim["schema_filtered_score"] = max(0.0, sim.get("final_score", 0.0) - penalty)
 
-            if self.verbose:
+            if verbose:
                 sim["arbiter_debug"] = {
                     "final_score": sim.get("final_score", 0.0),
                     "mismatch": mismatch,
