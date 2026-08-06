@@ -121,6 +121,24 @@ stable-sort input-order preservation, which is only deterministic if
 upstream ordering itself is deterministic. Fully-tied simulations (equal on
 all three) still fall back to input order.
 
+## Backward compatibility
+
+Every feature added to this arbiter since its original release
+(`normalize_inputs`, `validate_keys`/`on_missing_keys`, `verbose`,
+`fatigue_distortion_suppress_threshold`, `configure_from_preset`) is
+opt-in: its default reproduces the arbiter's original hard-coded behavior
+exactly (`alpha=0.5, beta=0.3, gamma=0.2`, no normalization, no key
+validation, no debug payload, threshold `0.5`). `SimulationClusterArbiter()`
+with no arguments is unaffected by any of it.
+
+`tests/test_arbiter.py::TestBackwardCompatibility` pins this down with
+characterization tests that reproduce the arbiter's original formula and
+assert the plain constructor's flags are all off, so an accidental change
+to a default is caught by the test suite rather than discovered by a
+caller. There's no deprecation path to document here because no existing
+parameter, method, or return shape has been removed or renamed — only new,
+optional ones added.
+
 ## Validating changes to this module
 
 When calibrating weights, thresholds, or deciding whether to enable

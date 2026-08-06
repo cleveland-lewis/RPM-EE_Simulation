@@ -611,3 +611,77 @@ class TestConfigureFromPreset:
                 weights["alpha"] * 0.5 + weights["beta"] * 0.5 + weights["gamma"] * expected_t3
             )
             assert sim["final_score"] == pytest.approx(round(expected, 3))
+
+
+class TestBackwardCompatibility:
+    """Every feature added since the arbiter's original release is opt-in (issue #46).
+
+    Characterization tests: pin default-constructor behavior against the
+    arbiter's original (pre-#38/#39/#41/#42) formula, so an accidental
+    change to a default is caught even if no other test happens to notice.
+    """
+
+    def test_default_constructor_matches_original_hardcoded_weights(self):
+        arbiter = SimulationClusterArbiter()
+
+        assert (arbiter.alpha, arbiter.beta, arbiter.gamma) == (0.5, 0.3, 0.2)
+
+    def test_default_constructor_all_new_features_are_off(self):
+        arbiter = SimulationClusterArbiter()
+
+        assert arbiter.normalize_inputs is False
+        assert arbiter.validate_keys is False
+        assert arbiter.verbose is False
+        assert arbiter.fatigue_distortion_suppress_threshold == 0.5
+
+    def test_score_simulations_reproduces_original_formula_with_no_config(self):
+        # Original (pre-#38/#39/#41/#42) score_simulations body:
+        #   t1, t2, t3 = sim.get(...), sim.get(...), sim.get(...)
+        #   if fatigue_flag and t3 > 0.5: t3 = 0.0
+        #   final_score = round(0.5*t1 + 0.3*t2 + 0.2*t3, 3)
+        arbiter = SimulationClusterArbiter()
+        sims = [
+            {"plausibility": 0.7, "emotional_prediction": -0.2, "reward_distortion": 0.6},
+            {
+                "plausibility": 0.4,
+                "emotional_prediction": 0.9,
+                "reward_distortion": 0.8,
+                "fatigue_flag": True,
+            },
+        ]
+
+        result = arbiter.score_simulations([dict(s) for s in sims])
+
+        assert result[0]["final_score"] == pytest.approx(
+            round(0.5 * 0.7 + 0.3 * -0.2 + 0.2 * 0.6, 3)
+        )
+        # sim 1: fatigue_flag True and reward_distortion 0.8 > 0.5 -> t3 suppressed to 0.0
+        assert result[1]["final_score"] == pytest.approx(round(0.5 * 0.4 + 0.3 * 0.9, 3))
+
+    def test_score_simulations_with_no_config_attaches_no_new_keys(self):
+        # None of validate_keys/verbose is on, so no arbiter_score_debug and
+        # no warnings -- output dict shape is unchanged from the original.
+        arbiter = SimulationClusterArbiter()
+        sims = [{"plausibility": 0.5, "emotional_prediction": 0.1, "reward_distortion": 0.2}]
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            result = arbiter.score_simulations(sims)
+
+        assert set(result[0].keys()) == {
+            "plausibility",
+            "emotional_prediction",
+            "reward_distortion",
+            "final_score",
+        }
+
+    def test_sort_simulations_signature_and_default_ordering_unchanged(self):
+        # sort_simulations still takes just `simulations` and still sorts
+        # descending by final_score; only the tie-break behavior changed
+        # (intentionally, per #43), which this test doesn't exercise.
+        arbiter = SimulationClusterArbiter()
+        sims = [{"final_score": 0.1}, {"final_score": 0.9}, {"final_score": 0.5}]
+
+        result = arbiter.sort_simulations(sims)
+
+        assert [s["final_score"] for s in result] == [0.9, 0.5, 0.1]
